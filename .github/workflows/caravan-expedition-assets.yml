@@ -1,0 +1,28 @@
+name: Validate Caravan expedition assets
+on:
+  push:
+    paths:
+      - "game/assets/expedition_v014/**"
+      - ".github/workflows/caravan-expedition-assets.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify resource manifest and SVG syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+          import json
+          root = Path('game/assets/expedition_v014')
+          m = json.loads((root/'manifest.json').read_text())
+          assert len(m['items']) == 12, 'Unexpected sprite count'
+          for i in m['items']:
+              p = Path(i['path'])
+              assert p.is_file(), f'Missing {p}'
+              e = ET.parse(p).getroot()
+              assert e.tag.endswith('svg') and e.get('viewBox') == '0 0 480 320'
+          print('OK: 12 standalone SVG sprites validated')
+          PY
