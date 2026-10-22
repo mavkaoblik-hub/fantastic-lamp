@@ -1,0 +1,95 @@
+{
+  "format": "CARAVAN_EXPEDITION_ASSETS_V014",
+  "date": "2026-10-22",
+  "coordinateSpace": "480x320",
+  "anchor": {
+    "x": 0.5,
+    "y": 0.88
+  },
+  "items": [
+    {
+      "id": "broken_tracks",
+      "name": "Завал колій",
+      "path": "game/assets/expedition_v014/broken_tracks.svg",
+      "type": "obstacle",
+      "interactRadius": 90
+    },
+    {
+      "id": "wrecked_car",
+      "name": "Покинута машина",
+      "path": "game/assets/expedition_v014/wrecked_car.svg",
+      "type": "obstacle",
+      "interactRadius": 90
+    },
+    {
+      "id": "scrap_heap",
+      "name": "Металобрухт",
+      "path": "game/assets/expedition_v014/scrap_heap.svg",
+      "type": "loot",
+      "interactRadius": 90
+    },
+    {
+      "id": "fuel_cache",
+      "name": "Запаси палива",
+      "path": "game/assets/expedition_v014/fuel_cache.svg",
+      "type": "loot",
+      "interactRadius": 90
+    },
+    {
+      "id": "medical_cache",
+      "name": "Медичні припаси",
+      "path": "game/assets/expedition_v014/medical_cache.svg",
+      "type": "loot",
+      "interactRadius": 90
+    },
+    {
+      "id": "water_tower",
+      "name": "Водонапірна башта",
+      "path": "game/assets/expedition_v014/water_tower.svg",
+      "type": "landmark",
+      "interactRadius": 90
+    },
+    {
+      "id": "generator_station",
+      "name": "Пошкоджений генератор",
+      "path": "game/assets/expedition_v014/generator_station.svg",
+      "type": "landmark",
+      "interactRadius": 90
+    },
+    {
+      "id": "radio_mast",
+      "name": "Радіомаяк",
+      "path": "game/assets/expedition_v014/radio_mast.svg",
+      "type": "landmark",
+      "interactRadius": 90
+    },
+    {
+      "id": "repair_outpost",
+      "name": "Ремонтний пункт",
+      "path": "game/assets/expedition_v014/repair_outpost.svg",
+      "type": "landmark",
+      "interactRadius": 90
+    },
+    {
+      "id": "abandoned_trolley",
+      "name": "Дрезина",
+      "path": "game/assets/expedition_v014/abandoned_trolley.svg",
+      "type": "landmark",
+      "interactRadius": 90
+    },
+    {
+      "id": "expedition_camp",
+      "name": "Табір експедиції",
+      "path": "game/assets/expedition_v014/expedition_camp.svg",
+      "type": "landmark",
+      "interactRadius": 90
+    },
+    {
+      "id": "collapsed_bridge",
+      "name": "Зруйнований міст",
+      "path": "game/assets/expedition_v014/collapsed_bridge.svg",
+      "type": "obstacle",
+      "interactRadius": 90
+    }
+  ]
+}
