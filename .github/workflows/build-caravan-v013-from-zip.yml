@@ -1,0 +1,68 @@
+name: Build CARAVAN Android v0.13 alpha APK
+
+on:
+  push:
+    paths:
+      - 'CARAVAN_ANDROID_SOURCE_v013.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate uploaded game source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s CARAVAN_ANDROID_SOURCE_v013.zip || { echo 'Upload CARAVAN_ANDROID_SOURCE_v013.zip to repository root'; exit 1; }
+          unzip -tqq CARAVAN_ANDROID_SOURCE_v013.zip
+          mkdir -p "$RUNNER_TEMP/caravan-v013"
+          unzip -q CARAVAN_ANDROID_SOURCE_v013.zip -d "$RUNNER_TEMP/caravan-v013"
+          test -s "$RUNNER_TEMP/caravan-v013/android/settings.gradle"
+          test -s "$RUNNER_TEMP/caravan-v013/android/app/build.gradle"
+          test -s "$RUNNER_TEMP/caravan-v013/android/app/src/main/assets/game/index.html"
+          test -s "$RUNNER_TEMP/caravan-v013/android/app/src/main/assets/game/assets/train/locomotive_L1.png"
+          test -s "$RUNNER_TEMP/caravan-v013/android/app/src/main/assets/game/assets/wagons/reactor.png"
+          echo 'Offline game source: OK'
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Compile and package debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle -p "$RUNNER_TEMP/caravan-v013/android" --no-daemon :app:assembleDebug
+          test -s "$RUNNER_TEMP/caravan-v013/android/app/build/outputs/apk/debug/app-debug.apk"
+          sha256sum "$RUNNER_TEMP/caravan-v013/android/app/build/outputs/apk/debug/app-debug.apk" > "$RUNNER_TEMP/caravan-v013/APK_SHA256.txt"
+
+      - name: Publish installable debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CARAVAN-v013-alpha-debug-APK
+          path: |
+            ${{ runner.temp }}/caravan-v013/android/app/build/outputs/apk/debug/app-debug.apk
+            ${{ runner.temp }}/caravan-v013/APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
