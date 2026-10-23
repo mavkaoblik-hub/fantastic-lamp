@@ -14,8 +14,48 @@ const modules=[
 ];
 const locations=[['СТАНЦІЯ «ПОПІЛ»','РОЗБИТІ КОЛІЇ','СУХИЙ ВІТЕР / 8°C'],['КІСТЯНИЙ МІСТ','ІРЖАВІ ЗЕМЛІ','ПИЛОВА БУРЯ / 6°C'],['ПОКИНУТИЙ ДЕПО','МЕРТВИЙ РЕГІОН','ТУМАН / 3°C'],['МІДНИЙ ПЕРЕВАЛ','СТАРІ МЕХАНІЗМИ','ЯСНО / 12°C'],['ОСТАННІЙ СИГНАЛ','ЗЕМЛІ ПОЗА МАПОЮ','ХОЛОД / −2°C']];
 const noise=(n)=>{let x=Math.sin(n*127.1+12.37)*43758.5453;return x-Math.floor(x)};
+const CM=window.CaravanCameraMath;
+if(!CM)throw new Error('camera_math.js must load before game.js');
 let width=0,height=0,scale=1,viewW=1280,cam=165,time=0,last=performance.now(),distanceScroll=0,trail=[],fx=[],chosen=-1,drag=null,muted=true,travelTimer=0,lastStation=0;
-function resize(){width=window.innerWidth;height=window.innerHeight;let d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(width*d);canvas.height=Math.round(height*d);canvas.style.width=width+'px';canvas.style.height=height+'px';scale=height/720;viewW=width/scale;c.setTransform(d*scale,0,0,d*scale,0,0);cam=clamp(cam,-110,Math.max(800,1700-viewW));}window.addEventListener('resize',resize);resize();
+let zoom=1,desiredZoom=1,desiredCam=165,viewMode='operational',cameraVelocity=0;
+const activePointers=new Map();
+let pinchDistance=0,pinchMidX=0,gestureMoved=false;
+function resize(){width=window.innerWidth;height=window.innerHeight;let d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(width*d);canvas.height=Math.round(height*d);canvas.style.width=width+'px';canvas.style.height=height+'px';scale=height/720;viewW=width/scale;c.setTransform(d*scale,0,0,d*scale,0,0);cam=CM.bound(cam,zoom,viewW);desiredCam=CM.bound(desiredCam,desiredZoom,viewW);}window.addEventListener('resize',resize);resize();
+function focusWagon(index){
+  if(index<0||index>=modules.length)return;
+  viewMode='micro';desiredZoom=CM.MODES.micro;
+  desiredCam=CM.centerAt(modules[index].x+modules[index].w/2,desiredZoom,viewW);
+  cameraVelocity=0;refreshCameraHud();
+}
+function setCameraMode(mode){
+  if(!Object.prototype.hasOwnProperty.call(CM.MODES,mode))return;
+  viewMode=mode;desiredZoom=CM.MODES[mode];cameraVelocity=0;
+  const center=mode==='macro'?825:chosen>=0?modules[chosen].x+modules[chosen].w/2:825;
+  desiredCam=CM.centerAt(center,desiredZoom,viewW);refreshCameraHud();
+}
+function refreshCameraHud(){
+  const label=$('camera-mode');if(label)label.textContent=({macro:'ВЕСЬ ПОТЯГ',operational:'РОБОЧИЙ ОГЛЯД',micro:'ПОТОЧНИЙ ВАГОН',custom:'РУЧНИЙ МАСШТАБ'})[viewMode]||'КАМЕРА';
+  const ratio=$('zoom-value');if(ratio)ratio.textContent=Math.round(desiredZoom*100)+'%';
+  document.querySelectorAll('[data-camera-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cameraMode===viewMode)));
+}
+function changeCameraZoom(mult,screenX=viewW/2){
+  const n=CM.zoomAt(cam,zoom,zoom*mult,screenX,viewW);
+  zoom=n.zoom;desiredZoom=zoom;cam=n.left;desiredCam=cam;cameraVelocity=0;
+  viewMode='custom';refreshCameraHud();
+}
+function animateCamera(dt){
+  if(activePointers.size)return;
+  const factor=Math.min(1,dt*9);
+  if(Math.abs(cameraVelocity)>1){
+    cam=CM.bound(cam+cameraVelocity*dt,zoom,viewW);
+    desiredCam=cam;
+    cameraVelocity*=Math.exp(-dt*9);
+  }else cameraVelocity=0;
+  zoom+=(desiredZoom-zoom)*factor;
+  if(!cameraVelocity)cam+=(desiredCam-cam)*factor;
+  cam=CM.bound(cam,zoom,viewW);
+  if(Math.abs(zoom-desiredZoom)<0.002)zoom=desiredZoom;
+}
 function styleText(text,x,y,size=15,color='#ddd5c5',font='600',align='left'){c.textAlign=align;c.font=`${font} ${size}px system-ui`;c.fillStyle=color;c.fillText(text,x,y);c.textAlign='left';}
 function rr(x,y,w,h,r,fill,stroke=null,lw=1){c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.lineWidth=lw;c.strokeStyle=stroke;c.stroke();}}
 function line(x1,y1,x2,y2,col,lw=1){c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.strokeStyle=col;c.lineWidth=lw;c.stroke();}
@@ -50,11 +90,11 @@ function brokenStation(){c.save();c.translate(-(cam*.5+distanceScroll*.46)%940,0
  for(let j=0;j<3;j++){let lx=ox+40+j*132;line(lx,286,lx,346,'#182632',2);glow(lx,352,29);rr(lx-6,344,12,18,2,'#f9c379','#534638',2)}
 }c.restore();}
 function foreground(){let off=(distanceScroll*.95)%97;
- c.fillStyle=grad(0,589,0,720,[[0,'#2b3031'],[.1,'#363432'],[.55,'#1c242b'],[1,'#101923']]);c.fillRect(0,585,viewW,145);
- for(let i=-2;i<Math.ceil(viewW/97)+3;i++){let x=i*97-off;poly([[x,597],[x+48,597],[x+35,683],[x-9,683]],'#443b32','#5b5548',1);line(x-25,610,x+44,610,'#615747',3);}
- for(const y of [603,658]){line(0,y,viewW,y,'#1a2229',15);line(0,y-5,viewW,y-5,'#8a8173',3);line(0,y+4,viewW,y+4,'#51463d',2);}
- for(let i=0;i<40;i++){let x=noise(i*23)*viewW,y=676+noise(i*12)*44;ellipse(x,y,1+noise(i*9)*4,1,'#5b5141');}
- for(let i=0;i<22;i++){let x=i*113-(distanceScroll*.63)%113;for(let h=0;h<4;h++){let bend=noise(i*9+h*9);line(x,yFromPlant(h,bend),x+Math.sin(time*.5+i)*2.5,696+h*3,'#77735d',1);}}
+ c.fillStyle=grad(0,589,0,940,[[0,'#2b3031'],[.1,'#363432'],[.55,'#1c242b'],[1,'#101923']]);c.fillRect(-2200,585,5200,500);
+ for(let i=-20;i<40;i++){let x=i*97-off;poly([[x,597],[x+48,597],[x+35,683],[x-9,683]],'#443b32','#5b5548',1);line(x-25,610,x+44,610,'#615747',3);}
+ for(const y of [603,658]){line(-2200,y,3000,y,'#1a2229',15);line(-2200,y-5,3000,y-5,'#8a8173',3);line(-2200,y+4,3000,y+4,'#51463d',2);}
+ for(let i=0;i<65;i++){let x=-250+noise(i*23)*2250,y=676+noise(i*12)*44;ellipse(x,y,1+noise(i*9)*4,1,'#5b5141');}
+ for(let i=-8;i<24;i++){let x=i*113-(distanceScroll*.63)%113;for(let h=0;h<4;h++){let bend=noise(i*9+h*9);line(x,yFromPlant(h,bend),x+Math.sin(time*.5+i)*2.5,696+h*3,'#77735d',1);}}
  function yFromPlant(h,b){return 690-(h*5+b*13)}
 }
 function wheel(x,y,r,rot){glow(x,y,26,'#e1a95f');ellipse(x,y,r+5,r+5,'#111922');ellipse(x,y,r,r,'#3c4246');ellipse(x,y,r-5,r-5,'#171f27');c.save();c.translate(x,y);c.rotate(rot);for(let j=0;j<8;j++){let a=j*TAU/8;line(Math.cos(a)*5,Math.sin(a)*5,Math.cos(a)*(r-8),Math.sin(a)*(r-8),'#716e65',3);}c.restore();ellipse(x,y,6,6,'#a18f70');ellipse(x,y,3,3,'#d7aa72');}
@@ -126,16 +166,40 @@ function locomotive(){let x=1101,y=355,w=346;chassis(x,w-19);glow(x+178,y+153,21
  for(let i=0;i<6;i++){rr(x+31+i*37,y+139,19,12,1,i%2?'#ad8053':'#6b685d','#aa916e',1);}
 }
 function signals(){ // signal mast foreground
- c.save();c.translate(-(cam*.9+distanceScroll*.85)%1120,0);for(let i=-1;i<4;i++){let x=190+i*1120;line(x,376,x,602,'#1d292e',11);line(x,376,x,602,'#857463',3);rr(x-14,392,29,69,5,'#182832','#aa9172',2);for(const [j,col] of [[0,'#b85d53'],[1,'#8b7046'],[2,'#719f77']]){ellipse(x,407+j*20,6,6,col);if(j===1)glow(x,427,32,'#d9a465');}line(x-49,387,x+35,387,'#6c6661',4);line(x+35,387,x+52,398,'#6c6661',3);}
+ c.save();c.translate(-(distanceScroll*.85)%1120,0);for(let i=-1;i<4;i++){let x=190+i*1120;line(x,376,x,602,'#1d292e',11);line(x,376,x,602,'#857463',3);rr(x-14,392,29,69,5,'#182832','#aa9172',2);for(const [j,col] of [[0,'#b85d53'],[1,'#8b7046'],[2,'#719f77']]){ellipse(x,407+j*20,6,6,col);if(j===1)glow(x,427,32,'#d9a465');}line(x-49,387,x+35,387,'#6c6661',4);line(x+35,387,x+52,398,'#6c6661',3);}
  c.restore();}
 function airFx(dt){if(!state.travelling&&Math.random()<.14){trail.push({x:1101+140+Math.random()*35,y:300+Math.random()*10,r:5+Math.random()*9,life:1.2});}if(state.travelling&&Math.random()<.65){trail.push({x:1220+Math.random()*25,y:300,r:6+Math.random()*8,life:1.5});}trail=trail.filter(p=>p.life>0);for(const p of trail){p.x+=dt*(state.travelling?-25:-17);p.y-=dt*30;p.r+=dt*11;p.life-=dt*.6;}
  for(let i=0;i<18;i++){let x=noise(i*21+5)*viewW,y=(noise(i*13+2)*720+(time*(state.travelling?58:19))*(i%2?1:-1))%720;ellipse(x,y,noise(i*10)*1.1+.3,.8,'#e2aa7759');}}
+function drawWorkingCrew(){
+ const crew=state.support&&Array.isArray(state.support.workers)?state.support.workers:[];
+ const centerX=[418,683,957];
+ crew.forEach((w,i)=>{
+  if(w.job===null||w.job<0||w.job>=modules.length)return;
+  const job=w.job,elapsed=Math.max(0,w.progress||0);
+  const dest=centerX[job]+i*15-18;
+  const progress=clamp(elapsed/2.7,0,1);
+  const eased=progress*progress*(3-2*progress);
+  const x=1180+i*21+(dest-(1180+i*21))*eased;
+  const y=541+(progress>=1?Math.sin(time*3+i)*3:Math.sin(time*9+i)*2);
+  // Procedural placeholder until approved RGBA characters are integrated.
+  crewFigure(x,y,.86,i*1.7);
+  if(zoom>0.85){
+   c.fillStyle='#0b1722dd';c.fillRect(x-22,y-63,65,21);
+   styleText(w.name,x+9,y-48,12,'#ffce92','700','center');
+   const duration=[18,22,25][job];
+   const pct=clamp(elapsed/duration,0,1);
+   rr(x-21,y-39,63,5,2,'#293840');rr(x-21,y-39,63*pct,5,2,'#d0a05f');
+  }
+ });
+}
 function draw(){let dpr=canvas.width/width;c.setTransform(dpr*scale,0,0,dpr*scale,0,0);
  sky();brokenStation();
- // dimensional fog between landscape and train
+ // distant fog remains screen-aligned, while railway, wagons and workers share the world camera
  c.fillStyle=grad(0,385,0,650,[[0,'#ddd0a500'],[.5,'#b7a68c10'],[1,'#080f1600']]);c.fillRect(0,385,viewW,265);
+ c.save();
+ c.translate(-cam*zoom,CM.LIMITS.pivotY*(1-zoom));c.scale(zoom,zoom);
  foreground();
- c.save();c.translate(-cam+Math.sin(time*2.3)*(state.travelling?2.6:.35),0);
+ c.save();c.translate(Math.sin(time*2.3)*(state.travelling?2.6:.35),0);
  // shadow under train
  ellipse(875,608,615,25,'#070e15ab');
  for(let i=0;i<3;i++)wagon(i);
@@ -144,8 +208,9 @@ function draw(){let dpr=canvas.width/width;c.setTransform(dpr*scale,0,0,dpr*scal
  for(let i=0;i<3;i++)line(modules[i].x+modules[i].w,566,modules[i].x+modules[i].w+15,567,'#8f806f',8);
  // character on platform
  crewFigure(1105,573,.8,3);
+ drawWorkingCrew();
  c.save();for(const p of trail){c.globalAlpha=clamp(p.life*.28,0,.34);ellipse(p.x,p.y,p.r,p.r*.77,'#cfd0c6');}c.restore();
- c.restore();signals();airFx(.016);
+ c.restore();signals();c.restore();airFx(.016);
  // light grading
  c.fillStyle=grad(0,0,0,720,[[0,'#0c172111'],[.5,'#f5aa5b00'],[1,'#070e1633']]);c.fillRect(0,0,viewW,720);
 }
@@ -153,17 +218,27 @@ function updateHUD(){for(const k of ['scrap','fuel','food','crew'])$(k).textCont
  $('go').disabled=state.travelling||state.fuel<10||state.food<5||(state.support&&state.support.water<5);$('go').innerHTML=state.travelling?`➤ <span>У ДОРОЗІ ${Math.round(state.distance*100)}%</span>`:'➤ <span>В ДОРОГУ</span>';
  $('scavenge').disabled=state.travelling||state.explored;
  $('scavenge').innerHTML=state.explored?'✓ <span>ДОСЛІДЖЕНО</span>':'⌕ <span>ДОСЛІДИТИ</span>';
+ updateCurrentWagon();
  $('mission').textContent=state.travelling?'Подолати небезпечну ділянку колії':state.explored?'Вирушити до наступної станції':'Знайти припаси й підготувати караван';
- if(chosen>=0){let m=modules[chosen],level=state.level[chosen],cost=m.cost+(level-1)*25;$('panel-name').textContent=m.name;$('panel-description').textContent=m.desc;$('panel-stats').innerHTML=`<div class="module-stat"><span>РІВЕНЬ МОДУЛЯ</span><strong>${level} / 5</strong></div><div class="module-stat"><span>БОНУС</span><strong>${m.benefit}</strong></div><div class="module-stat"><span>ЦІНА НАСТУПНОГО РІВНЯ</span><strong>${level>=5?'МАКС.':cost+' металу'}</strong></div>`;$('upgrade').disabled=level>=5||state.scrap<cost;$('upgrade').textContent=level>=5?'МАКСИМАЛЬНИЙ РІВЕНЬ':`ПОКРАЩИТИ · ${cost} МЕТАЛУ`;}
+ if(chosen>=0){let m=modules[chosen],level=state.level[chosen],cost=m.cost+(level-1)*25;$('panel-name').textContent=m.name;$('panel-description').textContent=m.desc;const crew=state.support&&state.support.workers?state.support.workers.filter(w=>w.job===chosen):[];
+ $('panel-stats').innerHTML=`<div class="module-stat"><span>ВАГОН</span><strong>${chosen+1} / ${modules.length}</strong></div><div class="module-stat"><span>РІВЕНЬ МОДУЛЯ</span><strong>${level} / 5</strong></div><div class="module-stat"><span>БОНУС</span><strong>${m.benefit}</strong></div><div class="module-stat"><span>ПРАЦЮЮТЬ</span><strong>${crew.length?crew.map(w=>w.name).join(', '):'Нікого'}</strong></div><div class="module-stat"><span>ЦІНА НАСТУПНОГО РІВНЯ</span><strong>${level>=5?'МАКС.':cost+' металу'}</strong></div>`;$('upgrade').disabled=level>=5||state.scrap<cost;$('upgrade').textContent=level>=5?'МАКСИМАЛЬНИЙ РІВЕНЬ':`ПОКРАЩИТИ · ${cost} МЕТАЛУ`;}
 }
 function notice(s){let div=document.createElement('div');div.className='alert';div.textContent=s;$('alerts').appendChild(div);setTimeout(()=>{div.style.opacity='0';setTimeout(()=>div.remove(),400)},3800);}
 let audio=null;function beep(f=440,d=.08){if(muted)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(f,audio.currentTime);o.frequency.exponentialRampToValueAtTime(f*.65,audio.currentTime+d);g.gain.setValueAtTime(.075,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+d);}catch{}}
-function select(i){chosen=i;$('panel').classList.remove('hidden');updateHUD();beep(520);}
-function closePanel(){chosen=-1;$('panel').classList.add('hidden');}
+function select(i){chosen=i;$('panel').classList.remove('hidden');focusWagon(i);updateHUD();beep(520);}
+function closePanel(clearSelection=true){
+ if(clearSelection)chosen=-1;
+ $('panel').classList.add('hidden');updateCurrentWagon();
+}
+function updateCurrentWagon(){
+ const badge=$('wagon-current');
+ if(!badge)return;
+ badge.textContent=chosen<0?'СКЛАД ПОТЯГА · 3 ВАГОНИ':'ВАГОН '+(chosen+1)+' / '+modules.length+' · '+modules[chosen].name+' · L'+state.level[chosen];
+}
 function salvage(){if(state.travelling||state.explored)return;let gain=32+state.level[0]*10,fu=9+((state.stage*7)%12),food=6+(state.stage%3)*5;state.scrap+=gain;state.fuel=clamp(state.fuel+fu,0,250);state.food+=food;if(state.support)state.support.water=Math.min(250,state.support.water+7);state.explored=true;persist();updateHUD();notice(`Розвідка завершена: +${gain} металу, +${fu} палива, +${food} їжі, +7 води`);beep(620,.19);}
 function go(){if(state.travelling)return;if(state.fuel<10||state.food<5||(state.support&&state.support.water<5)){notice('Недостатньо палива, їжі або води для рейсу. Дослідіть станцію.');return;}state.travelling=true;state.distance=0;closePanel();updateHUD();notice('Караван вирушає. Тримайтеся ближче до потяга.');beep(210,.28);}
 function endTrip(){state.travelling=false;state.fuel=Math.max(0,state.fuel-Math.max(7,17-state.level[2]*3));state.food=Math.max(0,state.food-Math.max(3,8-state.level[1]*2));if(state.support){state.support.water=Math.max(0,state.support.water-5);state.support.morale=Math.max(0,state.support.morale-1);}state.stage++;state.explored=false;state.distance=0;persist();updateHUD();notice('Нову станцію відкрито. Розвідайте місцевість.');beep(690,.25);}
-function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;time+=dt;if(state.travelling){distanceScroll+=dt*180;state.distance+=dt/17;if(state.distance>=1)endTrip();if(Math.floor(time*8)%2===0)updateHUD();}else{distanceScroll+=dt*.75;}draw();requestAnimationFrame(frame);}
+function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;time+=dt;animateCamera(dt);if(state.travelling){distanceScroll+=dt*180;state.distance+=dt/17;if(state.distance>=1)endTrip();if(Math.floor(time*8)%2===0)updateHUD();}else{distanceScroll+=dt*.75;}draw();requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 $('start').onclick=()=>{$('intro').classList.add('hidden');notice('Ласкаво просимо до каравану. Торкніться будь-якого вагона.');};
 $('how').onclick=$('help').onclick=()=>{$('modal').classList.remove('hidden');};
@@ -172,11 +247,77 @@ $('close-panel').onclick=closePanel;
 $('upgrade').onclick=()=>{if(chosen<0)return;let i=chosen,m=modules[i],lvl=state.level[i],cost=m.cost+(lvl-1)*25;if(lvl>=5||state.scrap<cost)return;state.scrap-=cost;state.level[i]++;persist();updateHUD();notice(`${m.name}: рівень ${state.level[i]}!`);beep(760,.25);};
 $('scavenge').onclick=salvage;$('go').onclick=go;
 $('sound').onclick=()=>{muted=!muted;$('sound').textContent=muted?'♫':'♪';beep();};
-$('cam-left').onclick=()=>{cam=clamp(cam-180,-110,Math.max(800,1700-viewW));};$('cam-right').onclick=()=>{cam=clamp(cam+180,-110,Math.max(800,1700-viewW));};$('cam-reset').onclick=()=>{cam=165;};
-// Pointer gestures do not require any framework and work offline on Android Chrome.
-canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,startX:e.clientX,startedCam:cam,moved:false};});
-canvas.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.x;if(Math.abs(e.clientX-drag.startX)>8)drag.moved=true;cam=clamp(cam-dx/scale,-110,Math.max(800,1700-viewW));drag.x=e.clientX;});
-canvas.addEventListener('pointerup',e=>{if(!drag)return;if(!drag.moved){let x=e.clientX/scale+cam,y=e.clientY/scale;let index=modules.findIndex(m=>x>=m.x-4&&x<=m.x+m.w+5&&y>=321&&y<=580);if(index>=0)select(index);else if(x>=1101&&x<=1446&&y>=302&&y<=580){notice('Локомотив «Мандрівник»: серце каравану. Підготований до рейсу.');beep(380);}else closePanel();}drag=null;});
-canvas.addEventListener('pointercancel',()=>drag=null);
-window.addEventListener('keydown',e=>{if(e.key==='ArrowRight')cam=clamp(cam+80,-110,Math.max(800,1700-viewW));if(e.key==='ArrowLeft')cam=clamp(cam-80,-110,Math.max(800,1700-viewW));if(e.code==='Space'){e.preventDefault();go();}if(e.key==='Escape'){closePanel();$('modal').classList.add('hidden');}});
-updateHUD();
+$('cam-left').onclick=()=>{cameraVelocity=0;cam=CM.pan(cam,180,zoom,viewW);desiredCam=cam;};
+$('cam-right').onclick=()=>{cameraVelocity=0;cam=CM.pan(cam,-180,zoom,viewW);desiredCam=cam;};
+$('cam-reset').onclick=()=>setCameraMode('operational');
+$('cam-minus').onclick=()=>changeCameraZoom(1/1.2);
+$('cam-plus').onclick=()=>changeCameraZoom(1.2);
+document.querySelectorAll('[data-camera-mode]').forEach(b=>{b.onclick=()=>setCameraMode(b.dataset.cameraMode);});
+$('wagon-crew').onclick=()=>{if(window.CaravanCrewUI)window.CaravanCrewUI.openForWagon(chosen);};
+function px(e){const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+function pointerDistance(){
+ const [a,b]=[...activePointers.values()];
+ return Math.hypot(a.x-b.x,a.y-b.y);
+}
+function pointerCenter(){
+ const [a,b]=[...activePointers.values()];
+ return (a.x+b.x)/2;
+}
+canvas.addEventListener('pointerdown',e=>{
+ e.preventDefault();canvas.setPointerCapture(e.pointerId);
+ activePointers.set(e.pointerId,{...px(e),time:e.timeStamp});
+ if(activePointers.size===1){drag={...px(e),startX:e.clientX,startY:e.clientY,moved:false};gestureMoved=false;cameraVelocity=0;}
+ if(activePointers.size===2){gestureMoved=true;drag=null;pinchDistance=pointerDistance();pinchMidX=pointerCenter();}
+});
+canvas.addEventListener('pointermove',e=>{
+ if(!activePointers.has(e.pointerId))return;
+ const prev=activePointers.get(e.pointerId),next={...px(e),time:e.timeStamp};
+ activePointers.set(e.pointerId,next);
+ if(activePointers.size>=2){
+  if(activePointers.size===2&&pinchDistance>10){
+   const mid=pointerCenter();
+   const z=CM.zoomAt(cam,zoom,zoom*pointerDistance()/pinchDistance,mid/scale,viewW);
+   zoom=z.zoom;cam=CM.pan(z.left,mid/scale-pinchMidX/scale,zoom,viewW);
+   desiredZoom=zoom;desiredCam=cam;viewMode='custom';refreshCameraHud();
+   pinchDistance=pointerDistance();pinchMidX=mid;
+  }
+  gestureMoved=true;return;
+ }
+ if(!drag)return;
+ const dx=next.x-prev.x,dt=Math.max(.008,(e.timeStamp-prev.time)/1000);
+ if(Math.abs(next.x-drag.x)>8||Math.abs(next.y-drag.y)>8)gestureMoved=true;
+ cam=CM.pan(cam,dx/scale,zoom,viewW);desiredCam=cam;cameraVelocity=clamp(-dx/scale/zoom/dt,-1800,1800);
+});
+function finishPointer(e,cancelled){
+ if(!activePointers.has(e.pointerId))return;
+ const wasSingle=activePointers.size===1;
+ const pt=px(e);activePointers.delete(e.pointerId);
+ if(wasSingle&&!cancelled&&!gestureMoved){
+  const world=CM.fromScreen(pt.x/scale,pt.y/scale,cam,zoom,viewW);
+  const i=CM.wagonAt(world.x,world.y,modules);
+  if(i>=0)select(i);
+  else if(world.x>=1101&&world.x<=1446&&world.y>=302&&world.y<=580){
+   notice('Локомотив «Мандрівник»: серце каравану.');beep(380);
+  }else closePanel();
+ }
+ if(activePointers.size===1){
+  const remaining=[...activePointers.values()][0];
+  drag={x:remaining.x,y:remaining.y,startX:remaining.x,startY:remaining.y,moved:true};
+  gestureMoved=true;cameraVelocity=0;
+ }else if(!activePointers.size){drag=null;pinchDistance=0;}
+}
+canvas.addEventListener('pointerup',e=>finishPointer(e,false));
+canvas.addEventListener('pointercancel',e=>finishPointer(e,true));
+canvas.addEventListener('lostpointercapture',e=>finishPointer(e,true));
+canvas.addEventListener('wheel',e=>{
+ e.preventDefault();const p=px(e);changeCameraZoom(e.deltaY<0?1.12:1/1.12,p.x/scale);
+},{passive:false});
+window.addEventListener('keydown',e=>{
+ if(e.key==='ArrowRight'){cam=CM.pan(cam,-85,zoom,viewW);desiredCam=cam;}
+ if(e.key==='ArrowLeft'){cam=CM.pan(cam,85,zoom,viewW);desiredCam=cam;}
+ if(e.key==='+'||e.key==='=')changeCameraZoom(1.2);
+ if(e.key==='-')changeCameraZoom(1/1.2);
+ if(e.code==='Space'){e.preventDefault();go();}
+ if(e.key==='Escape'){closePanel();$('modal').classList.add('hidden');}
+});
+refreshCameraHud();updateHUD();
