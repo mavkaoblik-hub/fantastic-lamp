@@ -170,26 +170,37 @@ function signals(){ // signal mast foreground
  c.restore();}
 function airFx(dt){if(!state.travelling&&Math.random()<.14){trail.push({x:1101+140+Math.random()*35,y:300+Math.random()*10,r:5+Math.random()*9,life:1.2});}if(state.travelling&&Math.random()<.65){trail.push({x:1220+Math.random()*25,y:300,r:6+Math.random()*8,life:1.5});}trail=trail.filter(p=>p.life>0);for(const p of trail){p.x+=dt*(state.travelling?-25:-17);p.y-=dt*30;p.r+=dt*11;p.life-=dt*.6;}
  for(let i=0;i<18;i++){let x=noise(i*21+5)*viewW,y=(noise(i*13+2)*720+(time*(state.travelling?58:19))*(i%2?1:-1))%720;ellipse(x,y,noise(i*10)*1.1+.3,.8,'#e2aa7759');}}
+const workerDirector=window.CaravanCrewMotion.createDirector();
+let workerPoses=[];
 function drawWorkingCrew(){
- const crew=state.support&&Array.isArray(state.support.workers)?state.support.workers:[];
- const centerX=[418,683,957];
- crew.forEach((w,i)=>{
-  if(w.job===null||w.job<0||w.job>=modules.length)return;
-  const job=w.job,elapsed=Math.max(0,w.progress||0);
-  const dest=centerX[job]+i*15-18;
-  const progress=clamp(elapsed/2.7,0,1);
-  const eased=progress*progress*(3-2*progress);
-  const x=1180+i*21+(dest-(1180+i*21))*eased;
-  const y=541+(progress>=1?Math.sin(time*3+i)*3:Math.sin(time*9+i)*2);
-  // Procedural placeholder until approved RGBA characters are integrated.
-  crewFigure(x,y,.86,i*1.7);
-  if(zoom>0.85){
-   c.fillStyle='#0b1722dd';c.fillRect(x-22,y-63,65,21);
-   styleText(w.name,x+9,y-48,12,'#ffce92','700','center');
-   const duration=[18,22,25][job];
-   const pct=clamp(elapsed/duration,0,1);
-   rr(x-21,y-39,63,5,2,'#293840');rr(x-21,y-39,63*pct,5,2,'#d0a05f');
-  }
+ const roster=state.support&&Array.isArray(state.support.workers)?state.support.workers:[];
+ const jobs=window.CaravanSystems?window.CaravanSystems.JOBS: [{seconds:18},{seconds:22},{seconds:25}];
+ workerPoses=[];
+ roster.forEach((worker,index)=>{
+   const pose=workerDirector.pose(worker,index,modules,jobs,time);
+   workerPoses.push(pose);
+   if(pose.phase==='working' && zoom>1.05){
+     glow(pose.x,pose.y+12,45,'#dca064');
+   }
+   c.save();
+   c.globalAlpha=pose.alpha;
+   crewFigure(pose.x,pose.y,pose.scale,index*1.7);
+   c.restore();
+   if(zoom>.8){
+     const heading=pose.phase==='patrol'?'ПАТРУЛЬ':
+       pose.phase==='walking'?'ІДЕ ДО ВАГОНА':
+       pose.phase==='entering'?'ЗАХОДИТЬ':
+       pose.phase==='working'?'ПРАЦЮЄ':
+       pose.phase==='exiting'?'ВИХОДИТЬ':'ПОВЕРТАЄТЬСЯ';
+     const width=zoom>1.25?91:69;
+     c.fillStyle='#0b1722e8';c.fillRect(pose.x-width/2,pose.y-68,width,24);
+     styleText(worker.name,pose.x,pose.y-54,12,'#ffce92','700','center');
+     if(zoom>1.25)styleText(heading,pose.x,pose.y-32,8,'#f0d1a2','700','center');
+     if(pose.job!==null){
+       rr(pose.x-width/2,pose.y-39,width,5,2,'#293840');
+       rr(pose.x-width/2,pose.y-39,width*pose.progress,5,2,'#d0a05f');
+     }
+   }
  });
 }
 function draw(){let dpr=canvas.width/width;c.setTransform(dpr*scale,0,0,dpr*scale,0,0);
@@ -206,8 +217,7 @@ function draw(){let dpr=canvas.width/width;c.setTransform(dpr*scale,0,0,dpr*scal
  locomotive();
  // rail joints under wheels
  for(let i=0;i<3;i++)line(modules[i].x+modules[i].w,566,modules[i].x+modules[i].w+15,567,'#8f806f',8);
- // character on platform
- crewFigure(1105,573,.8,3);
+ // Character poses share actual queued work timers and physical wagon door positions.
  drawWorkingCrew();
  c.save();for(const p of trail){c.globalAlpha=clamp(p.life*.28,0,.34);ellipse(p.x,p.y,p.r,p.r*.77,'#cfd0c6');}c.restore();
  c.restore();signals();c.restore();airFx(.016);
@@ -294,11 +304,16 @@ function finishPointer(e,cancelled){
  const pt=px(e);activePointers.delete(e.pointerId);
  if(wasSingle&&!cancelled&&!gestureMoved){
   const world=CM.fromScreen(pt.x/scale,pt.y/scale,cam,zoom,viewW);
+  const actor=workerDirector.pick(workerPoses,world.x,world.y);
+  if(actor&&window.CaravanCrewUI){
+   window.CaravanCrewUI.selectWorker(actor.id);
+  }else{
   const i=CM.wagonAt(world.x,world.y,modules);
   if(i>=0)select(i);
   else if(world.x>=1101&&world.x<=1446&&world.y>=302&&world.y<=580){
    notice('Локомотив «Мандрівник»: серце каравану.');beep(380);
   }else closePanel();
+  }
  }
  if(activePointers.size===1){
   const remaining=[...activePointers.values()][0];
@@ -321,3 +336,4 @@ window.addEventListener('keydown',e=>{
  if(e.key==='Escape'){closePanel();$('modal').classList.add('hidden');}
 });
 refreshCameraHud();updateHUD();
+window.CaravanSceneQA=Object.freeze({getPoses:()=>workerPoses.map(p=>({...p})),camera:()=>({left:cam,zoom,viewMode,viewportWidth:viewW}),selectedWagon:()=>chosen});
