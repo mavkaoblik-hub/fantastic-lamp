@@ -25,6 +25,15 @@
    const element=box.querySelector('img');
    if(element&&!element.getAttribute('src'))element.src=ART+box.dataset.art;
   });
+  const values={fuel:state.fuel,food:state.food,water:support.water,morale:support.morale};
+  const min={fuel:20,food:15,water:18,morale:30};
+  document.querySelectorAll('.resources .res').forEach(box=>{
+   const stat=box.querySelector('strong[id]');
+   if(!stat)return;
+   const critical=Object.hasOwn(min,stat.id) && values[stat.id]<min[stat.id];
+   box.classList.toggle('low',critical);
+   box.title=critical?'УВАГА: критично низький запас':'';
+  });
  }
  function show(which){
   if(which===view){hide();return;}
