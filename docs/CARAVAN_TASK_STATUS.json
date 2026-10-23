@@ -25,7 +25,7 @@
       "id": "M1",
       "title": "Camera and responsive HUD",
       "priority": "P0",
-      "status": "BACKLOG",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "M0"
       ]
@@ -103,8 +103,8 @@
       "id": "S-05",
       "area": "camera",
       "title": "Horizontal viewport pan",
-      "status": "IN_PROGRESS",
-      "next_step": "Add inertia and boundaries",
+      "status": "TESTING",
+      "next_step": "Camera pan uses zoom-correct world transform, edge clamping and inertia; awaiting touch/device QA.",
       "evidence": "web/game.js",
       "android_verified": false
     },
@@ -112,8 +112,8 @@
       "id": "S-06",
       "area": "camera",
       "title": "Three zoom modes and pinch",
-      "status": "BACKLOG",
-      "next_step": "Implement Macro, Operational, Micro",
+      "status": "TESTING",
+      "next_step": "Macro 0.76x / Operational 1.0x / Micro 1.7x, pinch and zoom buttons integrated into Android source; verify physical touch.",
       "evidence": "web/game.js",
       "android_verified": false
     },
@@ -130,8 +130,8 @@
       "id": "S-08",
       "area": "hud",
       "title": "Wagon context panel",
-      "status": "IN_PROGRESS",
-      "next_step": "Show workers, production timer and risk",
+      "status": "TESTING",
+      "next_step": "Tapped wagon focuses Micro camera and panel shows number, level, assigned workers and crew action; awaiting mobile QA.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -149,7 +149,7 @@
       "area": "crew",
       "title": "Three workers with queued assignments",
       "status": "IN_PROGRESS",
-      "next_step": "Three workers with timed jobs and 3-item queues added to main APK source; needs walking/enter/exit sprites and device QA.",
+      "next_step": "Queued worker jobs now show moving procedural crew markers and progress inside scene; approved RGBA locomotion remains planned.",
       "evidence": "game/v012_migration/app.js",
       "android_verified": false
     },
@@ -247,8 +247,8 @@
       "id": "S-21",
       "area": "qa",
       "title": ">=16dp safe areas and 20-30% larger hitboxes",
-      "status": "BACKLOG",
-      "next_step": "Android measurements on varied screen sizes",
+      "status": "IN_PROGRESS",
+      "next_step": "Responsive zoom and panel controls added; real Android hitbox and safe-area tests remain.",
       "evidence": "web/style.css",
       "android_verified": false
     },
@@ -277,6 +277,13 @@
       "phase": "M0",
       "date": "2026-10-23",
       "change": "Port crew jobs, queued assignments, saved quest rewards, inventory summary and original art icons into the actual offline Android source.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.3",
+      "date": "2026-10-23",
+      "phase": "M1 partial",
+      "change": "Camera macro/operational/micro zoom, pinch, inertia, polygon hitboxes, current wagon and contextual crew assignment; Android CI built, physical QA pending.",
       "device_tested": false
     }
   ]
