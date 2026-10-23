@@ -1,0 +1,60 @@
+{
+  "format": "CARAVAN_APPROVED_ART_ATLASES_V1",
+  "approval_date": "2026-10-23",
+  "palette": "dark painterly dieselpunk; blackened steel, iron rust, brass hardware, warm amber lamps and blue-black shadows",
+  "preserve_original_exact_bytes": true,
+  "atlases": [
+    {
+      "filename": "approved_wagons.png",
+      "role": "wagons",
+      "resolution": [
+        1448,
+        1086
+      ],
+      "size_bytes": 3916261,
+      "sha256": "79eb95d597b36bfe0d2f4cbc57c10abb0faf6c2fa862b5a92b3ee3b52d6eeda5",
+      "parts": 6,
+      "part_chunk_bytes": 750000,
+      "status": "approved_reference_atlas_not_extracted"
+    },
+    {
+      "filename": "approved_tasks_actions.png",
+      "role": "tasks_actions",
+      "resolution": [
+        1448,
+        1086
+      ],
+      "size_bytes": 3488995,
+      "sha256": "ae86dd8802763caa345109c17e593d91c26c2d8723555fcf3d3455a45bc221fb",
+      "parts": 5,
+      "part_chunk_bytes": 750000,
+      "status": "approved_reference_atlas_not_extracted"
+    },
+    {
+      "filename": "approved_currencies_resources_statuses.png",
+      "role": "currencies_resources_statuses",
+      "resolution": [
+        1448,
+        1086
+      ],
+      "size_bytes": 3295983,
+      "sha256": "cc814ae8c3d8f2a6b9564a09f388b3cb1df79e062243fbf02e41e3cb557ff830",
+      "parts": 5,
+      "part_chunk_bytes": 750000,
+      "status": "approved_reference_atlas_not_extracted"
+    },
+    {
+      "filename": "approved_locomotive_upgrades.png",
+      "role": "locomotive_upgrades",
+      "resolution": [
+        1448,
+        1086
+      ],
+      "size_bytes": 3512701,
+      "sha256": "c0d67007f41ba46b6141c2ebe20d1c51941aaa598a5d52909d9964b2e6a5874e",
+      "parts": 5,
+      "part_chunk_bytes": 750000,
+      "status": "approved_reference_atlas_not_extracted"
+    }
+  ]
+}
