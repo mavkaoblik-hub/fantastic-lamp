@@ -2,7 +2,7 @@ name: CARAVAN • Automatic Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, caravan-v012-android-migration]
     paths:
       - 'web/**'
       - 'android/**'
