@@ -1,0 +1,75 @@
+name: Build CARAVAN Android v0.14 repaired APK
+
+on:
+  push:
+    paths:
+      - 'CARAVAN_ANDROID_FIX_v014.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout Caravan only
+        uses: actions/checkout@v4
+      - name: Verify source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s CARAVAN_ANDROID_FIX_v014.zip
+          unzip -tqq CARAVAN_ANDROID_FIX_v014.zip
+          mkdir -p "$RUNNER_TEMP/caravan-fixed"
+          unzip -q CARAVAN_ANDROID_FIX_v014.zip -d "$RUNNER_TEMP/caravan-fixed"
+          test -s "$RUNNER_TEMP/caravan-fixed/android/app/src/main/java/ua/mavka/caravan/MainActivity.java"
+          test -s "$RUNNER_TEMP/caravan-fixed/android/app/src/main/assets/game/index.html"
+          test -s "$RUNNER_TEMP/caravan-fixed/android/app/src/main/assets/game/app.js"
+          test -s "$RUNNER_TEMP/caravan-fixed/android/app/src/main/assets/game/assets/train/locomotive_L1.png"
+          grep -F "applicationId 'ua.mavka.caravan.alpha'" "$RUNNER_TEMP/caravan-fixed/android/app/build.gradle"
+          grep -F 'ua.mavka.caravan.MainActivity' "$RUNNER_TEMP/caravan-fixed/android/app/src/main/AndroidManifest.xml"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK 35
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile with official Android Gradle Plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle -p "$RUNNER_TEMP/caravan-fixed/android" --no-daemon --stacktrace :app:assembleDebug
+          test -s "$RUNNER_TEMP/caravan-fixed/android/app/build/outputs/apk/debug/app-debug.apk"
+      - name: Validate compiled APK and launcher activity
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$RUNNER_TEMP/caravan-fixed/android/app/build/outputs/apk/debug/app-debug.apk"
+          unzip -tqq "$APK"
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          "$AAPT" dump badging "$APK" | tee "$RUNNER_TEMP/caravan-fixed/apk-badging.txt"
+          grep -F "package: name='ua.mavka.caravan.alpha'" "$RUNNER_TEMP/caravan-fixed/apk-badging.txt"
+          "$AAPT" dump xmltree "$APK" AndroidManifest.xml | grep -F 'ua.mavka.caravan.MainActivity'
+          "$APKSIGNER" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/caravan-fixed/signature-report.txt"
+          sha256sum "$APK" | tee "$RUNNER_TEMP/caravan-fixed/APK_SHA256.txt"
+      - name: Upload tested package for installation
+        uses: actions/upload-artifact@v4
+        with:
+          name: CARAVAN-v014-Android-debug-APK
+          path: |
+            ${{ runner.temp }}/caravan-fixed/android/app/build/outputs/apk/debug/app-debug.apk
+            ${{ runner.temp }}/caravan-fixed/APK_SHA256.txt
+            ${{ runner.temp }}/caravan-fixed/apk-badging.txt
+            ${{ runner.temp }}/caravan-fixed/signature-report.txt
+          retention-days: 30
+          if-no-files-found: error
