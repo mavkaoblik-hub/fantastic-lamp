@@ -41,3 +41,12 @@
 ## Регламент статусів
 
 `CODE_READY` = код зібрано. `TESTING` = автоматичні тести або ручна перевірка тривають. `DONE` дозволено тільки після підтвердження функції у встановленій Android APK на реальному пристрої. Див. [трекер](CARAVAN_TASK_STATUS.json).
+
+## Підсумок перевірок цього проходу
+
+- Android source commit: `e9d5bd1a25d2b9619b8d8fe93fb47802d62fd1d7`.
+- [GitHub Actions: Android APK — PASS](https://github.com/mavkaoblik-hub/fantastic-lamp/actions/runs/39973216449): unit/regression tests, JS syntax, offline bundling, Gradle build, APK ZIP, aapt та debug підпис.
+- [GitHub Actions: візуальний smoke — PASS](https://github.com/mavkaoblik-hub/fantastic-lamp/actions/runs/39973216440): режим ПОТЯГ/РОБОЧИЙ/ВАГОН, вибір конкретного вагона, цільове доручення, рух працівника та тест відсутності накладання текстів HUD.
+- SHA-256 APK: `1b62cead2674332f3f45c8884e2733d39ced17e5a31c66da197d230b0ffa48c8`.
+- Збірка **лише debug**, тест на фізичному Android ще не виконано; статус гри лишається `TESTING`.
+
