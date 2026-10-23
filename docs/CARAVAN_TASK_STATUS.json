@@ -131,7 +131,7 @@
       "area": "hud",
       "title": "Wagon context panel",
       "status": "TESTING",
-      "next_step": "Tapped wagon focuses Micro camera and panel shows number, level, assigned workers and crew action; awaiting mobile QA.",
+      "next_step": "Selected wagon live context refreshes crew assignments; overlapping current-wagon badge repositioned based on verified browser screenshot; smartphone QA pending.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -148,8 +148,8 @@
       "id": "S-10",
       "area": "crew",
       "title": "Three workers with queued assignments",
-      "status": "IN_PROGRESS",
-      "next_step": "Queued worker jobs now show moving procedural crew markers and progress inside scene; approved RGBA locomotion remains planned.",
+      "status": "TESTING",
+      "next_step": "Live 3-worker timeline now animates patrol, travel to doors, entry, on-wagon work, exit and return using same persisted job progress; worker tap opens exact crew. Physical Android test and final approved RGBA art still needed.",
       "evidence": "game/v012_migration/app.js",
       "android_verified": false
     },
@@ -212,7 +212,7 @@
       "area": "art",
       "title": "Canonical icon role catalog",
       "status": "IN_PROGRESS",
-      "next_step": "Live HUD and menus use approved catalog icons; need centralized runtime ID mapping and Android QA.",
+      "next_step": "Existing approved resource and UI icons continue to be reused from canonical crop library; no new duplicate generated; full runtime ID wiring remains.",
       "evidence": "game/assets/catalog/registry.json",
       "android_verified": false
     },
@@ -248,7 +248,7 @@
       "area": "qa",
       "title": ">=16dp safe areas and 20-30% larger hitboxes",
       "status": "IN_PROGRESS",
-      "next_step": "Responsive zoom and panel controls added; real Android hitbox and safe-area tests remain.",
+      "next_step": "Responsive badge overlap fixed after screenshot review; no physical Android safe-area acceptance yet.",
       "evidence": "web/style.css",
       "android_verified": false
     },
@@ -285,6 +285,13 @@
       "phase": "M1 partial",
       "change": "Camera macro/operational/micro zoom, pinch, inertia, polygon hitboxes, current wagon and contextual crew assignment; Android CI built, physical QA pending.",
       "device_tested": false
+    },
+    {
+      "version": "v0.4",
+      "date": "2026-10-23",
+      "phase": "M1/M2 integration",
+      "change": "Added door-coordinate crew animation stages, direct worker selection, live worker indicators and overlapping badge correction; automated browser tests succeeded, Android physical test pending.",
+      "android_verified": false
     }
   ]
 }
