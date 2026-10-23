@@ -1712,22 +1712,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        4,
+        9,
         664,
-        110,
+        114,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        6,
+        13,
         939,
-        156,
+        161,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_extra_armor.png",
-      "width": 150,
+      "width": 148,
       "height": 143,
-      "sha256": "d0c8979529294333705470bb9f501077be7073e2017b0bb658394c23844e604f",
+      "sha256": "4448afa520c1ab87d4b1b07861a3ad8df8f8fca163914993e67f286c32162231",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1738,20 +1738,20 @@
       "rect_preview": [
         118,
         664,
-        224,
+        222,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
         167,
         939,
-        317,
+        314,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_storage_expansion.png",
-      "width": 150,
+      "width": 147,
       "height": 143,
-      "sha256": "5e73dc9f9019978da32fbe3341ddc03e002792d366e5137538fdf4590272cc78",
+      "sha256": "f401b15b8651b1d0a7fee0b5fcca72f29243d4dd3fb32f38a1cf1350259b07df",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1760,22 +1760,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        232,
+        228,
         664,
-        337,
+        333,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        328,
+        322,
         939,
-        477,
+        471,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_refill_shells.png",
       "width": 149,
       "height": 143,
-      "sha256": "2e44f7d389035194dda58dc642d8e9736becf2487009f9c2372897a486da963e",
+      "sha256": "0a27b925e8a55543ed8e96ae23ed696784e353bfb88ad511e45c63495142d11a",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1784,22 +1784,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        345,
+        339,
         664,
-        451,
+        445,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        488,
+        479,
         939,
-        638,
+        629,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_power_radio_mast.png",
       "width": 150,
       "height": 143,
-      "sha256": "3e60c83c60d24e2c5639ee74204b021c392983a3abae93267698f7c29cdeb3b9",
+      "sha256": "9fd90c0cc4ee1c068fba647206f78b969987494b6bb90cc212f94a55fa1da253",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1808,22 +1808,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        459,
+        452,
         664,
-        565,
+        557,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        649,
+        639,
         939,
-        799,
+        788,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_solar_array.png",
-      "width": 150,
+      "width": 149,
       "height": 143,
-      "sha256": "d8c2918bad2d6618da133fead12eeb003775780a77972bce67476d2d518fc888",
+      "sha256": "a87c7a7b8a4ab6f69838d0b501751c630e4a072b4a824a14dfb0b7c36554fd1a",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1832,22 +1832,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        573,
+        565,
         664,
-        679,
+        676,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        810,
+        799,
         939,
-        960,
+        956,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_turret_shield.png",
-      "width": 150,
+      "width": 157,
       "height": 143,
-      "sha256": "c655db6e3b10979464579776cf18ec363b9673244e69077ef9b92a2cac3aee4a",
+      "sha256": "3ea850637f0fcc42dd3b96fc05a4ce9b4d1fade413f3af35202074c42206451b",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1856,22 +1856,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        687,
+        681,
         664,
-        792,
+        789,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        971,
+        963,
         939,
-        1120,
+        1116,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_cold_storage.png",
-      "width": 149,
+      "width": 153,
       "height": 143,
-      "sha256": "eb3cccb168b72ae82687be9eeb77d084192185ea9077d6b1df2c434ce0472d69",
+      "sha256": "a097b44489f4bc1e676acb82867bae0fd738ea63f048301b83acf61a042d22c7",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1880,22 +1880,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        800,
+        795,
         664,
-        906,
+        907,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        1131,
+        1124,
         939,
-        1281,
+        1283,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_water_tanks.png",
-      "width": 150,
+      "width": 159,
       "height": 143,
-      "sha256": "b169d85a4a2d81bf382ce4ab8519812fcf053387d6aaf7971cee2da0f6c4cfc5",
+      "sha256": "b108a7a0fa0efb821df28e6748fa72fbc96a5c3ca649a4eb9fdf3d76d61d2b5e",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1904,22 +1904,22 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        914,
+        913,
         664,
-        1020,
+        1018,
         765
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        1292,
+        1291,
         939,
-        1442,
+        1440,
         1082
       ],
       "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_spare_wheels.png",
-      "width": 150,
+      "width": 149,
       "height": 143,
-      "sha256": "f6b371ce5bfdb72c7968abc0cb4942056a770be8d59bf7baccee0553aef3bcf1",
+      "sha256": "e8023e8ae8cb47768216234c12c60873766b4ea50a43ffed2fdf5a23bdc083af",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1928,22 +1928,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        7,
+        5,
         83,
-        164,
+        192,
         238
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        10,
+        7,
         117,
-        232,
+        272,
         337
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_engine_mk2.png",
-      "width": 222,
+      "width": 265,
       "height": 220,
-      "sha256": "6fe24f6bfd272870a077b7c89bea7251e150f8af176e576be982f79345ad57d4",
+      "sha256": "c8e0cbdaa5a90ef550ca77f25c3ad6f3453094cceee725c42a2c83e2f99ef02a",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1952,22 +1952,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        178,
+        197,
         83,
-        334,
+        360,
         238
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        252,
+        279,
         117,
-        472,
+        509,
         337
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_boiler_boost.png",
-      "width": 220,
+      "width": 230,
       "height": 220,
-      "sha256": "1ea651e98e47120c64a651380562b2ee52f99ca52037cd794b1d15c176ac5e3f",
+      "sha256": "f525631672510e0252cd6a35d02f6ee3f71ef5aa9e37342d0960cbdbf0bda1f8",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -1976,22 +1976,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        348,
+        365,
         83,
-        505,
+        526,
         238
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        492,
+        516,
         117,
-        714,
+        744,
         337
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_reinforced_armor.png",
-      "width": 222,
+      "width": 228,
       "height": 220,
-      "sha256": "815178e4cac13fad74d62c97182b7c3049d1ffe2bdccd8989df6951a7981fe13",
+      "sha256": "f60bd62a97480eab515cb3e065855f9e923276278f8f5e1a4b3a23b470cf6462",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2000,22 +2000,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        519,
+        531,
         83,
-        676,
+        683,
         238
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        734,
+        751,
         117,
-        956,
+        966,
         337
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_headlight.png",
-      "width": 222,
+      "width": 215,
       "height": 220,
-      "sha256": "b430fecc1632fecdce85ed3e3be07c841fcdc23b4ef19dcc2121d7eff49ff2ad",
+      "sha256": "77d105aa9a89794c3fd1b3e05627fbda125fe8f55c098bb797386d3fc370523e",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2024,22 +2024,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        690,
+        688,
         83,
-        846,
+        842,
         238
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        976,
+        973,
         117,
-        1196,
+        1191,
         337
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_smoke_system.png",
-      "width": 220,
+      "width": 218,
       "height": 220,
-      "sha256": "c0763a55860186e914b92b787746a90f5ce3ed7b04d37a131c0345dd2ba5136e",
+      "sha256": "38f88ed9e92c3b636c4bb4825482c3714bb197e4957ae8201e3823ca7e3fea65",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2048,22 +2048,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        860,
+        847,
         83,
         1017,
         238
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        1216,
+        1198,
         117,
         1438,
         337
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_turbocharger.png",
-      "width": 222,
+      "width": 240,
       "height": 220,
-      "sha256": "0e63f8aff7e936d631e0a8ed36e9da4b5468ac7958b739f81622eb55b6b05d76",
+      "sha256": "9df17f3acb3ee1ce81f69d7a52a09abdb6fa898475e812659475370b13798f82",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2072,22 +2072,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        7,
-        264,
-        164,
+        6,
+        263,
+        173,
         400
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        10,
-        373,
-        232,
+        8,
+        372,
+        245,
         566
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_upgraded_suspension.png",
-      "width": 222,
-      "height": 193,
-      "sha256": "5cbefe60b516d432d8487a24c5faaec7eb907009cf449859168c5a24b52e09bf",
+      "width": 237,
+      "height": 194,
+      "sha256": "896e8022dd52399745f75ee7b092c9b89dc9c0eeecb52c505d670b6d0e11abf6",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2096,22 +2096,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        178,
-        264,
-        334,
+        176,
+        263,
+        342,
         400
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        252,
-        373,
-        472,
+        249,
+        372,
+        484,
         566
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_strong_wheels.png",
-      "width": 220,
-      "height": 193,
-      "sha256": "b4aed1a1fb62d995858804d2bbdbd0130706c41c1ca88396f01915560d6a5e62",
+      "width": 235,
+      "height": 194,
+      "sha256": "08c9b5710560feced17ee2550b138c88e4930c53a195bb33eba7ef3eee110128",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2120,22 +2120,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        348,
-        264,
-        505,
+        345,
+        263,
+        499,
         400
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        492,
-        373,
-        714,
+        488,
+        372,
+        706,
         566
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_snowplow.png",
-      "width": 222,
-      "height": 193,
-      "sha256": "56858498bd5f8107b3e9f71566e5673a3ed38a675bbb279f298f7c62f0e3b954",
+      "width": 218,
+      "height": 194,
+      "sha256": "f3ce2790034053f1750e76a4f3c93d8101bba22985f75bf66318f78526dc6c18",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2144,22 +2144,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        519,
-        264,
-        676,
+        503,
+        263,
+        656,
         400
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        734,
-        373,
-        956,
+        711,
+        372,
+        928,
         566
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_dust_filters.png",
-      "width": 222,
-      "height": 193,
-      "sha256": "dd233056fc969cc539d59910bcb558bc236ff2b87201398a3e036fb663e5df70",
+      "width": 217,
+      "height": 194,
+      "sha256": "b83a2cbde9a912256007fb87adb66d244c9674c441452554331a61e45a39f8ae",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2168,22 +2168,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        690,
-        264,
-        846,
+        661,
+        263,
+        807,
         400
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        976,
-        373,
-        1196,
+        935,
+        372,
+        1141,
         566
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_fuel_processor.png",
-      "width": 220,
-      "height": 193,
-      "sha256": "76a995e37b8037461ebb3416de3aea973967c65fbda7eb4ea06549ca744ef079",
+      "width": 206,
+      "height": 194,
+      "sha256": "1a11dd42a63d66c2072df2212ceaa769dd597562ee2925083f523482f38c2360",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2192,22 +2192,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        860,
-        264,
-        1017,
+        811,
+        263,
+        1019,
         400
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        1216,
-        373,
-        1438,
+        1147,
+        372,
+        1441,
         566
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_extended_tank.png",
-      "width": 222,
-      "height": 193,
-      "sha256": "a55a51c75ad7dfe9bdb99f26fe04f228c0a59d20ef28abd5d233523f034de13f",
+      "width": 294,
+      "height": 194,
+      "sha256": "9342ac597c0e5462640711b011b06f3178d17531d835942cdbd4b04e3ae2bbb8",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2218,20 +2218,20 @@
       "rect_preview": [
         7,
         424,
-        164,
+        168,
         576
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
         10,
         600,
-        232,
+        238,
         814
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_warning_horn.png",
-      "width": 222,
+      "width": 228,
       "height": 214,
-      "sha256": "d0f103204f95eb62e2ff9d67bdaf99ffb894b85d46f9183c298276b8003c859c",
+      "sha256": "59311be3a579f1a8162b427ee606ca62068ea0b5bb7a4d9229ebf7b612a4b3a3",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2240,22 +2240,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        178,
+        173,
         424,
-        334,
+        332,
         576
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        252,
+        245,
         600,
-        472,
+        469,
         814
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_repair_drone.png",
-      "width": 220,
+      "width": 224,
       "height": 214,
-      "sha256": "c26e0ad235cc628854bb3305f10e9730dd79b384a9e37214a2f6006454d54311",
+      "sha256": "7cb7e3294dec188a8666ba9d52246be850e53ef04cb2b0dc7bed51daf8134886",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2264,22 +2264,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        348,
+        337,
         424,
-        505,
+        464,
         576
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        492,
+        477,
         600,
-        714,
+        656,
         814
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_roof_periscope.png",
-      "width": 222,
+      "width": 179,
       "height": 214,
-      "sha256": "914808bb58c3bca09232a3f9030f66ec4c2172a5cd2bf49e9f320009af0cc10f",
+      "sha256": "ed9627ec44c03a4ef975f0ba7fff06d65d94fed21f1529ee7b91e3485b597cd6",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2288,22 +2288,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        519,
+        470,
         424,
-        676,
+        636,
         576
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        734,
+        665,
         600,
-        956,
+        899,
         814
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_machinegun_turret.png",
-      "width": 222,
+      "width": 234,
       "height": 214,
-      "sha256": "34774c4c0d360f09d20da213c99374b5beb1a716ec09012daa300706e12d65d8",
+      "sha256": "99526ca0bc905c37d4b9169d2ef21aa456a26bdbfa2bb3e249f2d1a29083947b",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2312,22 +2312,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        690,
+        640,
         424,
-        846,
+        837,
         576
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        976,
+        905,
         600,
-        1196,
+        1184,
         814
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_gun_mount.png",
-      "width": 220,
+      "width": 279,
       "height": 214,
-      "sha256": "bc5b69f48bd94633e1ffeffd8c0353bff70a4168cc4caa68b6436fbfaa0e52dd",
+      "sha256": "d481a13c4c2ca5174245ce6e14e2c4dff238407e61099eaec22f62c12effaff4",
       "background_removed": false,
       "alpha_isolated": false
     },
@@ -2336,22 +2336,22 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        860,
+        841,
         424,
-        1017,
+        1018,
         576
       ],
       "status": "source_crop_background_retained",
       "rect_source_pixels": [
-        1216,
+        1189,
         600,
-        1438,
+        1440,
         814
       ],
       "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_mine_roller.png",
-      "width": 222,
+      "width": 251,
       "height": 214,
-      "sha256": "b702853e649f075bf3c25dccea8980614575c12fa247a32ad428aa1670907ac9",
+      "sha256": "4f45f20cbd6146421b79131f030ba5de85b22c61352cba824f965d8c6a07b868",
       "background_removed": false,
       "alpha_isolated": false
     },
