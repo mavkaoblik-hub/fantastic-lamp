@@ -863,9 +863,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        4,
+        9,
         664,
-        110,
+        114,
         765
       ],
       "status": "source_crop_background_retained"
@@ -877,7 +877,7 @@
       "rect_preview": [
         118,
         664,
-        224,
+        222,
         765
       ],
       "status": "source_crop_background_retained"
@@ -887,9 +887,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        232,
+        228,
         664,
-        337,
+        333,
         765
       ],
       "status": "source_crop_background_retained"
@@ -899,9 +899,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        345,
+        339,
         664,
-        451,
+        445,
         765
       ],
       "status": "source_crop_background_retained"
@@ -911,9 +911,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        459,
+        452,
         664,
-        565,
+        557,
         765
       ],
       "status": "source_crop_background_retained"
@@ -923,9 +923,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        573,
+        565,
         664,
-        679,
+        676,
         765
       ],
       "status": "source_crop_background_retained"
@@ -935,9 +935,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        687,
+        681,
         664,
-        792,
+        789,
         765
       ],
       "status": "source_crop_background_retained"
@@ -947,9 +947,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        800,
+        795,
         664,
-        906,
+        907,
         765
       ],
       "status": "source_crop_background_retained"
@@ -959,9 +959,9 @@
       "group": "wagon_module",
       "atlas": "approved_wagons.png",
       "rect_preview": [
-        914,
+        913,
         664,
-        1020,
+        1018,
         765
       ],
       "status": "source_crop_background_retained"
@@ -971,9 +971,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        7,
+        5,
         83,
-        164,
+        192,
         238
       ],
       "status": "source_crop_background_retained"
@@ -983,9 +983,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        178,
+        197,
         83,
-        334,
+        360,
         238
       ],
       "status": "source_crop_background_retained"
@@ -995,9 +995,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        348,
+        365,
         83,
-        505,
+        526,
         238
       ],
       "status": "source_crop_background_retained"
@@ -1007,9 +1007,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        519,
+        531,
         83,
-        676,
+        683,
         238
       ],
       "status": "source_crop_background_retained"
@@ -1019,9 +1019,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        690,
+        688,
         83,
-        846,
+        842,
         238
       ],
       "status": "source_crop_background_retained"
@@ -1031,7 +1031,7 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        860,
+        847,
         83,
         1017,
         238
@@ -1043,9 +1043,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        7,
-        264,
-        164,
+        6,
+        263,
+        173,
         400
       ],
       "status": "source_crop_background_retained"
@@ -1055,9 +1055,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        178,
-        264,
-        334,
+        176,
+        263,
+        342,
         400
       ],
       "status": "source_crop_background_retained"
@@ -1067,9 +1067,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        348,
-        264,
-        505,
+        345,
+        263,
+        499,
         400
       ],
       "status": "source_crop_background_retained"
@@ -1079,9 +1079,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        519,
-        264,
-        676,
+        503,
+        263,
+        656,
         400
       ],
       "status": "source_crop_background_retained"
@@ -1091,9 +1091,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        690,
-        264,
-        846,
+        661,
+        263,
+        807,
         400
       ],
       "status": "source_crop_background_retained"
@@ -1103,9 +1103,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        860,
-        264,
-        1017,
+        811,
+        263,
+        1019,
         400
       ],
       "status": "source_crop_background_retained"
@@ -1117,7 +1117,7 @@
       "rect_preview": [
         7,
         424,
-        164,
+        168,
         576
       ],
       "status": "source_crop_background_retained"
@@ -1127,9 +1127,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        178,
+        173,
         424,
-        334,
+        332,
         576
       ],
       "status": "source_crop_background_retained"
@@ -1139,9 +1139,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        348,
+        337,
         424,
-        505,
+        464,
         576
       ],
       "status": "source_crop_background_retained"
@@ -1151,9 +1151,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        519,
+        470,
         424,
-        676,
+        636,
         576
       ],
       "status": "source_crop_background_retained"
@@ -1163,9 +1163,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        690,
+        640,
         424,
-        846,
+        837,
         576
       ],
       "status": "source_crop_background_retained"
@@ -1175,9 +1175,9 @@
       "group": "locomotive_upgrade",
       "atlas": "approved_locomotive_upgrades.png",
       "rect_preview": [
-        860,
+        841,
         424,
-        1017,
+        1018,
         576
       ],
       "status": "source_crop_background_retained"
