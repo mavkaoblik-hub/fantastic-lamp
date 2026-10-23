@@ -74,7 +74,10 @@ function assignCrew(target){if(target==='tail'&&state.cars.length<3){msg('Тре
 document.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>assignCrew(b.dataset.target));
 $('cancelJob').onclick=()=>{const p=crew[chosenCrew];if(p.queue.length){const j=p.queue.pop();msg('Скасовано останнє доручення: '+LOCATIONS[j.target].label)}else if(p.job){if(p.inside>0||p.mode==='working'||p.mode==='entering'){startExit(p)}else{p.mode='patrol';p.job=null}msg('Поточну роботу припинено')}renderCrewPanel();store()};
 $('crewHome').onclick=()=>{const p=crew[chosenCrew];p.queue=[];if(p.job&&(p.mode==='entering'||p.mode==='working'||p.mode==='exiting')){startExit(p)}else{p.job=null;p.mode='patrol';p.inside=0}renderCrewPanel();store();msg(crewNames[chosenCrew]+': повертається на патруль')};
-$('tasksOpen').onclick=()=>{$('sidebar').classList.add('open');$('togglePanel').setAttribute('aria-expanded','true');$('crewpanel').scrollIntoView({behavior:'smooth',block:'nearest'})};
+function closeSidebar(){$('sidebar').classList.remove('open');$('sidebarBackdrop').hidden=true;$('togglePanel').setAttribute('aria-expanded','false')}
+function openSidebar(section){if(!window.matchMedia('(max-width:1050px)').matches)return;$('sidebar').classList.add('open');$('sidebarBackdrop').hidden=false;$('togglePanel').setAttribute('aria-expanded','true');requestAnimationFrame(()=>{const box=$('sidebar');if(section==='crew'){box.scrollTop+= $('crewpanel').getBoundingClientRect().top-box.getBoundingClientRect().top-64}else{box.scrollTop=0}})}
+$('sidebarBackdrop').addEventListener('click',closeSidebar);$('closeSidebar').addEventListener('click',closeSidebar);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar()});
+$('tasksOpen').onclick=()=>openSidebar('crew');
 $('wagon').onchange=e=>{currentCar().kind=e.target.value;setChosen();store();msg('Тип вагона: '+m.wagon[e.target.value].title)};
 $('newWagon').value='salvage';
 $('carList').onclick=e=>{const b=e.target.closest('[data-carid]');if(!b)return;state.selectedCarId=b.dataset.carid;setChosen();msg('Обрано вагон №'+(selectedSlot()+1))};
@@ -90,9 +93,9 @@ $('upgrade').onclick=()=>{const car=currentCar();if(levelFor(car)===2)return;if(
 $('base').onclick=()=>{currentCar().level=1;setChosen();store()};
 $('reset').onclick=()=>{state=defaultState();crew=makeCrew();chosenCrew=0;eventLog=[];setChosen();renderCrewPanel();store();msg('Прогрес v0.9 скинуто')};
 $('fit').onclick=()=>msg('Увесь потяг відображено в кадрі');
-$('togglePanel').onclick=()=>{const on=$('sidebar').classList.toggle('open');$('togglePanel').setAttribute('aria-expanded',on?'true':'false')};
+$('togglePanel').onclick=()=>{if($('sidebar').classList.contains('open'))closeSidebar();else openSidebar('modules')};
 function fit(){const r=canvas.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.round(Math.max(200,r.width)*dpr);canvas.height=Math.round(Math.max(160,r.height)*dpr);const W=canvas.width/dpr,H=canvas.height/dpr,cinematic=W/H>2.6;scale=cinematic?W/CW:Math.min(W/CW,H/CH);offX=(W-CW*scale)/2;offY=cinematic?H*.51-345*scale:(H-CH*scale)/2;c.setTransform(dpr,0,0,dpr,0,0)}window.addEventListener('resize',fit);
-canvas.addEventListener('pointerdown',e=>{const b=canvas.getBoundingClientRect();const x=(e.clientX-b.left-offX)/scale,y=(e.clientY-b.top-offY)/scale;const ci=crew.findIndex(p=>p.mode!=='working'&&x>=p.x-10&&x<=p.x+54&&y>=383&&y<=500);if(ci>=0){chosenCrew=ci;renderCrewPanel();msg('Екіпаж: '+crewNames[ci]);return}for(const r of rects){if(x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h){if(r.key!=='engine'){state.selectedCarId=r.id;setChosen();msg('Вагон №'+(selectedSlot()+1)+': '+m.wagon[r.key].title)}else msg('Локомотив · рівень L'+state.locoLevel);return}}});
+canvas.addEventListener('pointerdown',e=>{const b=canvas.getBoundingClientRect();const x=(e.clientX-b.left-offX)/scale,y=(e.clientY-b.top-offY)/scale;const ci=crew.findIndex(p=>p.mode!=='working'&&x>=p.x-10&&x<=p.x+54&&y>=383&&y<=500);if(ci>=0){chosenCrew=ci;renderCrewPanel();msg('Екіпаж: '+crewNames[ci]);openSidebar('crew');return}for(const r of rects){if(x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h){if(r.key!=='engine'){state.selectedCarId=r.id;setChosen();msg('Вагон №'+(selectedSlot()+1)+': '+m.wagon[r.key].title);openSidebar('modules')}else msg('Локомотив · рівень L'+state.locoLevel);return}}});
 function circle(x,y,r,color){c.fillStyle=color;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill()}
 function applyReward(p,i){let reward='';const target=p.job?.target;
  const car=target==='center'?carAtSlot(0):target==='rear'?carAtSlot(1):target==='tail'?carAtSlot(2):null;
