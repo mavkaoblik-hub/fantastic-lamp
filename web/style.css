@@ -64,3 +64,8 @@
  .systems-panel{top:calc(60px + env(safe-area-inset-top));bottom:calc(98px + env(safe-area-inset-bottom))}
  .mission{max-width:35vw}.mission-title{font-size:11px}
 }
+
+/* Survival HUD danger must be distinguishable without relying on colour alone. */
+.resources .res.low{background:#65312b88;outline:1px solid #ef8769;border-radius:4px}
+.resources .res.low small{color:#ffe5d3}
+.resources .res.low strong::after{content:" !";color:#ffb17e;font-weight:800}
