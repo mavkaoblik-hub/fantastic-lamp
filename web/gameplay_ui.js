@@ -7,7 +7,7 @@
  const ART=native?'assets/catalog/':'../game/assets/catalog/crops_v1/';
  let support=state.support?S.normalize(state.support):S.initial();
  state.support=support;
- let view=null,person='marko',last=performance.now(),uiTime=0,saveTime=0;
+ let view=null,person='marko',last=performance.now(),uiTime=0,saveTime=0,focusedWagon=null;
  const panel=document.getElementById('systems-panel');
  const body=document.getElementById('systems-content');
  const title=document.getElementById('systems-title');
@@ -43,7 +43,7 @@
   document.querySelectorAll('.systems-dock button').forEach(b=>{
    b.setAttribute('aria-expanded',String(b.dataset.view===which));
   });
-  closePanel();
+  closePanel(false);
   render();
  }
  function hide(){
@@ -52,7 +52,12 @@
  }
  function crewPanel(){
   title.textContent='ЕКІПАЖ / ДОРУЧЕННЯ';
-  let html='<p class="system-note">Три фахівці із шести членів екіпажу. Доручення приносять ресурси, доки гра відкрита.</p><div class="crew-picker">';
+  let html='<p class="system-note">Три фахівці із шести членів екіпажу. Доручення приносять ресурси, доки гра відкрита.</p>';
+  if(focusedWagon!==null){
+   const details=['Склад постачання','Житловий вагон','Майстерня'][focusedWagon];
+   html+='<p class="crew-destination">ПОТОЧНИЙ ВАГОН: '+(focusedWagon+1)+' · '+details+'</p>';
+  }
+  html+='<div class="crew-picker">';
   for(const w of support.workers){
    html+='<button type="button" class="crew-entry'+(person===w.id?' selected':'')+'" data-action="choose" data-person="'+w.id+'">'+w.name+'<small>'+w.specialty+'</small></button>';
   }
@@ -65,6 +70,7 @@
    html+='<div class="work-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+percent+'"><span style="width:'+percent+'%"></span></div>';
   }
   html+='<p class="system-note">У черзі: '+(w.queue.length?w.queue.map(i=>S.JOBS[i].name).join(' → '):'немає')+'. Завершено: '+w.completed+'</p>';
+  if(focusedWagon!==null)html+='<button type="button" class="assign-focused" data-action="assignFocused">ПРИЗНАЧИТИ В ОБРАНИЙ ВАГОН · '+(focusedWagon+1)+'</button>';
   html+='<div class="job-list">';
   for(let i=0;i<S.JOBS.length;i++){
    const j=S.JOBS[i],reward=Object.entries(j.reward).map(([key,val])=>'+'+val+' '+({scrap:'металу',fuel:'палива',water:'води',morale:'моралі'}[key]||key)).join(' / ');
@@ -108,8 +114,9 @@
   if(!b||b.disabled)return;
   let message='';
   if(b.dataset.action==='choose')person=b.dataset.person;
-  if(b.dataset.action==='assign'){
-   const result=S.assign(support,person,Number(b.dataset.job));
+  if(b.dataset.action==='assign'||b.dataset.action==='assignFocused'){
+   const job=b.dataset.action==='assignFocused'?focusedWagon:Number(b.dataset.job);
+   const result=S.assign(support,person,job);
    message=result.ok?(result.queued?'Доручення додано до черги.':'Доручення розпочато.'):result.reason;
   }
   if(b.dataset.action==='cancel')S.cancel(support,person);
@@ -141,5 +148,9 @@
   requestAnimationFrame(frame);
  }
  topHUD();requestAnimationFrame(frame);
+ window.CaravanCrewUI=Object.freeze({openForWagon:function(i){
+  if(!Number.isInteger(i)||i<0||i>=S.JOBS.length)return;
+  focusedWagon=i;show('crew');
+ },clearFocus:function(){focusedWagon=null;}});
  window.CaravanGameplayQA=Object.freeze({snapshot:()=>JSON.parse(JSON.stringify({support,state})),open:show});
 })();
