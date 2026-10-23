@@ -33,16 +33,17 @@ jobs:
           test -s web/style.css
           test -s game/assets/painterly_v021/assets/locations/abandoned_power_point.png
           node --check web/game.js
+          node --check web/camera_math.js
           node --check web/caravan_systems.js
           node --check web/gameplay_ui.js
-          node --test tests/caravan_systems.test.cjs
+          node --test tests/caravan_systems.test.cjs tests/caravan_camera.test.cjs
       - name: Bundle the game offline
         shell: bash
         run: |
           set -euo pipefail
           GAME=android/app/src/main/assets/game
           mkdir -p "$GAME/assets"
-          cp web/index.html web/game.js web/caravan_systems.js web/gameplay_ui.js web/style.css web/manifest.webmanifest web/sw.js "$GAME/"
+          cp web/index.html web/game.js web/camera_math.js web/caravan_systems.js web/gameplay_ui.js web/style.css web/manifest.webmanifest web/sw.js "$GAME/"
           cp game/assets/painterly_v021/assets/locations/abandoned_power_point.png "$GAME/assets/concept_cover.png"
           mkdir -p "$GAME/assets/painterly"
           cp game/assets/painterly_v021/assets/locations/*.png "$GAME/assets/painterly/"
@@ -61,7 +62,7 @@ jobs:
           index.write_text(txt)
           assert (root / "assets/concept_cover.png").stat().st_size > 10000
           assert (root / "game.js").stat().st_size > 1000
-          for name in ("caravan_systems.js", "gameplay_ui.js"):
+          for name in ("camera_math.js", "caravan_systems.js", "gameplay_ui.js"):
               assert (root / name).stat().st_size > 1000
               assert name in txt
           for item in ("ui/ui_tasks_open.png", "resource/resource_water.png", "task/task_repair.png"):
