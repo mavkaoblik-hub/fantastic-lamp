@@ -1,0 +1,1210 @@
+{
+  "format": "CARAVAN_APPROVED_CROPS_V1",
+  "reference_size": [
+    1024,
+    768
+  ],
+  "description": "Source-only, byte-verified rectangular crops from the four approved original PNG atlases; no drawings or alpha removal.",
+  "items": [
+    {
+      "id": "currency.caravan_tickets",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        5,
+        91,
+        200,
+        232
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "currency.metal_tokens",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        210,
+        91,
+        405,
+        232
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "currency.trade_vouchers",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        415,
+        91,
+        609,
+        232
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "currency.reputation",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        619,
+        91,
+        814,
+        232
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "currency.debt_marks",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        824,
+        91,
+        1019,
+        232
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.metal",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        2,
+        267,
+        100,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.fuel",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        104,
+        267,
+        203,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.water",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        207,
+        267,
+        305,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.food",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        309,
+        267,
+        408,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.medicine",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        412,
+        267,
+        510,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.ammunition",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        514,
+        267,
+        612,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.fabric",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        616,
+        267,
+        715,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.wood",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        719,
+        267,
+        817,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.electronics",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        821,
+        267,
+        920,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "resource.spare_parts",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        924,
+        267,
+        1022,
+        414
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "rare.reactor_parts",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        5,
+        451,
+        200,
+        594
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "rare.artifacts",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        210,
+        451,
+        405,
+        594
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "rare.optics",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        415,
+        451,
+        609,
+        594
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "rare.radio_parts",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        619,
+        451,
+        814,
+        594
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "rare.explosives",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        824,
+        451,
+        1019,
+        594
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.alarm",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        3,
+        622,
+        111,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.hunger",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        117,
+        622,
+        225,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.thirst",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        231,
+        622,
+        338,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.breakdown",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        344,
+        622,
+        452,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.contamination",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        458,
+        622,
+        566,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.cold",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        572,
+        622,
+        680,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.heat",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        686,
+        622,
+        793,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.morale",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        799,
+        622,
+        907,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "status.overload",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        913,
+        622,
+        1021,
+        759
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.repair",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        5,
+        91,
+        109,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.scrap_collection",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        119,
+        91,
+        223,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.scouting",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        233,
+        91,
+        336,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.trade",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        346,
+        91,
+        450,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.escort",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        460,
+        91,
+        564,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.rescue",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        574,
+        91,
+        678,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.defense",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        688,
+        91,
+        791,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.stealth",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        801,
+        91,
+        905,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.sabotage",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        915,
+        91,
+        1019,
+        223
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.medicine_delivery",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        5,
+        226,
+        109,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.fuel_delivery",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        119,
+        226,
+        223,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.storm_warning",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        233,
+        226,
+        336,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.research",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        346,
+        226,
+        450,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.rest_camp",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        460,
+        226,
+        564,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.negotiation",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        574,
+        226,
+        678,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.ambush",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        688,
+        226,
+        791,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.hunting",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        801,
+        226,
+        905,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.caravan_assembly",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        915,
+        226,
+        1019,
+        358
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.radio_contact",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        5,
+        365,
+        138,
+        495
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.map_target",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        148,
+        365,
+        281,
+        495
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.side_quest",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        291,
+        365,
+        423,
+        495
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "task.main_quest",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        433,
+        365,
+        566,
+        495
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.inventory",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        7,
+        531,
+        164,
+        637
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.map",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        178,
+        531,
+        334,
+        637
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.crew",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        348,
+        531,
+        505,
+        637
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.tasks_open",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        519,
+        531,
+        676,
+        637
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.upgrade",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        690,
+        531,
+        846,
+        637
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.workshop",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        860,
+        531,
+        1017,
+        637
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.movement",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        7,
+        640,
+        164,
+        744
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.stop",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        178,
+        640,
+        334,
+        744
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.confirm",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        348,
+        640,
+        505,
+        744
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.cancel",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        519,
+        640,
+        676,
+        744
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.information",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        690,
+        640,
+        846,
+        744
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "ui.warning",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        860,
+        640,
+        1017,
+        744
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.command",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        62,
+        507,
+        209
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.dining",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        62,
+        1019,
+        209
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.water_purification",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        209,
+        507,
+        356
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.trade",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        209,
+        1019,
+        356
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.laboratory",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        356,
+        507,
+        503
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.armored_cargo",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        356,
+        1019,
+        503
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.repair_crane",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        503,
+        507,
+        651
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon.radio_relay",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        503,
+        1019,
+        651
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.extra_armor",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        4,
+        664,
+        110,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.storage_expansion",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        118,
+        664,
+        224,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.refill_shells",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        232,
+        664,
+        337,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.power_radio_mast",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        345,
+        664,
+        451,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.solar_array",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        459,
+        664,
+        565,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.turret_shield",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        573,
+        664,
+        679,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.cold_storage",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        687,
+        664,
+        792,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.water_tanks",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        800,
+        664,
+        906,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "wagon_module.spare_wheels",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        914,
+        664,
+        1020,
+        765
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.engine_mk2",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        7,
+        83,
+        164,
+        238
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.boiler_boost",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        178,
+        83,
+        334,
+        238
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.reinforced_armor",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        348,
+        83,
+        505,
+        238
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.headlight",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        519,
+        83,
+        676,
+        238
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.smoke_system",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        690,
+        83,
+        846,
+        238
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.turbocharger",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        860,
+        83,
+        1017,
+        238
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.upgraded_suspension",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        7,
+        264,
+        164,
+        400
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.strong_wheels",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        178,
+        264,
+        334,
+        400
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.snowplow",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        348,
+        264,
+        505,
+        400
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.dust_filters",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        519,
+        264,
+        676,
+        400
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.fuel_processor",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        690,
+        264,
+        846,
+        400
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.extended_tank",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        860,
+        264,
+        1017,
+        400
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.warning_horn",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        7,
+        424,
+        164,
+        576
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.repair_drone",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        178,
+        424,
+        334,
+        576
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.roof_periscope",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        348,
+        424,
+        505,
+        576
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.machinegun_turret",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        519,
+        424,
+        676,
+        576
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.gun_mount",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        690,
+        424,
+        846,
+        576
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.mine_roller",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        860,
+        424,
+        1017,
+        576
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.emergency_generator",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        5,
+        595,
+        245,
+        747
+      ],
+      "status": "source_crop_background_retained"
+    },
+    {
+      "id": "locomotive_upgrade.field_radio_antenna",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        250,
+        595,
+        495,
+        747
+      ],
+      "status": "source_crop_background_retained"
+    }
+  ]
+}
