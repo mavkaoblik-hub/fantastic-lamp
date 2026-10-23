@@ -16,6 +16,12 @@ const fs=require('node:fs');
   await page.locator('[data-camera-mode="macro"]').click();
   await page.waitForTimeout(800);
   assert.equal(await page.locator('#camera-mode').innerText(),'ВЕСЬ ПОТЯГ');
+  const station=await page.locator('#conditions').boundingBox();
+  const current=await page.locator('#wagon-current').boundingBox();
+  assert.ok(station && current, 'Station and selected wagon badges must exist');
+  assert.ok(station.x+station.width<=current.x || current.x+current.width<=station.x ||
+    station.y+station.height<=current.y || current.y+current.height<=station.y,
+    'Current wagon status must not overlap station conditions on phone');
   await page.screenshot({path:'caravan-smoke/01_macro_landscape.png'});
   await page.locator('[data-camera-mode="operational"]').click();
   await page.waitForTimeout(800);

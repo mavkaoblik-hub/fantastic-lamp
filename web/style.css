@@ -104,3 +104,12 @@
 @media(max-height:390px) and (orientation:landscape){
  .wagon-current{top:139px}
 }
+
+/* v0.4 QA: status belongs on the right, away from station title and alerts. */
+.wagon-current{left:auto;right:175px;top:165px;max-width:min(38vw,470px)}
+@media(max-width:1100px) and (orientation:landscape){
+ .wagon-current{left:auto;right:160px;top:119px;max-width:39vw}
+}
+@media(max-height:390px) and (orientation:landscape){
+ .wagon-current{left:auto;right:135px;top:109px;max-width:40vw}
+}
