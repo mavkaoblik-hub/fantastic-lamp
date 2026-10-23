@@ -96,3 +96,11 @@
  .camera-tools{top:31%;gap:3px}
  .camera-tools button{height:28px}
 }
+
+/* v0.4 QA: move current-wagon status clear of station heading at phone sizes. */
+@media(max-width:1100px) and (orientation:landscape){
+ .wagon-current{top:178px;max-width:min(52vw,450px)}
+}
+@media(max-height:390px) and (orientation:landscape){
+ .wagon-current{top:139px}
+}
