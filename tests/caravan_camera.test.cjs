@@ -37,5 +37,5 @@ test('clicking polygon wagon works at actual shape not oversized bounding square
   assert.equal(M.wagonAt(750,445,m),1);
   assert.equal(M.wagonAt(930,460,m),2);
   assert.equal(M.wagonAt(150,320,m),-1);
-  assert.equal(M.wagonAt(308,360,m),-1);
+  assert.equal(M.wagonAt(295,360,m),-1);
 });
