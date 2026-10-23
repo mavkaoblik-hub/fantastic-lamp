@@ -69,3 +69,30 @@
 .resources .res.low{background:#65312b88;outline:1px solid #ef8769;border-radius:4px}
 .resources .res.low small{color:#ffe5d3}
 .resources .res.low strong::after{content:" !";color:#ffb17e;font-weight:800}
+
+/* Camera and contextual wagon controls: same dieselpunk palette, no duplicate art. */
+.wagon-current{position:absolute;z-index:2;top:174px;left:30px;max-width:min(55vw,590px);padding:6px 12px;border:1px solid #a98352aa;border-radius:4px;background:#0b1821e0;color:#f7dbac;font:600 12px Oswald,system-ui,sans-serif;letter-spacing:.08em;pointer-events:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.camera-modes{position:absolute;z-index:4;right:26px;top:102px;display:flex;align-items:center;gap:5px;border:1px solid #77664c;background:#0e1a23e8;border-radius:6px;padding:5px}
+.camera-modes button{font:600 11px Oswald,system-ui,sans-serif;letter-spacing:.08em;padding:8px 11px;color:#f2dfbf;background:#152731;border:1px solid #59666b;border-radius:4px;min-height:36px}
+.camera-modes button[aria-pressed=true]{color:#20170f;background:linear-gradient(#e3b578,#ad7041);border-color:#f8cb91}
+.camera-modes #camera-mode{font:500 10px Oswald,system-ui,sans-serif;letter-spacing:.03em;color:#e2ae75;white-space:nowrap;padding:0 5px}
+.camera-tools{top:36%;gap:5px}
+.camera-tools #zoom-value{display:block;width:40px;text-align:center;font:600 11px Oswald,system-ui,sans-serif;background:#0a1824bf;border:1px solid #6e6050;border-radius:4px;padding:6px 0;color:#ecc08c}
+.wagon-crew{width:100%;margin-top:9px;padding:12px 10px;border-radius:4px;font:600 12px Oswald,system-ui,sans-serif}
+.crew-destination{background:#423324a8;color:#ffe0b3;border:1px solid #ab8251;border-radius:5px;padding:10px;font-size:12px}
+.assign-focused{display:block;width:100%;margin:9px 0 13px;padding:10px 12px;background:#9b6034;color:#fff0d8;border:1px solid #efb777;border-radius:5px;font:700 12px Oswald,system-ui,sans-serif}
+@media(max-width:1100px){
+ .wagon-current{top:112px;left:12px;font-size:9px;max-width:54vw;padding:4px 7px}
+ .camera-modes{right:10px;top:65px;padding:3px;gap:3px}
+ .camera-modes button{font-size:9px;padding:4px 6px;min-height:29px}
+ .camera-modes #camera-mode{display:none}
+ .camera-tools{top:34%;right:9px;gap:4px}
+ .camera-tools button{min-height:30px}
+ .camera-tools #zoom-value{width:31px;font-size:9px;padding:4px 0}
+}
+@media(max-height:450px) and (orientation:landscape){
+ .camera-modes{right:9px;top:53px}
+ .wagon-current{top:94px}
+ .camera-tools{top:31%;gap:3px}
+ .camera-tools button{height:28px}
+}
