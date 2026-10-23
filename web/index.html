@@ -16,10 +16,10 @@
 <header class="top">
   <div class="identity"><div class="crest">✦</div><div><div class="eyebrow">CARAVAN <span>· THE LAST ROAD</span></div><div class="brand">КАРАВАН <span>/ ОСТАННЯ ДОРОГА</span></div></div></div>
   <div class="resources" aria-live="polite">
-   <div class="res"><span class="glyph">◈</span><small>МЕТАЛ</small><strong id="scrap">145</strong></div>
-   <div class="res"><span class="glyph orange">◆</span><small>ПАЛИВО</small><strong id="fuel">81</strong></div>
-   <div class="res"><span class="glyph green">❖</span><small>ПРИПАСИ</small><strong id="food">62</strong></div>
-   <div class="res"><span class="glyph gold">♟</span><small>ЕКІПАЖ</small><strong id="crew">6</strong></div>
+   <div class="res" data-art="resource/resource_metal.png"><img class="art-hud" alt=""><small>МЕТАЛ</small><strong id="scrap">145</strong></div>
+   <div class="res" data-art="resource/resource_fuel.png"><img class="art-hud" alt=""><small>ПАЛИВО</small><strong id="fuel">81</strong></div>
+   <div class="res" data-art="resource/resource_food.png"><img class="art-hud" alt=""><small>ЇЖА</small><strong id="food">62</strong></div>
+   <div class="res" data-art="resource/resource_water.png"><img class="art-hud" alt=""><small>ВОДА</small><strong id="water">72</strong></div><div class="res" data-art="status/status_morale.png"><img class="art-hud" alt=""><small>МОРАЛЬ</small><strong id="morale">75%</strong></div><div class="res" data-art="ui/ui_crew.png"><img class="art-hud" alt=""><small>ЕКІПАЖ</small><span><strong id="crew">6</strong><small id="crew-capacity"> / 8</small></span></div>
   </div>
   <div class="top-actions"><button id="sound" title="Звук" aria-label="Увімкнути або вимкнути звук">♫</button><button id="help" title="Керування">?</button></div>
 </header>
@@ -29,12 +29,16 @@
 <div id="tooltip" class="tooltip hidden"></div>
 <div class="camera-tools"><button id="cam-left" aria-label="Камера ліворуч">‹</button><button id="cam-reset" aria-label="Повернути камеру">⌖</button><button id="cam-right" aria-label="Камера праворуч">›</button></div>
 <div class="bottom"><div class="mission"><span class="pulsedot"></span><div><div class="smallcap" id="mission-caption">ПОТОЧНЕ ЗАВДАННЯ</div><div class="mission-title" id="mission">Підготувати караван до відправлення</div></div></div><div class="cta"><button class="secondary" id="scavenge">⌕ <span>ДОСЛІДИТИ</span></button><button class="primary" id="go">➤ <span>В ДОРОГУ</span></button></div></div>
+<nav class="systems-dock" aria-label="Меню потяга"><button type="button" data-view="quests" aria-expanded="false" aria-label="Завдання"><span class="dock-art" data-art="ui/ui_tasks_open.png"><img alt=""></span><span>ЗАВДАННЯ</span></button><button type="button" data-view="crew" aria-expanded="false" aria-label="Екіпаж"><span class="dock-art" data-art="ui/ui_crew.png"><img alt=""></span><span>ЕКІПАЖ</span></button><button type="button" data-view="inventory" aria-expanded="false" aria-label="Склад"><span class="dock-art" data-art="ui/ui_inventory.png"><img alt=""></span><span>СКЛАД</span></button></nav>
+<section id="systems-panel" class="systems-panel hidden" aria-label="Керування потягом" aria-hidden="true"><button id="systems-close" type="button" aria-label="Закрити панель">×</button><h2 id="systems-title"></h2><div id="systems-content"></div></section>
 <div class="hint">ПЕРЕТЯГУЙТЕ ДЛЯ ОГЛЯДУ • ТОРКНІТЬСЯ ВАГОНА ДЛЯ ПОКРАЩЕННЯ</div>
-<div class="overlay" id="intro"><div class="intro-back"></div><div class="intro-shade"></div><div class="intro-content"><div class="eyebrow">SURVIVAL · STRATEGY · EXPEDITION</div><h1>КАРАВАН</h1><div class="intro-tag">ОСТАННЯ ДОРОГА</div><p>Світ закінчився. Колії залишилися.<br>Ведіть свій рухомий дім крізь забуті землі.</p><div class="intro-buttons"><button id="start" class="primary">РОЗПОЧАТИ ЕКСПЕДИЦІЮ →</button><button id="how" class="secondary">ЯК ГРАТИ</button></div><div class="build">VERTICAL SLICE 0.1 · ІГРОВА ДЕМОНСТРАЦІЯ, НЕ РЕЛІЗ</div></div></div>
+<div class="overlay" id="intro"><div class="intro-back"></div><div class="intro-shade"></div><div class="intro-content"><div class="eyebrow">SURVIVAL · STRATEGY · EXPEDITION</div><h1>КАРАВАН</h1><div class="intro-tag">ОСТАННЯ ДОРОГА</div><p>Світ закінчився. Колії залишилися.<br>Ведіть свій рухомий дім крізь забуті землі.</p><div class="intro-buttons"><button id="start" class="primary">РОЗПОЧАТИ ЕКСПЕДИЦІЮ →</button><button id="how" class="secondary">ЯК ГРАТИ</button></div><div class="build">VERTICAL SLICE 0.2 · ІГРОВИЙ ТЕСТ, НЕ РЕЛІЗ</div></div></div>
 <div class="modal hidden" id="modal"><div class="modal-card"><button class="close" id="close-modal" aria-label="Закрити">×</button><div class="smallcap">ПОЛЬОВИЙ ПОСІБНИК</div><h2>Як грати</h2><p>Досліджуйте станції, поповнюйте ресурси, покращуйте вагони й вирушайте до наступної точки маршруту. Кожен рейс споживає паливо та припаси.</p><p>Натисніть на вагон, щоб відкрити модуль. Перетягуйте ігрову сцену для огляду. Прогрес зберігається у браузері на цьому пристрої.</p><div class="quickkeys">ПК: миша / клавіші ← → / Space • Телефон: дотик / кнопки</div><button class="primary" id="modal-ok">ЗРОЗУМІЛО</button></div></div>
 <div class="rotate">↻<p>Для найкращого огляду поверніть телефон горизонтально</p><small>У вертикальному режимі теж можна грати</small></div>
 </main>
 <script src="game.js"></script>
+<script src="caravan_systems.js"></script>
+<script src="gameplay_ui.js"></script>
 <script>if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});</script>
 </body>
 </html>
