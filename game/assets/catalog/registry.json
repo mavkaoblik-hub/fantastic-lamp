@@ -71,10 +71,24 @@
       ]
     }
   ],
-  "currencies": [],
+  "currencies": [
+    "currency.caravan_tickets",
+    "currency.metal_tokens",
+    "currency.trade_vouchers",
+    "currency.reputation",
+    "currency.debt_marks"
+  ],
   "notes": [
     "Approved atlases are original source images split into byte-exact PNG parts, not extracted individual sprites.",
     "Currency icon names and crop coordinates have not been visually verified; do not invent currency types.",
     "Every UI action or currency must eventually resolve to one shared sprite across all game screens."
-  ]
+  ],
+  "catalog": "game/assets/catalog/crops_v1/manifest.json",
+  "catalog_note": "100 source-authentic crops have unique semantic IDs. Crop manifest is the inventory authority; approve and reuse these before creating new graphics.",
+  "aliases": {
+    "ui.tasks_open": "ui.tasks.open",
+    "resource.scrap": "resource.metal",
+    "resource.supplies": "resource.food",
+    "status.crew": "ui.crew"
+  }
 }
