@@ -1,10 +1,10 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {chromium}=require('playwright');
+const {chromium}=require('playwright-core');
 const fs=require('node:fs');
 (async()=>{
   fs.mkdirSync('caravan-smoke',{recursive:true});
-  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+  const browser=await chromium.launch({headless:true,executablePath:process.env.CARAVAN_CHROME_BIN,args:['--no-sandbox','--disable-dev-shm-usage']});
   const page=await browser.newPage({viewport:{width:960,height:540},deviceScaleFactor:1});
   const errors=[];
   page.on('pageerror',e=>errors.push(e.stack||String(e)));

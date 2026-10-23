@@ -4,10 +4,14 @@ on:
     branches: [main]
     paths:
       - 'tests/caravan_browser_smoke.cjs'
+      - 'web/**'
       - '.github/workflows/caravan-visual-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: caravan-visual-smoke
+  cancel-in-progress: true
 jobs:
   browser-smoke:
     runs-on: ubuntu-latest
@@ -19,8 +23,8 @@ jobs:
           node-version: '22'
       - name: Install ephemeral browser test runtime
         run: |
-          npm install --no-save --no-audit --no-fund playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --no-audit --no-fund playwright-core@1.56.1
+          echo "CARAVAN_CHROME_BIN=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
       - name: Serve entire GitHub game tree
         run: |
           python3 -m http.server 8787 --bind 127.0.0.1 >/tmp/caravan-http.log 2>&1 &
