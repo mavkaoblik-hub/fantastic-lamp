@@ -1,0 +1,94 @@
+name: CARAVAN • Automatic Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'android/**'
+      - 'game/assets/painterly_v021/**'
+      - '.github/workflows/build-caravan-automatic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: caravan-android-auto
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout Caravan source
+        uses: actions/checkout@v4
+      - name: Verify web source and game assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s web/index.html
+          test -s web/game.js
+          test -s web/style.css
+          test -s game/assets/painterly_v021/assets/locations/abandoned_power_point.png
+          node --check web/game.js
+      - name: Bundle the game offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME=android/app/src/main/assets/game
+          mkdir -p "$GAME/assets"
+          cp web/index.html web/game.js web/style.css web/manifest.webmanifest web/sw.js "$GAME/"
+          cp game/assets/painterly_v021/assets/locations/abandoned_power_point.png "$GAME/assets/concept_cover.png"
+          mkdir -p "$GAME/assets/painterly"
+          cp game/assets/painterly_v021/assets/locations/*.png "$GAME/assets/painterly/"
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("android/app/src/main/assets/game")
+          css = root / "style.css"
+          css.write_text("\n".join(line for line in css.read_text().splitlines() if not line.lstrip().startswith('@import url(')) + "\n")
+          index = root / "index.html"
+          txt = index.read_text()
+          txt = txt.replace("if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});", "")
+          index.write_text(txt)
+          assert (root / "assets/concept_cover.png").stat().st_size > 10000
+          assert (root / "game.js").stat().st_size > 1000
+          PY
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile genuine Android APK
+        run: gradle -p android --no-daemon --stacktrace :app:assembleDebug
+      - name: Check APK identity, ZIP and signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          unzip -tqq "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee android/apk-badging.txt
+          grep -F "package: name='ua.mavka.caravan.autotest'" android/apk-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee android/apk-signature.txt
+          sha256sum "$APK" | tee android/APK_SHA256.txt
+      - name: Publish downloadable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CARAVAN-auto-Android-debug-APK
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/apk-badging.txt
+            android/apk-signature.txt
+            android/APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
