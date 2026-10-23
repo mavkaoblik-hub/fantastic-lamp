@@ -33,16 +33,23 @@ jobs:
           test -s web/style.css
           test -s game/assets/painterly_v021/assets/locations/abandoned_power_point.png
           node --check web/game.js
+          node --check web/caravan_systems.js
+          node --check web/gameplay_ui.js
+          node --test tests/caravan_systems.test.cjs
       - name: Bundle the game offline
         shell: bash
         run: |
           set -euo pipefail
           GAME=android/app/src/main/assets/game
           mkdir -p "$GAME/assets"
-          cp web/index.html web/game.js web/style.css web/manifest.webmanifest web/sw.js "$GAME/"
+          cp web/index.html web/game.js web/caravan_systems.js web/gameplay_ui.js web/style.css web/manifest.webmanifest web/sw.js "$GAME/"
           cp game/assets/painterly_v021/assets/locations/abandoned_power_point.png "$GAME/assets/concept_cover.png"
           mkdir -p "$GAME/assets/painterly"
           cp game/assets/painterly_v021/assets/locations/*.png "$GAME/assets/painterly/"
+          for GROUP in ui resource status task currency; do
+            mkdir -p "$GAME/assets/catalog/$GROUP"
+            cp "game/assets/catalog/crops_v1/$GROUP/"*.png "$GAME/assets/catalog/$GROUP/"
+          done
           python3 - <<'PY'
           from pathlib import Path
           root = Path("android/app/src/main/assets/game")
@@ -54,6 +61,11 @@ jobs:
           index.write_text(txt)
           assert (root / "assets/concept_cover.png").stat().st_size > 10000
           assert (root / "game.js").stat().st_size > 1000
+          for name in ("caravan_systems.js", "gameplay_ui.js"):
+              assert (root / name).stat().st_size > 1000
+              assert name in txt
+          for item in ("ui/ui_tasks_open.png", "resource/resource_water.png", "task/task_repair.png"):
+              assert (root / "assets/catalog" / item).stat().st_size > 1000
           PY
       - name: Java 17
         uses: actions/setup-java@v4
