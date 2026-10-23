@@ -122,7 +122,7 @@
       "area": "hud",
       "title": "Main resource HUD and icons",
       "status": "IN_PROGRESS",
-      "next_step": "Approved original-art resource icons, water/morale counters are integrated in current source; verify Android screens and critical thresholds.",
+      "next_step": "Approved art resource/status icons and actual low-stock highlights added; Android visual testing and full adaptive layout remain.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -185,7 +185,7 @@
       "area": "economy",
       "title": "Unified economy and resource costs",
       "status": "IN_PROGRESS",
-      "next_step": "Unify scrap/metal, food/supplies and move balance to configuration",
+      "next_step": "Water is earned by station salvage and worker jobs, consumed by trips; morale decreases on travel. Next centralize all balance constants and resource caps.",
       "evidence": "web/game.js",
       "android_verified": false
     },
