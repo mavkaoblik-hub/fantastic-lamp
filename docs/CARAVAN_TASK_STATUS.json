@@ -122,7 +122,7 @@
       "area": "hud",
       "title": "Main resource HUD and icons",
       "status": "IN_PROGRESS",
-      "next_step": "Replace glyphs; add water, morale and limits",
+      "next_step": "Approved original-art resource icons, water/morale counters are integrated in current source; verify Android screens and critical thresholds.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -148,8 +148,8 @@
       "id": "S-10",
       "area": "crew",
       "title": "Three workers with queued assignments",
-      "status": "BLOCKED",
-      "next_step": "Merge v0.12 state and images into real Android bundle",
+      "status": "IN_PROGRESS",
+      "next_step": "Three workers with timed jobs and 3-item queues added to main APK source; needs walking/enter/exit sprites and device QA.",
       "evidence": "game/v012_migration/app.js",
       "android_verified": false
     },
@@ -175,8 +175,8 @@
       "id": "S-13",
       "area": "gameplay",
       "title": "Inventory and claimable quest list",
-      "status": "BACKLOG",
-      "next_step": "Implement item and quest state machines",
+      "status": "IN_PROGRESS",
+      "next_step": "Quest journal includes 3 milestones and one-time rewards; inventory shows actual resource balances. Full items and crafting remain.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -212,7 +212,7 @@
       "area": "art",
       "title": "Canonical icon role catalog",
       "status": "IN_PROGRESS",
-      "next_step": "Wire all UI screens to one runtime asset map",
+      "next_step": "Live HUD and menus use approved catalog icons; need centralized runtime ID mapping and Android QA.",
       "evidence": "game/assets/catalog/registry.json",
       "android_verified": false
     },
@@ -265,10 +265,19 @@
       "id": "S-23",
       "area": "platform",
       "title": "Single APK including advanced gameplay",
-      "status": "BLOCKED",
-      "next_step": "Unify web/ and v012_migration/ and update build workflow",
+      "status": "IN_PROGRESS",
+      "next_step": "First v0.12 job concepts migrated into unified web/ code; 14 wagons and advanced sprites are still blocked on missing dependencies.",
       "evidence": "web/;game/v012_migration/",
       "android_verified": false
+    }
+  ],
+  "release_notes": [
+    {
+      "version": "v0.2",
+      "phase": "M0",
+      "date": "2026-10-23",
+      "change": "Port crew jobs, queued assignments, saved quest rewards, inventory summary and original art icons into the actual offline Android source.",
+      "device_tested": false
     }
   ]
 }
