@@ -1,0 +1,43 @@
+name: CARAVAN - Visual camera and selected wagon smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/caravan_browser_smoke.cjs'
+      - '.github/workflows/caravan-visual-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install ephemeral browser test runtime
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve entire GitHub game tree
+        run: |
+          python3 -m http.server 8787 --bind 127.0.0.1 >/tmp/caravan-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:8787/web/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/caravan-http.log
+          exit 1
+      - name: Test Android-sized camera, wagon selection and crew UI
+        run: node tests/caravan_browser_smoke.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CARAVAN-v03-camera-visual-QA
+          path: |
+            caravan-smoke/
+            /tmp/caravan-http.log
+          if-no-files-found: warn
+          retention-days: 14
