@@ -142,7 +142,7 @@
     updateHUD();persist();
    }
    S.syncQuests(support,state);
-   if(now-uiTime>850){render();uiTime=now;}
+   if(now-uiTime>850){updateHUD();render();uiTime=now;}
    if(support.workers.some(w=>w.job!==null)&&now-saveTime>5000){persist();saveTime=now;}
   }
   requestAnimationFrame(frame);
@@ -150,7 +150,13 @@
  topHUD();requestAnimationFrame(frame);
  window.CaravanCrewUI=Object.freeze({openForWagon:function(i){
   if(!Number.isInteger(i)||i<0||i>=S.JOBS.length)return;
-  focusedWagon=i;show('crew');
+  focusedWagon=i;if(view==='crew')render();else show('crew');
+ },selectWorker:function(id){
+  const w=support.workers.find(person=>person.id===id);
+  if(!w)return false;
+  person=id;focusedWagon=w.job;
+  if(view==='crew')render();else show('crew');
+  return true;
  },clearFocus:function(){focusedWagon=null;}});
  window.CaravanGameplayQA=Object.freeze({snapshot:()=>JSON.parse(JSON.stringify({support,state})),open:show});
 })();
