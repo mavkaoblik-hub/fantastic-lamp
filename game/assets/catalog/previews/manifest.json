@@ -1,0 +1,50 @@
+{
+  "format": "CARAVAN_APPROVED_ATLAS_PREVIEW_V1",
+  "source_manifest": "game/assets/approved_style_20261023/manifest.json",
+  "atlases": [
+    {
+      "atlas": "approved_wagons.png",
+      "sha256_original": "79eb95d597b36bfe0d2f4cbc57c10abb0faf6c2fa862b5a92b3ee3b52d6eeda5",
+      "size_original": [
+        1448,
+        1086
+      ],
+      "preview": "approved_wagons.jpg",
+      "grid": "approved_wagons_grid.jpg",
+      "note": "unaltered source content, scaled preview only; not an isolated sprite"
+    },
+    {
+      "atlas": "approved_tasks_actions.png",
+      "sha256_original": "ae86dd8802763caa345109c17e593d91c26c2d8723555fcf3d3455a45bc221fb",
+      "size_original": [
+        1448,
+        1086
+      ],
+      "preview": "approved_tasks_actions.jpg",
+      "grid": "approved_tasks_actions_grid.jpg",
+      "note": "unaltered source content, scaled preview only; not an isolated sprite"
+    },
+    {
+      "atlas": "approved_currencies_resources_statuses.png",
+      "sha256_original": "cc814ae8c3d8f2a6b9564a09f388b3cb1df79e062243fbf02e41e3cb557ff830",
+      "size_original": [
+        1448,
+        1086
+      ],
+      "preview": "approved_currencies_resources_statuses.jpg",
+      "grid": "approved_currencies_resources_statuses_grid.jpg",
+      "note": "unaltered source content, scaled preview only; not an isolated sprite"
+    },
+    {
+      "atlas": "approved_locomotive_upgrades.png",
+      "sha256_original": "c0d67007f41ba46b6141c2ebe20d1c51941aaa598a5d52909d9964b2e6a5874e",
+      "size_original": [
+        1448,
+        1086
+      ],
+      "preview": "approved_locomotive_upgrades.jpg",
+      "grid": "approved_locomotive_upgrades_grid.jpg",
+      "note": "unaltered source content, scaled preview only; not an isolated sprite"
+    }
+  ]
+}
