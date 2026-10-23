@@ -30,7 +30,7 @@
   document.querySelectorAll('.resources .res').forEach(box=>{
    const stat=box.querySelector('strong[id]');
    if(!stat)return;
-   const critical=Object.hasOwn(min,stat.id) && values[stat.id]<min[stat.id];
+   const critical=Object.prototype.hasOwnProperty.call(min,stat.id) && values[stat.id]<min[stat.id];
    box.classList.toggle('low',critical);
    box.title=critical?'УВАГА: критично низький запас':'';
   });
