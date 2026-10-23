@@ -16,7 +16,7 @@ test('worker follows door, enters, works, exits, returns to patrol',()=>{
  assert.equal(walking.phase,'walking');
  const door=modules[1].x+modules[1].w-27;
  assert.ok(walking.x<1125 && walking.x>door);
- const entrance=d.pose(person(1,4.5),0,modules,jobs,4.5);
+ const entrance=d.pose(person(1,3.6),0,modules,jobs,4.5);
  assert.equal(entrance.phase,'entering');
  const work=d.pose(person(1,8),0,modules,jobs,8);
  assert.equal(work.phase,'working');

@@ -19,7 +19,7 @@
      const job=Number.isInteger(worker.job)&&worker.job>=0&&worker.job<modules.length&&jobs[worker.job]?worker.job:null;
      if(job!==null){
        if(t.lastJob!==job){
-         t.travelFrom=t.lastJob!==null ? modules[t.lastJob].x+modules[t.lastJob].w-28 : home;
+         t.travelFrom=t.lastJob!==null ? modules[t.lastJob].x+modules[t.lastJob].w-27 : home;
        }
        t.lastJob=job;t.lastCompleted=worker.completed||0;t.returnStart=null;
        const m=modules[job],door=m.x+m.w-27;
