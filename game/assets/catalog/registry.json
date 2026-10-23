@@ -1,0 +1,80 @@
+{
+  "format": "CARAVAN_CANONICAL_ICONS_V1",
+  "source": "game/assets/approved_style_20261023/manifest.json",
+  "policy": {
+    "one_role_one_icon": true,
+    "one_currency_one_icon": true,
+    "reuse_same_id_across_screens": true,
+    "approved_atlas_immutable": true
+  },
+  "canonical": [
+    {
+      "id": "ui.tasks.open",
+      "type": "button",
+      "uk": "Відкрити завдання",
+      "atlas": "approved_tasks_actions.png",
+      "status": "atlas_reference_only",
+      "crop": null,
+      "used_by": [
+        "game/v012_migration/app.js:tasksOpen"
+      ]
+    },
+    {
+      "id": "resource.metal",
+      "type": "resource",
+      "uk": "Метал",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "status": "atlas_reference_only",
+      "crop": null,
+      "used_by": [
+        "web/index.html:scrap",
+        "godot/main.gd:scrap",
+        "game/v012_migration/app.js:metal"
+      ]
+    },
+    {
+      "id": "resource.fuel",
+      "type": "resource",
+      "uk": "Паливо",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "status": "atlas_reference_only",
+      "crop": null,
+      "used_by": [
+        "web/index.html:fuel",
+        "godot/main.gd:fuel",
+        "game/v012_migration/app.js:fuel"
+      ]
+    },
+    {
+      "id": "resource.supplies",
+      "type": "resource",
+      "uk": "Припаси",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "status": "atlas_reference_only",
+      "crop": null,
+      "used_by": [
+        "web/index.html:food",
+        "godot/main.gd:food",
+        "game/v012_migration/app.js:supplies"
+      ]
+    },
+    {
+      "id": "status.crew",
+      "type": "status_counter",
+      "uk": "Екіпаж",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "status": "atlas_reference_only",
+      "crop": null,
+      "used_by": [
+        "web/index.html:crew",
+        "godot/main.gd:crew"
+      ]
+    }
+  ],
+  "currencies": [],
+  "notes": [
+    "Approved atlases are original source images split into byte-exact PNG parts, not extracted individual sprites.",
+    "Currency icon names and crop coordinates have not been visually verified; do not invent currency types.",
+    "Every UI action or currency must eventually resolve to one shared sprite across all game screens."
+  ]
+}

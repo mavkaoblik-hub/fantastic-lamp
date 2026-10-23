@@ -1,0 +1,110 @@
+name: CARAVAN approved art integrity and duplication audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'game/assets/**'
+      - '.github/workflows/caravan-art-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Pillow for visual contact sheets
+        run: python -m pip install --quiet Pillow
+      - name: Verify approved source PNGs, catalog and duplicates
+        shell: bash
+        run: |
+          mkdir -p /tmp/caravan-art-audit/previews
+          python3 - <<'PY'
+          import hashlib, io, json, struct
+          from collections import defaultdict
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+          from PIL import Image, ImageDraw, ImageOps
+          root=Path('game/assets'); approved=root/'approved_style_20261023'
+          out=Path('/tmp/caravan-art-audit')
+          spec=json.loads((approved/'manifest.json').read_text())
+          registry=json.loads((root/'catalog/registry.json').read_text())
+          sha=lambda b: hashlib.sha256(b).hexdigest()
+          report={'atlases':[], 'standalone':[], 'issues':[], 'exact_duplicates':[], 'same_name_candidates':[]}
+          atlas_names={x['filename'] for x in spec['atlases']}
+          for x in spec['atlases']:
+              p=[approved/'originals'/f"{x['filename']}.part{i:02d}" for i in range(x['parts'])]
+              if not all(y.exists() for y in p): raise RuntimeError(f"Missing parts: {x['filename']}")
+              data=b''.join(y.read_bytes() for y in p)
+              assert len(data)==x['size_bytes'] and sha(data)==x['sha256'], x['filename']
+              with Image.open(io.BytesIO(data)) as picture:
+                  picture.verify()
+              with Image.open(io.BytesIO(data)) as picture:
+                  assert list(picture.size)==x['resolution'],x['filename']
+                  image=ImageOps.contain(picture.convert('RGB'),(1152,864))
+              canvas=Image.new('RGB',(image.width,image.height+38),'#111923')
+              canvas.paste(image,(0,38))
+              draw=ImageDraw.Draw(canvas)
+              draw.text((10,12),x['filename']+' / ORIGINAL ATLAS / NOT A CROPPED SPRITE',fill='#e6c695')
+              for i in range(1,8):
+                  col=round(i*image.width/8)
+                  draw.line((col,38,col,image.height+38),fill='#777777')
+              for i in range(1,6):
+                  row=38+round(i*image.height/6)
+                  draw.line((0,row,image.width,row),fill='#777777')
+              canvas.save(out/'previews'/x['filename'])
+              report['atlases'].append({'name':x['filename'],'parts':len(p),'bytes':len(data),'sha256':'PASS','size':x['resolution']})
+          seenids=set()
+          for item in registry['canonical']:
+              assert item['id'] not in seenids, f"Duplicate canonical icon id: {item['id']}"
+              assert item['atlas'] in atlas_names, f"Bad atlas: {item['id']}"
+              assert item['status']=='atlas_reference_only',f"Unexpected sprite status: {item['id']}"
+              seenids.add(item['id'])
+          all_assets=[]
+          for p in sorted(root.rglob('*')):
+              if p.is_file() and p.suffix.lower() in ('.png','.svg') and not p.is_relative_to(approved):
+                  b=p.read_bytes()
+                  if p.suffix.lower()=='.png':
+                      with Image.open(io.BytesIO(b)) as image: image.verify()
+                  else:
+                      assert ET.parse(p).getroot().tag.endswith('svg'),str(p)
+                  row={'path':p.as_posix(),'sha256':sha(b),'size_bytes':len(b)}
+                  all_assets.append(row)
+          report['standalone']=all_assets
+          byhash=defaultdict(list); byname=defaultdict(list)
+          for obj in all_assets:
+              byhash[obj['sha256']].append(obj['path'])
+              byname[Path(obj['path']).stem.lower()].append(obj['path'])
+          report['exact_duplicates']=[v for v in byhash.values() if len(v)>1]
+          report['same_name_candidates']=[v for v in byname.values() if len(v)>1]
+          exp=json.loads((root/'expedition_v014/manifest.json').read_text())
+          for item in exp['items']:
+              if not Path(item['path']).is_file():
+                  report['issues'].append({'type':'missing_expedition_asset','id':item['id'],'path':item['path']})
+                  print('::warning::Missing manifest resource '+item['path'])
+          lines=['# CARAVAN actual repository asset audit','',
+                 f"Approved verified atlases: {len(report['atlases'])}/{len(spec['atlases'])}",
+                 f"Standalone PNG/SVG files: {len(all_assets)}",
+                 f"Exact SHA-256 duplicate groups: {len(report['exact_duplicates'])}",
+                 f"Same-name candidates (not confirmed duplicates): {len(report['same_name_candidates'])}",
+                 f"Missing referenced expedition files: {len(report['issues'])}",'',
+                 '## Potential same-subject graphics']
+          lines += ['- '+', '.join(p) for p in report['same_name_candidates']] or ['- None']
+          lines += ['','## Issues']
+          lines += ['- '+x['type']+': '+x['path'] for x in report['issues']] or ['- None']
+          lines += ['','Individual icon duplicates INSIDE the original atlases have not been visually verified.',
+                    'Original source atlases are never overwritten. Previews are reference-only.']
+          (out/'audit.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          (out/'AUDIT.md').write_text('\n'.join(lines)+'\n')
+          print('\n'.join(lines))
+          PY
+      - name: Publish audited atlas previews and report
+        uses: actions/upload-artifact@v4
+        with:
+          name: CARAVAN-approved-art-audit
+          path: /tmp/caravan-art-audit/
+          if-no-files-found: error
+          retention-days: 30
