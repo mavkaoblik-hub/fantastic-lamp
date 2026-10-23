@@ -1,0 +1,274 @@
+{
+  "schema": "CARAVAN_IMPLEMENTATION_TRACKER_V1",
+  "updated": "2026-10-23",
+  "source": "docs/CARAVAN_MASTER_TZ_v1_2026-10-23.md",
+  "approved_style": "docs/CARAVAN_VISUAL_STYLE_LOCK.md",
+  "audit_commit": "132a7a7eff1c36579916e45e92771d93c779434d",
+  "statuses": [
+    "BACKLOG",
+    "IN_PROGRESS",
+    "CODE_READY",
+    "TESTING",
+    "DONE",
+    "BLOCKED"
+  ],
+  "done_rule": "A requirement is DONE only when integrated into current installable Android APK and tested with acceptance evidence, not merely present in source code or art assets.",
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "One complete offline Android source and build",
+      "priority": "P0",
+      "status": "IN_PROGRESS",
+      "depends_on": []
+    },
+    {
+      "id": "M1",
+      "title": "Camera and responsive HUD",
+      "priority": "P0",
+      "status": "BACKLOG",
+      "depends_on": [
+        "M0"
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "Crew, wagons and living scene",
+      "priority": "P0",
+      "status": "BACKLOG",
+      "depends_on": [
+        "M0",
+        "M1"
+      ]
+    },
+    {
+      "id": "M3",
+      "title": "Routes, inventory, quests and balanced resources",
+      "priority": "P0",
+      "status": "BACKLOG",
+      "depends_on": [
+        "M2"
+      ]
+    },
+    {
+      "id": "M4",
+      "title": "Stable signed updates, regression and device QA",
+      "priority": "P0",
+      "status": "BACKLOG",
+      "depends_on": [
+        "M0",
+        "M1",
+        "M2",
+        "M3"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "S-01",
+      "area": "build",
+      "title": "Android debug APK workflow",
+      "status": "CODE_READY",
+      "next_step": "Test installed APK on Android",
+      "evidence": "build-caravan-automatic.yml",
+      "android_verified": false
+    },
+    {
+      "id": "S-02",
+      "area": "platform",
+      "title": "Offline Android WebView shell",
+      "status": "CODE_READY",
+      "next_step": "Verify start/resume/save on device",
+      "evidence": "MainActivity.java",
+      "android_verified": false
+    },
+    {
+      "id": "S-03",
+      "area": "gameplay",
+      "title": "Trip, salvage, resource spending and save",
+      "status": "CODE_READY",
+      "next_step": "Android full cycle acceptance",
+      "evidence": "web/game.js",
+      "android_verified": false
+    },
+    {
+      "id": "S-04",
+      "area": "wagons",
+      "title": "Three basic upgradeable wagon modules",
+      "status": "CODE_READY",
+      "next_step": "Android visual and interaction QA",
+      "evidence": "web/game.js",
+      "android_verified": false
+    },
+    {
+      "id": "S-05",
+      "area": "camera",
+      "title": "Horizontal viewport pan",
+      "status": "IN_PROGRESS",
+      "next_step": "Add inertia and boundaries",
+      "evidence": "web/game.js",
+      "android_verified": false
+    },
+    {
+      "id": "S-06",
+      "area": "camera",
+      "title": "Three zoom modes and pinch",
+      "status": "BACKLOG",
+      "next_step": "Implement Macro, Operational, Micro",
+      "evidence": "web/game.js",
+      "android_verified": false
+    },
+    {
+      "id": "S-07",
+      "area": "hud",
+      "title": "Main resource HUD and icons",
+      "status": "IN_PROGRESS",
+      "next_step": "Replace glyphs; add water, morale and limits",
+      "evidence": "web/index.html",
+      "android_verified": false
+    },
+    {
+      "id": "S-08",
+      "area": "hud",
+      "title": "Wagon context panel",
+      "status": "IN_PROGRESS",
+      "next_step": "Show workers, production timer and risk",
+      "evidence": "web/index.html",
+      "android_verified": false
+    },
+    {
+      "id": "S-09",
+      "area": "wagons",
+      "title": "14 wagon types and locomotive L1-L4",
+      "status": "BLOCKED",
+      "next_step": "Restore linked v0.12 assets and CSS; integrate with APK",
+      "evidence": "game/v012_migration/index.html",
+      "android_verified": false
+    },
+    {
+      "id": "S-10",
+      "area": "crew",
+      "title": "Three workers with queued assignments",
+      "status": "BLOCKED",
+      "next_step": "Merge v0.12 state and images into real Android bundle",
+      "evidence": "game/v012_migration/app.js",
+      "android_verified": false
+    },
+    {
+      "id": "S-11",
+      "area": "crew",
+      "title": "Touch drag-and-drop crew assignment",
+      "status": "BACKLOG",
+      "next_step": "Highlight compatible wagons and enlarge hitboxes",
+      "evidence": "game/v012_migration/app.js",
+      "android_verified": false
+    },
+    {
+      "id": "S-12",
+      "area": "world",
+      "title": "Interactive route map and remote alarms",
+      "status": "BACKLOG",
+      "next_step": "Add route transitions and camera targeting",
+      "evidence": "web/index.html",
+      "android_verified": false
+    },
+    {
+      "id": "S-13",
+      "area": "gameplay",
+      "title": "Inventory and claimable quest list",
+      "status": "BACKLOG",
+      "next_step": "Implement item and quest state machines",
+      "evidence": "web/index.html",
+      "android_verified": false
+    },
+    {
+      "id": "S-14",
+      "area": "economy",
+      "title": "Unified economy and resource costs",
+      "status": "IN_PROGRESS",
+      "next_step": "Unify scrap/metal, food/supplies and move balance to configuration",
+      "evidence": "web/game.js",
+      "android_verified": false
+    },
+    {
+      "id": "S-15",
+      "area": "art",
+      "title": "Four original user-approved art atlases",
+      "status": "CODE_READY",
+      "next_step": "Integrate verified source art into screens",
+      "evidence": "game/assets/approved_style_20261023/manifest.json",
+      "android_verified": false
+    },
+    {
+      "id": "S-16",
+      "area": "art",
+      "title": "100 rectangular art crops from atlases",
+      "status": "CODE_READY",
+      "next_step": "Review quality; extract transparency for scene objects",
+      "evidence": "game/assets/catalog/crops_v1/manifest.json",
+      "android_verified": false
+    },
+    {
+      "id": "S-17",
+      "area": "art",
+      "title": "Canonical icon role catalog",
+      "status": "IN_PROGRESS",
+      "next_step": "Wire all UI screens to one runtime asset map",
+      "evidence": "game/assets/catalog/registry.json",
+      "android_verified": false
+    },
+    {
+      "id": "S-18",
+      "area": "art",
+      "title": "8 location PNGs and 17 environment props",
+      "status": "CODE_READY",
+      "next_step": "Confirm runtime usage and correct art layering",
+      "evidence": "game/assets/painterly_v021/",
+      "android_verified": false
+    },
+    {
+      "id": "S-19",
+      "area": "art",
+      "title": "Alpha-clean wagons and character animations",
+      "status": "BLOCKED",
+      "next_step": "Create approved RGBA cutouts and validate scale/coupling",
+      "evidence": "game/assets/catalog/crops_v1/",
+      "android_verified": false
+    },
+    {
+      "id": "S-20",
+      "area": "hud",
+      "title": "Incidents, off-screen arrows and Android push",
+      "status": "BACKLOG",
+      "next_step": "Implement incident state, navigation, then opt-in notifications",
+      "evidence": "web/",
+      "android_verified": false
+    },
+    {
+      "id": "S-21",
+      "area": "qa",
+      "title": ">=16dp safe areas and 20-30% larger hitboxes",
+      "status": "BACKLOG",
+      "next_step": "Android measurements on varied screen sizes",
+      "evidence": "web/style.css",
+      "android_verified": false
+    },
+    {
+      "id": "S-22",
+      "area": "build",
+      "title": "Persistent Android signing and updates",
+      "status": "BACKLOG",
+      "next_step": "Stable release key and save migration",
+      "evidence": "build-caravan-automatic.yml",
+      "android_verified": false
+    },
+    {
+      "id": "S-23",
+      "area": "platform",
+      "title": "Single APK including advanced gameplay",
+      "status": "BLOCKED",
+      "next_step": "Unify web/ and v012_migration/ and update build workflow",
+      "evidence": "web/;game/v012_migration/",
+      "android_verified": false
+    }
+  ]
+}
