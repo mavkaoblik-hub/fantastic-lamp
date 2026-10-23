@@ -1,0 +1,2407 @@
+{
+  "format": "CARAVAN_SOURCE_CROPS_MANIFEST_V1",
+  "original_source_is_immutable": true,
+  "not_transparent_sprites": true,
+  "items": [
+    {
+      "id": "currency.caravan_tickets",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        5,
+        91,
+        200,
+        232
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        129,
+        283,
+        328
+      ],
+      "file": "game/assets/catalog/crops_v1/currency/currency_caravan_tickets.png",
+      "width": 276,
+      "height": 199,
+      "sha256": "2c46af56bce644f2c96994b5dab0713e18c5073cf656106a07cda153da0b00b3",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "currency.metal_tokens",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        210,
+        91,
+        405,
+        232
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        297,
+        129,
+        573,
+        328
+      ],
+      "file": "game/assets/catalog/crops_v1/currency/currency_metal_tokens.png",
+      "width": 276,
+      "height": 199,
+      "sha256": "4f2bf6a8f14c7e03367656052494f9a0629aa260c3de3a21ee0add0138326ce9",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "currency.trade_vouchers",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        415,
+        91,
+        609,
+        232
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        587,
+        129,
+        861,
+        328
+      ],
+      "file": "game/assets/catalog/crops_v1/currency/currency_trade_vouchers.png",
+      "width": 274,
+      "height": 199,
+      "sha256": "372bcae7ff25bc77664ad5b0a7d823a108d91a5535185ad853988d7997e5524b",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "currency.reputation",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        619,
+        91,
+        814,
+        232
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        875,
+        129,
+        1151,
+        328
+      ],
+      "file": "game/assets/catalog/crops_v1/currency/currency_reputation.png",
+      "width": 276,
+      "height": 199,
+      "sha256": "49e1ca2303b6bfa13aba0706b0bf965dd32f2d6818ddb575543404a733710934",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "currency.debt_marks",
+      "group": "currency",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        824,
+        91,
+        1019,
+        232
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1165,
+        129,
+        1441,
+        328
+      ],
+      "file": "game/assets/catalog/crops_v1/currency/currency_debt_marks.png",
+      "width": 276,
+      "height": 199,
+      "sha256": "b7a75e61e09482f5931e3b5428ed698c5ade973956f377bd32f4e7d343f5487d",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.metal",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        2,
+        267,
+        100,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        3,
+        378,
+        141,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_metal.png",
+      "width": 138,
+      "height": 207,
+      "sha256": "816cdeb8a74862e8767934a0b7ab683e185e4789e8ed8a0e1ccfde07042cae24",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.fuel",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        104,
+        267,
+        203,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        147,
+        378,
+        287,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_fuel.png",
+      "width": 140,
+      "height": 207,
+      "sha256": "99950c356799e60f833755eeca6ca989ff884b814ad04849c1b4427707f5f7f2",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.water",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        207,
+        267,
+        305,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        293,
+        378,
+        431,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_water.png",
+      "width": 138,
+      "height": 207,
+      "sha256": "dd14eb6ed04d53aa2741a540d18d3bbf59aa6a5c9fcf0e9c7ab3d50e6398dd1d",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.food",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        309,
+        267,
+        408,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        437,
+        378,
+        577,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_food.png",
+      "width": 140,
+      "height": 207,
+      "sha256": "43a3a27a91e2de5d5ea489b745c338aac01f9302b70749979ae81c136ae9a9f0",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.medicine",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        412,
+        267,
+        510,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        583,
+        378,
+        721,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_medicine.png",
+      "width": 138,
+      "height": 207,
+      "sha256": "0244b526743da4df609d4f0af587803fd77ee3a8b98124ca47594e46e885983f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.ammunition",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        514,
+        267,
+        612,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        727,
+        378,
+        865,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_ammunition.png",
+      "width": 138,
+      "height": 207,
+      "sha256": "ab08f079df35f02d9adca560c8047f05b854a8353b5dbfae29ac84e450f92b81",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.fabric",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        616,
+        267,
+        715,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        871,
+        378,
+        1011,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_fabric.png",
+      "width": 140,
+      "height": 207,
+      "sha256": "cde03ba908af8e328fb37803c327bb10c9636000ec65ba95e434b7ddabb36884",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.wood",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        719,
+        267,
+        817,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1017,
+        378,
+        1155,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_wood.png",
+      "width": 138,
+      "height": 207,
+      "sha256": "90935a91ec4d9d7d38bebd0263b136044df448fe2fc34047aac8b2cb3703888a",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.electronics",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        821,
+        267,
+        920,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1161,
+        378,
+        1301,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_electronics.png",
+      "width": 140,
+      "height": 207,
+      "sha256": "b68d9858e7b89663bc1fbbe5a2e9ccf65bfd3498726cbc4343b4b7c97f76f99b",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "resource.spare_parts",
+      "group": "resource",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        924,
+        267,
+        1022,
+        414
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1307,
+        378,
+        1445,
+        585
+      ],
+      "file": "game/assets/catalog/crops_v1/resource/resource_spare_parts.png",
+      "width": 138,
+      "height": 207,
+      "sha256": "5a24486bb184a37466d952238f0bd8f37be9e3edab4bf0740cd9e5d9f75f0fa1",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "rare.reactor_parts",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        5,
+        451,
+        200,
+        594
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        638,
+        283,
+        840
+      ],
+      "file": "game/assets/catalog/crops_v1/rare/rare_reactor_parts.png",
+      "width": 276,
+      "height": 202,
+      "sha256": "f95a95bde01916dfa0c48a6ca5cc227ac7389f5877739f04f368ee020bcdfedd",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "rare.artifacts",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        210,
+        451,
+        405,
+        594
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        297,
+        638,
+        573,
+        840
+      ],
+      "file": "game/assets/catalog/crops_v1/rare/rare_artifacts.png",
+      "width": 276,
+      "height": 202,
+      "sha256": "79d5d98f3059d8cb8cd592409a1824c5e1b4d3dbfa6a7a22c807e8779e0675bc",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "rare.optics",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        415,
+        451,
+        609,
+        594
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        587,
+        638,
+        861,
+        840
+      ],
+      "file": "game/assets/catalog/crops_v1/rare/rare_optics.png",
+      "width": 274,
+      "height": 202,
+      "sha256": "15b0a5d756f7334499f35667e832a44632fb594ac6b4280d8be3e3cc27d1868b",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "rare.radio_parts",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        619,
+        451,
+        814,
+        594
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        875,
+        638,
+        1151,
+        840
+      ],
+      "file": "game/assets/catalog/crops_v1/rare/rare_radio_parts.png",
+      "width": 276,
+      "height": 202,
+      "sha256": "9afe2991596d49849f3b14ee1952aba8bac751cad619d4c1b60dca66ae4e098f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "rare.explosives",
+      "group": "rare",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        824,
+        451,
+        1019,
+        594
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1165,
+        638,
+        1441,
+        840
+      ],
+      "file": "game/assets/catalog/crops_v1/rare/rare_explosives.png",
+      "width": 276,
+      "height": 202,
+      "sha256": "55ed1d22a33c5ee69072965472a8db78a2243465e8cf8cbe7058dbfc817b2cc7",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.alarm",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        3,
+        622,
+        111,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        4,
+        880,
+        157,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_alarm.png",
+      "width": 153,
+      "height": 193,
+      "sha256": "7f6c69e94a5f353e3e1ccd4923d6c25974b6cd86f0209e294549a6099da33666",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.hunger",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        117,
+        622,
+        225,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        165,
+        880,
+        318,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_hunger.png",
+      "width": 153,
+      "height": 193,
+      "sha256": "3ab8efde7230bd08098607a499789de12cb686dac229bf153b10938177b94722",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.thirst",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        231,
+        622,
+        338,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        327,
+        880,
+        478,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_thirst.png",
+      "width": 151,
+      "height": 193,
+      "sha256": "fe19f2cd89f534928024ae7d51a668f73556677c7ebb351f4fad7e68d2fc3679",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.breakdown",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        344,
+        622,
+        452,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        486,
+        880,
+        639,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_breakdown.png",
+      "width": 153,
+      "height": 193,
+      "sha256": "6cb575805e17ce8e46bb33081c936ddcb6125a647f7cba44f52b00113325a80d",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.contamination",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        458,
+        622,
+        566,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        648,
+        880,
+        800,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_contamination.png",
+      "width": 152,
+      "height": 193,
+      "sha256": "f800ca7b3c7b498aa589759a43fbdfcd0dea96317f6938f6f305b0c2902ff31e",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.cold",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        572,
+        622,
+        680,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        809,
+        880,
+        962,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_cold.png",
+      "width": 153,
+      "height": 193,
+      "sha256": "cccabc88381d169151a69ef0bfd96facfa0d9ad621fa307107352e45bf73eb2f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.heat",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        686,
+        622,
+        793,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        970,
+        880,
+        1121,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_heat.png",
+      "width": 151,
+      "height": 193,
+      "sha256": "3c87420dad31a3cfd81e382d513e7be6b52122cdcb4469da8f83a6134cffe9f0",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.morale",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        799,
+        622,
+        907,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1130,
+        880,
+        1283,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_morale.png",
+      "width": 153,
+      "height": 193,
+      "sha256": "55146727628a2907930e4a8d192e5e24e924afa609a1d3b0a9dcf4cce8ab9d06",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "status.overload",
+      "group": "status",
+      "atlas": "approved_currencies_resources_statuses.png",
+      "rect_preview": [
+        913,
+        622,
+        1021,
+        759
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1291,
+        880,
+        1444,
+        1073
+      ],
+      "file": "game/assets/catalog/crops_v1/status/status_overload.png",
+      "width": 153,
+      "height": 193,
+      "sha256": "4cf371b5402a3f9c318857b2d4b5c9da98d8a15348ad7dde0388783d8f214ee9",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.repair",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        5,
+        91,
+        109,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        129,
+        154,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_repair.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "89385ab6d40e27353234b88204e9cc5547eadeb366943639f2e5f366cd17def4",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.scrap_collection",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        119,
+        91,
+        223,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        168,
+        129,
+        315,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_scrap_collection.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "05ad5c5d48ce288ea486b5b4d031a7185409b603fa44d27bd2009e6953076aca",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.scouting",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        233,
+        91,
+        336,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        329,
+        129,
+        475,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_scouting.png",
+      "width": 146,
+      "height": 186,
+      "sha256": "d073b57687376faadf9e272b3c1d547753ad3ac3fff8f24bab6b7cbc9fa71776",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.trade",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        346,
+        91,
+        450,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        489,
+        129,
+        636,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_trade.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "26106185a166e819764a791c040101ac886498293097d2ab0d379e1a6eaf06d5",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.escort",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        460,
+        91,
+        564,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        650,
+        129,
+        798,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_escort.png",
+      "width": 148,
+      "height": 186,
+      "sha256": "86a65bd171b4c7646b0086c7b499aae913cd365090181360cde3a53ebcd25bc7",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.rescue",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        574,
+        91,
+        678,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        812,
+        129,
+        959,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_rescue.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "b89a9bfdaee5f904aca52a222a42ddc1b74e33f096b74ebacb03007cc80fd5b8",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.defense",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        688,
+        91,
+        791,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        973,
+        129,
+        1119,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_defense.png",
+      "width": 146,
+      "height": 186,
+      "sha256": "4ce27c2f2e345d92e14a464c6899874ec46b4017bb93c4bc6d12554faf9d6601",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.stealth",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        801,
+        91,
+        905,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1133,
+        129,
+        1280,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_stealth.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "b0fbb09edb3c8e4991c217cb0651e0ce08cbdcb2e82715da3430ddcd590674b2",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.sabotage",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        915,
+        91,
+        1019,
+        223
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1294,
+        129,
+        1441,
+        315
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_sabotage.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "341305eff4f01db5e1721cdcfff0409d687f8c7bc7643105823286fe6859e95a",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.medicine_delivery",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        5,
+        226,
+        109,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        320,
+        154,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_medicine_delivery.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "28866bb91d66059d085453a9048d2360802f4e77f2547ebe314794c68c21f807",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.fuel_delivery",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        119,
+        226,
+        223,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        168,
+        320,
+        315,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_fuel_delivery.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "9a9b373ce36eefbefa3c471813631837aa7d9798997ad8ed0bd7519ec22b6a81",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.storm_warning",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        233,
+        226,
+        336,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        329,
+        320,
+        475,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_storm_warning.png",
+      "width": 146,
+      "height": 186,
+      "sha256": "0047ad47f8a4d041dde2ea0933bb07cc534a55ab3c512e9223d8ccef4a1af79a",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.research",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        346,
+        226,
+        450,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        489,
+        320,
+        636,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_research.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "4c2d5bcd8d600ebd599dd279cbd92ce11eef38bdbd5f5b5f2d3356bea3509bdd",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.rest_camp",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        460,
+        226,
+        564,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        650,
+        320,
+        798,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_rest_camp.png",
+      "width": 148,
+      "height": 186,
+      "sha256": "603b1a9579072937819c1ac690ca76f2c991f22a1b061c8c703bcd78555e2e88",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.negotiation",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        574,
+        226,
+        678,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        812,
+        320,
+        959,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_negotiation.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "55d9c8f0ff6559187208adbf30000e6ceb72ecb07e346b84f1f672678e89af4a",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.ambush",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        688,
+        226,
+        791,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        973,
+        320,
+        1119,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_ambush.png",
+      "width": 146,
+      "height": 186,
+      "sha256": "53dd7b38c30cdd8cacdceb94aa4a5e883463ab615a46632c9f5d222c1594fe20",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.hunting",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        801,
+        226,
+        905,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1133,
+        320,
+        1280,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_hunting.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "14edd05cf58ebb290d488c9c1e95b5a5c06b4e936e9ebe5224eb733dfe3537c0",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.caravan_assembly",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        915,
+        226,
+        1019,
+        358
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1294,
+        320,
+        1441,
+        506
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_caravan_assembly.png",
+      "width": 147,
+      "height": 186,
+      "sha256": "aacca77995944bd9d3004ab53c884db4de802d9c89b2cd2cfb05ff95f5209d83",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.radio_contact",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        5,
+        365,
+        138,
+        495
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        516,
+        195,
+        700
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_radio_contact.png",
+      "width": 188,
+      "height": 184,
+      "sha256": "cf538e645f846cf63c5db99098a9d94999b889d361468ecb5db5bcb915c08ee2",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.map_target",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        148,
+        365,
+        281,
+        495
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        209,
+        516,
+        397,
+        700
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_map_target.png",
+      "width": 188,
+      "height": 184,
+      "sha256": "433fbb13ec4874af80f058d5128e07050eefaea9093d9e1f8c1cae8b43166120",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.side_quest",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        291,
+        365,
+        423,
+        495
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        411,
+        516,
+        598,
+        700
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_side_quest.png",
+      "width": 187,
+      "height": 184,
+      "sha256": "88d7a131f72cfd043f546526479b06f96949c4aec1490eb7468009b441ab5758",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "task.main_quest",
+      "group": "task",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        433,
+        365,
+        566,
+        495
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        612,
+        516,
+        800,
+        700
+      ],
+      "file": "game/assets/catalog/crops_v1/task/task_main_quest.png",
+      "width": 188,
+      "height": 184,
+      "sha256": "24bcb0f9c8eb130e527e7193ccaee32f52d37e766c3882e27ef05783380798b4",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.inventory",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        7,
+        531,
+        164,
+        637
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        10,
+        751,
+        232,
+        901
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_inventory.png",
+      "width": 222,
+      "height": 150,
+      "sha256": "6039f256f27f0895c6288059c74099239260f6d3942714af909ca7e19a53ff0d",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.map",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        178,
+        531,
+        334,
+        637
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        252,
+        751,
+        472,
+        901
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_map.png",
+      "width": 220,
+      "height": 150,
+      "sha256": "fd0cdd86fef4282ca0e11af0f67885874a2ef5641836e47cf2203346fd90dbde",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.crew",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        348,
+        531,
+        505,
+        637
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        492,
+        751,
+        714,
+        901
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_crew.png",
+      "width": 222,
+      "height": 150,
+      "sha256": "b4e984996deec0c1d1adb5d7f42b9fc010d7baf46b901fccb0b0506d076bc57c",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.tasks_open",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        519,
+        531,
+        676,
+        637
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        734,
+        751,
+        956,
+        901
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_tasks_open.png",
+      "width": 222,
+      "height": 150,
+      "sha256": "c3f5f5fc0018c90ffa8d2ae1476c3f2709e53bce9f22f4403827ca0c40166f3d",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.upgrade",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        690,
+        531,
+        846,
+        637
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        976,
+        751,
+        1196,
+        901
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_upgrade.png",
+      "width": 220,
+      "height": 150,
+      "sha256": "753689bf8884ab3f8fae946dd1aedaa0c4af29c25398284a0aa551e64f01a2e5",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.workshop",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        860,
+        531,
+        1017,
+        637
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1216,
+        751,
+        1438,
+        901
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_workshop.png",
+      "width": 222,
+      "height": 150,
+      "sha256": "f5210d432b3bf4dfe084dd869735ea467b194f9c0cc2e51248169fac1a9bef3b",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.movement",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        7,
+        640,
+        164,
+        744
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        10,
+        905,
+        232,
+        1052
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_movement.png",
+      "width": 222,
+      "height": 147,
+      "sha256": "2067ec704ca32fb1bb96e8e5519d01a4ad6a95922ed9f0708a103b4edb6cd66a",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.stop",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        178,
+        640,
+        334,
+        744
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        252,
+        905,
+        472,
+        1052
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_stop.png",
+      "width": 220,
+      "height": 147,
+      "sha256": "991c1ac13b0791cb5df2111fd27699fb044e7039137f95956107aaf25cb34136",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.confirm",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        348,
+        640,
+        505,
+        744
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        492,
+        905,
+        714,
+        1052
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_confirm.png",
+      "width": 222,
+      "height": 147,
+      "sha256": "f51dca72b7835a47d46309a6b27a4bbcb7262e03c775d376a880061573dc5d5a",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.cancel",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        519,
+        640,
+        676,
+        744
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        734,
+        905,
+        956,
+        1052
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_cancel.png",
+      "width": 222,
+      "height": 147,
+      "sha256": "0a29b9c92d31606f334d298eb67a12279d24bf2548f57588e368d5d45e249765",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.information",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        690,
+        640,
+        846,
+        744
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        976,
+        905,
+        1196,
+        1052
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_information.png",
+      "width": 220,
+      "height": 147,
+      "sha256": "1783ab4a6608b1e69e54351bc5c386372b59b2c33b04df9c29a45e80bad4a8c5",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "ui.warning",
+      "group": "ui",
+      "atlas": "approved_tasks_actions.png",
+      "rect_preview": [
+        860,
+        640,
+        1017,
+        744
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1216,
+        905,
+        1438,
+        1052
+      ],
+      "file": "game/assets/catalog/crops_v1/ui/ui_warning.png",
+      "width": 222,
+      "height": 147,
+      "sha256": "b8aed02b8ee7f07f1478bc852e6b71b26012bc9fb0112fbe49a24ec78e8b0b48",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.command",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        62,
+        507,
+        209
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        88,
+        717,
+        296
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_command.png",
+      "width": 710,
+      "height": 208,
+      "sha256": "b5930756128b71258f37ea1bfe1370a38071d25c1c291b7550117ebc2b9643b1",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.dining",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        62,
+        1019,
+        209
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        731,
+        88,
+        1441,
+        296
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_dining.png",
+      "width": 710,
+      "height": 208,
+      "sha256": "187baaeb57384179a1939f48bd62c7e2e51841fa9a6f134b70c2db49b43b7e97",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.water_purification",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        209,
+        507,
+        356
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        296,
+        717,
+        503
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_water_purification.png",
+      "width": 710,
+      "height": 207,
+      "sha256": "b155092fe45f127113d7512ba1799906e7e7ca793621080ca58a040f4d3c4bcb",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.trade",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        209,
+        1019,
+        356
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        731,
+        296,
+        1441,
+        503
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_trade.png",
+      "width": 710,
+      "height": 207,
+      "sha256": "89d3bc0c9b8c51352971dc11b9b438519388ee88d4af7e732188c7e6921bbe06",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.laboratory",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        356,
+        507,
+        503
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        503,
+        717,
+        711
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_laboratory.png",
+      "width": 710,
+      "height": 208,
+      "sha256": "ed4df9c74bce6d694111a3f1781aafe5b4b4d543ca2d2c01ef149b415dcabdee",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.armored_cargo",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        356,
+        1019,
+        503
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        731,
+        503,
+        1441,
+        711
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_armored_cargo.png",
+      "width": 710,
+      "height": 208,
+      "sha256": "e215f81d4015b334ead0afc8e9fb4e03ecfc34f7d3cee1ea79c1574f5a0f8d44",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.repair_crane",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        5,
+        503,
+        507,
+        651
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        711,
+        717,
+        921
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_repair_crane.png",
+      "width": 710,
+      "height": 210,
+      "sha256": "63a74676e7dfc6e9f3e68f16b4c473ab81701b52c78f8bd9777b724bff51e88b",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon.radio_relay",
+      "group": "wagon",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        517,
+        503,
+        1019,
+        651
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        731,
+        711,
+        1441,
+        921
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon/wagon_radio_relay.png",
+      "width": 710,
+      "height": 210,
+      "sha256": "65e35b70f08fec1bd5b2dcf0380a387274a47ddb6b1e231b7f0fa6581ca16bb6",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.extra_armor",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        4,
+        664,
+        110,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        6,
+        939,
+        156,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_extra_armor.png",
+      "width": 150,
+      "height": 143,
+      "sha256": "d0c8979529294333705470bb9f501077be7073e2017b0bb658394c23844e604f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.storage_expansion",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        118,
+        664,
+        224,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        167,
+        939,
+        317,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_storage_expansion.png",
+      "width": 150,
+      "height": 143,
+      "sha256": "5e73dc9f9019978da32fbe3341ddc03e002792d366e5137538fdf4590272cc78",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.refill_shells",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        232,
+        664,
+        337,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        328,
+        939,
+        477,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_refill_shells.png",
+      "width": 149,
+      "height": 143,
+      "sha256": "2e44f7d389035194dda58dc642d8e9736becf2487009f9c2372897a486da963e",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.power_radio_mast",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        345,
+        664,
+        451,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        488,
+        939,
+        638,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_power_radio_mast.png",
+      "width": 150,
+      "height": 143,
+      "sha256": "3e60c83c60d24e2c5639ee74204b021c392983a3abae93267698f7c29cdeb3b9",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.solar_array",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        459,
+        664,
+        565,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        649,
+        939,
+        799,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_solar_array.png",
+      "width": 150,
+      "height": 143,
+      "sha256": "d8c2918bad2d6618da133fead12eeb003775780a77972bce67476d2d518fc888",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.turret_shield",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        573,
+        664,
+        679,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        810,
+        939,
+        960,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_turret_shield.png",
+      "width": 150,
+      "height": 143,
+      "sha256": "c655db6e3b10979464579776cf18ec363b9673244e69077ef9b92a2cac3aee4a",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.cold_storage",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        687,
+        664,
+        792,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        971,
+        939,
+        1120,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_cold_storage.png",
+      "width": 149,
+      "height": 143,
+      "sha256": "eb3cccb168b72ae82687be9eeb77d084192185ea9077d6b1df2c434ce0472d69",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.water_tanks",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        800,
+        664,
+        906,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1131,
+        939,
+        1281,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_water_tanks.png",
+      "width": 150,
+      "height": 143,
+      "sha256": "b169d85a4a2d81bf382ce4ab8519812fcf053387d6aaf7971cee2da0f6c4cfc5",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "wagon_module.spare_wheels",
+      "group": "wagon_module",
+      "atlas": "approved_wagons.png",
+      "rect_preview": [
+        914,
+        664,
+        1020,
+        765
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1292,
+        939,
+        1442,
+        1082
+      ],
+      "file": "game/assets/catalog/crops_v1/wagon_module/wagon_module_spare_wheels.png",
+      "width": 150,
+      "height": 143,
+      "sha256": "f6b371ce5bfdb72c7968abc0cb4942056a770be8d59bf7baccee0553aef3bcf1",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.engine_mk2",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        7,
+        83,
+        164,
+        238
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        10,
+        117,
+        232,
+        337
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_engine_mk2.png",
+      "width": 222,
+      "height": 220,
+      "sha256": "6fe24f6bfd272870a077b7c89bea7251e150f8af176e576be982f79345ad57d4",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.boiler_boost",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        178,
+        83,
+        334,
+        238
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        252,
+        117,
+        472,
+        337
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_boiler_boost.png",
+      "width": 220,
+      "height": 220,
+      "sha256": "1ea651e98e47120c64a651380562b2ee52f99ca52037cd794b1d15c176ac5e3f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.reinforced_armor",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        348,
+        83,
+        505,
+        238
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        492,
+        117,
+        714,
+        337
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_reinforced_armor.png",
+      "width": 222,
+      "height": 220,
+      "sha256": "815178e4cac13fad74d62c97182b7c3049d1ffe2bdccd8989df6951a7981fe13",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.headlight",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        519,
+        83,
+        676,
+        238
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        734,
+        117,
+        956,
+        337
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_headlight.png",
+      "width": 222,
+      "height": 220,
+      "sha256": "b430fecc1632fecdce85ed3e3be07c841fcdc23b4ef19dcc2121d7eff49ff2ad",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.smoke_system",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        690,
+        83,
+        846,
+        238
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        976,
+        117,
+        1196,
+        337
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_smoke_system.png",
+      "width": 220,
+      "height": 220,
+      "sha256": "c0763a55860186e914b92b787746a90f5ce3ed7b04d37a131c0345dd2ba5136e",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.turbocharger",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        860,
+        83,
+        1017,
+        238
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1216,
+        117,
+        1438,
+        337
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_turbocharger.png",
+      "width": 222,
+      "height": 220,
+      "sha256": "0e63f8aff7e936d631e0a8ed36e9da4b5468ac7958b739f81622eb55b6b05d76",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.upgraded_suspension",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        7,
+        264,
+        164,
+        400
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        10,
+        373,
+        232,
+        566
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_upgraded_suspension.png",
+      "width": 222,
+      "height": 193,
+      "sha256": "5cbefe60b516d432d8487a24c5faaec7eb907009cf449859168c5a24b52e09bf",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.strong_wheels",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        178,
+        264,
+        334,
+        400
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        252,
+        373,
+        472,
+        566
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_strong_wheels.png",
+      "width": 220,
+      "height": 193,
+      "sha256": "b4aed1a1fb62d995858804d2bbdbd0130706c41c1ca88396f01915560d6a5e62",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.snowplow",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        348,
+        264,
+        505,
+        400
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        492,
+        373,
+        714,
+        566
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_snowplow.png",
+      "width": 222,
+      "height": 193,
+      "sha256": "56858498bd5f8107b3e9f71566e5673a3ed38a675bbb279f298f7c62f0e3b954",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.dust_filters",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        519,
+        264,
+        676,
+        400
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        734,
+        373,
+        956,
+        566
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_dust_filters.png",
+      "width": 222,
+      "height": 193,
+      "sha256": "dd233056fc969cc539d59910bcb558bc236ff2b87201398a3e036fb663e5df70",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.fuel_processor",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        690,
+        264,
+        846,
+        400
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        976,
+        373,
+        1196,
+        566
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_fuel_processor.png",
+      "width": 220,
+      "height": 193,
+      "sha256": "76a995e37b8037461ebb3416de3aea973967c65fbda7eb4ea06549ca744ef079",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.extended_tank",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        860,
+        264,
+        1017,
+        400
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1216,
+        373,
+        1438,
+        566
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_extended_tank.png",
+      "width": 222,
+      "height": 193,
+      "sha256": "a55a51c75ad7dfe9bdb99f26fe04f228c0a59d20ef28abd5d233523f034de13f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.warning_horn",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        7,
+        424,
+        164,
+        576
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        10,
+        600,
+        232,
+        814
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_warning_horn.png",
+      "width": 222,
+      "height": 214,
+      "sha256": "d0f103204f95eb62e2ff9d67bdaf99ffb894b85d46f9183c298276b8003c859c",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.repair_drone",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        178,
+        424,
+        334,
+        576
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        252,
+        600,
+        472,
+        814
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_repair_drone.png",
+      "width": 220,
+      "height": 214,
+      "sha256": "c26e0ad235cc628854bb3305f10e9730dd79b384a9e37214a2f6006454d54311",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.roof_periscope",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        348,
+        424,
+        505,
+        576
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        492,
+        600,
+        714,
+        814
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_roof_periscope.png",
+      "width": 222,
+      "height": 214,
+      "sha256": "914808bb58c3bca09232a3f9030f66ec4c2172a5cd2bf49e9f320009af0cc10f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.machinegun_turret",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        519,
+        424,
+        676,
+        576
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        734,
+        600,
+        956,
+        814
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_machinegun_turret.png",
+      "width": 222,
+      "height": 214,
+      "sha256": "34774c4c0d360f09d20da213c99374b5beb1a716ec09012daa300706e12d65d8",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.gun_mount",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        690,
+        424,
+        846,
+        576
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        976,
+        600,
+        1196,
+        814
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_gun_mount.png",
+      "width": 220,
+      "height": 214,
+      "sha256": "bc5b69f48bd94633e1ffeffd8c0353bff70a4168cc4caa68b6436fbfaa0e52dd",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.mine_roller",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        860,
+        424,
+        1017,
+        576
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        1216,
+        600,
+        1438,
+        814
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_mine_roller.png",
+      "width": 222,
+      "height": 214,
+      "sha256": "b702853e649f075bf3c25dccea8980614575c12fa247a32ad428aa1670907ac9",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.emergency_generator",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        5,
+        595,
+        245,
+        747
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        7,
+        841,
+        346,
+        1056
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_emergency_generator.png",
+      "width": 339,
+      "height": 215,
+      "sha256": "aaf65de472dcc30168aff1d8b3636282a33483243fab90cbeeb13b9a0c317a9f",
+      "background_removed": false,
+      "alpha_isolated": false
+    },
+    {
+      "id": "locomotive_upgrade.field_radio_antenna",
+      "group": "locomotive_upgrade",
+      "atlas": "approved_locomotive_upgrades.png",
+      "rect_preview": [
+        250,
+        595,
+        495,
+        747
+      ],
+      "status": "source_crop_background_retained",
+      "rect_source_pixels": [
+        354,
+        841,
+        700,
+        1056
+      ],
+      "file": "game/assets/catalog/crops_v1/locomotive_upgrade/locomotive_upgrade_field_radio_antenna.png",
+      "width": 346,
+      "height": 215,
+      "sha256": "ad4403b388478a462f111c9eadacf9909cdcf4bfaed12a8aa85db955718a1899",
+      "background_removed": false,
+      "alpha_isolated": false
+    }
+  ]
+}
