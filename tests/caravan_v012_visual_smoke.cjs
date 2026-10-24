@@ -101,6 +101,22 @@ const {chromium}=require('playwright-core');
  await page.locator('[data-view-mode="wagon"]').click();
  await page.waitForTimeout(700);
  await page.screenshot({path:'caravan-v012-visual/wagon_near_full_scene_1280x576.png'});
+ // Verify a genuine wagon-level achievement, one claim, and durable save.
+ await page.locator('#journalOpen').click();
+ assert.equal(await page.locator('#journalList .journal-entry').count(),4);
+ await page.locator('#journalList [data-claim="wagon_upgrade"]').isDisabled();
+ const metalBefore=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.metal);
+ await page.locator('#upgrade').click();
+ const claimButton=page.locator('#journalList [data-claim="wagon_upgrade"]');
+ assert.equal(await claimButton.isEnabled(),true,'One L2 upgrade should enable quest reward');
+ await claimButton.click();
+ const afterClaim=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state);
+ assert.equal(afterClaim.metal,metalBefore-35+18,'Reward must add exactly one resource grant');
+ assert.equal(await claimButton.isDisabled(),true,'Reward can no longer be claimed');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForTimeout(900);
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.journal().find(q=>q.id==='wagon_upgrade').status)),'claimed',
+  'Claim state must survive full browser restart');
  await page.locator('#locoUpgrade').click();
  await page.waitForTimeout(400);
  await page.screenshot({path:'caravan-v012-visual/after_interactions.png'});

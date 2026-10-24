@@ -8,6 +8,7 @@ on:
       - 'tools/caravan_restore_v012.py'
       - 'tests/caravan_v012_visual_smoke.cjs'
       - 'tests/caravan_v012_camera.test.cjs'
+      - 'tests/caravan_v012_journal.test.cjs'
       - '.github/workflows/caravan-v012-original-android.yml'
   workflow_dispatch:
 permissions:
@@ -25,8 +26,9 @@ jobs:
         run: |
           python3 tools/caravan_restore_v012.py "$RUNNER_TEMP/caravan-v012-game"
           node --check game/v012_restored/camera.js
+          node --check game/v012_restored/journal.js
           node --check game/v012_restored/app.js
-          node --test tests/caravan_v012_camera.test.cjs
+          node --test tests/caravan_v012_camera.test.cjs tests/caravan_v012_journal.test.cjs
       - name: Node and browser setup
         uses: actions/setup-node@v4
         with:
@@ -74,6 +76,7 @@ jobs:
           cp -a "$RUNNER_TEMP/caravan-v012-game/." "$GAME/"
           cp web/manifest.webmanifest "$GAME/manifest.webmanifest"
           test -s "$GAME/camera.js"
+          test -s "$GAME/journal.js"
           python3 - <<'PY'
           from pathlib import Path
           root=Path("android/app/src/main/assets/game")

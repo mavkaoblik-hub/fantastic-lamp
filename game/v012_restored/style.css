@@ -36,3 +36,22 @@ main{align-items:start}.scene{align-self:start}
 #stage{touch-action:none}
 .assign-to-selected{width:100%;margin-top:9px;margin-bottom:9px;padding:10px 8px;background:#604327;color:#ffe1b4;border:1px solid #d5a36b;border-radius:6px;font-weight:700;font-size:11px;min-height:42px}
 @media(max-width:1050px) and (orientation:landscape){.camera-hud{right:7px;top:5px;padding:4px 7px;max-width:36%;font-size:9px}.camera-hud small{font-size:8px}.playbar #cameraIn,.playbar #cameraOut{min-width:33px}}
+
+/* Caravan v0.12.3: journal shares the existing dieselpunk sidebar, no art replacement. */
+.journal-panel{padding:14px 12px;margin:16px 0;border:1px solid #8c6944;border-radius:8px;
+ background:linear-gradient(140deg,rgba(34,39,38,.93),rgba(14,26,29,.97))}
+.journal-head small{font:600 10px system-ui,sans-serif;color:#daa96f;letter-spacing:.1em}
+.journal-head h3{margin:4px 0 8px;font:700 19px system-ui,sans-serif;color:#f4d6a7}
+.journal-summary{font-size:11px;color:#e5c79e;margin:12px 0}
+.journal-list{display:grid;gap:9px}
+.journal-entry{border:1px solid #49565b;background:#12232bdc;border-radius:6px;padding:11px 10px}
+.journal-title{color:#f3d2a0;font-weight:700;font-size:13px}
+.journal-entry p{color:#b9bebd;font-size:11px;line-height:1.45;margin:5px 0 8px}
+.journal-progress{height:6px;background:#31414a;border-radius:5px;overflow:hidden}
+.journal-progress span{height:100%;display:block;background:#d19b58}
+.journal-entry small{display:block;margin:7px 0;color:#b9c7c0;font-size:10px}
+.journal-entry button{min-height:38px;width:100%;color:#ffdfa5;background:#65442e;
+ border:1px solid #b08049;border-radius:5px;font-weight:700;font-size:11px}
+.journal-entry button:disabled{opacity:.55}
+.journal-entry.claimed{border-color:#58715b}
+@media(max-width:1050px){.journal-entry button{min-height:44px}.journal-panel{margin:12px 0}}
