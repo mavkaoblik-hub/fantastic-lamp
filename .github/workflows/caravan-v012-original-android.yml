@@ -1,0 +1,113 @@
+name: CARAVAN v0.12 - Restore original approved train
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'game/v012_restored/**'
+      - 'game/v012_asset_packs/**'
+      - 'tools/caravan_restore_v012.py'
+      - 'tests/caravan_v012_visual_smoke.cjs'
+      - '.github/workflows/caravan-v012-original-android.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: caravan-v012-original-android
+  cancel-in-progress: true
+jobs:
+  original-v012-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and restore all original source assets
+        run: |
+          python3 tools/caravan_restore_v012.py "$RUNNER_TEMP/caravan-v012-game"
+          node --check game/v012_restored/app.js
+      - name: Node and browser setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test dependency
+        run: |
+          npm install --no-save --no-audit --no-fund playwright-core@1.56.1
+          echo "CARAVAN_CHROME_BIN=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
+      - name: Serve original v0.12 offline game
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/caravan-v012-game"
+          python3 -m http.server 8787 --bind 127.0.0.1 > /tmp/caravan-v012-server.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl --silent --fail http://127.0.0.1:8787/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Original wagon rendering and visual acceptance smoke
+        run: node tests/caravan_v012_visual_smoke.cjs
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -d "$ANDROID_HOME/platforms/android-35" ] || [ ! -x "$ANDROID_HOME/build-tools/35.0.0/aapt" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install 'platforms;android-35' 'build-tools;35.0.0'
+          fi
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Package exact v0.12 art, not the geometric prototype
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME=android/app/src/main/assets/game
+          rm -rf "$GAME"
+          mkdir -p "$GAME"
+          cp -a "$RUNNER_TEMP/caravan-v012-game/." "$GAME/"
+          cp web/manifest.webmanifest "$GAME/manifest.webmanifest"
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path("android/app/src/main/assets/game")
+          css=root/"style.css"
+          css.write_text("\n".join(line for line in css.read_text().splitlines()
+              if not line.lstrip().startswith("@import url("))+"\n",encoding="utf-8")
+          assert "app.js" in (root/"index.html").read_text()
+          assert len(list((root/"assets").rglob("*.png")))+len(list((root/"assets").rglob("*.jpg")))==103
+          PY
+      - name: Compile original restored Android build
+        run: gradle -p android --no-daemon --stacktrace :app:assembleDebug
+      - name: Validate debug APK and signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          unzip -tqq "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee android/original-v012-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee android/original-v012-signature.txt
+          sha256sum "$APK" | tee android/ORIGINAL_V012_APK_SHA256.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CARAVAN-original-v012-video-style-validation
+          path: |
+            caravan-v012-visual/
+            /tmp/caravan-v012-server.log
+          retention-days: 30
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: CARAVAN-original-v012-Android-APK
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/original-v012-badging.txt
+            android/original-v012-signature.txt
+            android/ORIGINAL_V012_APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
