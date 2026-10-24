@@ -113,7 +113,7 @@
       "area": "camera",
       "title": "Three zoom modes and pinch",
       "status": "TESTING",
-      "next_step": "Original v0.12 has wide .78, train 1.0, wagon 1.65 and manual .78–2.15 zoom via buttons, wheel and pinch; device QA pending.",
+      "next_step": "v0.12.2 two-finger pinch in/out now uses a stable gesture origin; browser Chromium real touch-event simulation PASS. Wagon focus 3.30x fills 89% of logical scene height, manual zoom 0.78–4.75x. Must validate real Android multitouch, performance and visibility before DONE.",
       "evidence": "web/game.js",
       "android_verified": false
     },
@@ -131,7 +131,7 @@
       "area": "hud",
       "title": "Wagon context panel",
       "status": "TESTING",
-      "next_step": "Source wagon art click selects real car instance, autofocuses camera and displays selected car ID/type/level with quick assigned crew action; physical Android QA pending.",
+      "next_step": "Selected original wagon zooms to ~330%, 89% of game scene height with world-bound clamping. Visual Android landscape browser screenshot PASS; real device QA required.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -305,6 +305,13 @@
       "phase": "M0/M1",
       "change": "Base game is 103 authentic painterly assets, 14 wagon types, locomotive L1–L4, original crew and economy. Integrated independent camera with wide/train/wagon, smooth zoom, panning, pinching, original-art click selection, current wagon HUD and direct crew assignment. Automated browser/Node/Android workflow runs; physical device acceptance remains.",
       "device_tested": false
+    },
+    {
+      "version": "v0.12.2 two-finger wagon zoom",
+      "date": "2026-10-24",
+      "phase": "M1",
+      "change": "Stable two-touch pinch gesture anchored between fingers; wagon-focus zoom 3.30x nearly full scene height; up to 4.75x zoom, real multi-touch simulation regression PASS, offline Android debug APK successful. Original 103 approved images untouched.",
+      "android_verified": false
     }
   ],
   "visual_baseline": {
