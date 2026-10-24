@@ -82,4 +82,4 @@ const {chromium}=require('playwright-core');
  assert.deepEqual(errors,[],'No JS or static resource loading failures');
  console.log(JSON.stringify({result:'PASS',...score,imageRefs:imgs.length},null,2));
  await browser.close();
-})().catch(err=>{console.error(err);process.exitCode=1;});
+})().catch(err=>{console.error(err);process.exit(1);});
