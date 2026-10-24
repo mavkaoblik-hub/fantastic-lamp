@@ -1,6 +1,6 @@
 {
   "schema": "CARAVAN_IMPLEMENTATION_TRACKER_V1",
-  "updated": "2026-10-23",
+  "updated": "2026-10-24",
   "source": "docs/CARAVAN_MASTER_TZ_v1_2026-10-23.md",
   "approved_style": "docs/CARAVAN_VISUAL_STYLE_LOCK.md",
   "audit_commit": "132a7a7eff1c36579916e45e92771d93c779434d",
@@ -139,8 +139,8 @@
       "id": "S-09",
       "area": "wagons",
       "title": "14 wagon types and locomotive L1-L4",
-      "status": "BLOCKED",
-      "next_step": "Restore actual v0.12 source ZIP: code references 102 PNG files (0/102 present) plus missing style.css. Reproduce user-provided 2026-10-23 video art before any new wagon renderer; retain existing Android gameplay separately until ready.",
+      "status": "TESTING",
+      "next_step": "Authentic v0.12 source and 103 original image assets restored, SHA-256 and browser render PASS, separate reference Android debug APK PASS. Next migrate later camera/crew/quest mechanics INTO real painterly v0.12 scene, then physical device QA.",
       "evidence": "game/v012_migration/index.html",
       "android_verified": false
     },
@@ -292,16 +292,26 @@
       "phase": "M1/M2 integration",
       "change": "Added door-coordinate crew animation stages, direct worker selection, live worker indicators and overlapping badge correction; automated browser tests succeeded, Android physical test pending.",
       "android_verified": false
+    },
+    {
+      "version": "v0.12 reference restored",
+      "date": "2026-10-24",
+      "change": "Recovered 11 ZIP parts with original 103 artist-approved assets and original app.js/index.html/style.css from historical branch; separate authenticated offline Android reference APK built and visual browser smoke passed.",
+      "device_tested": false
     }
   ],
   "visual_baseline": {
-    "source": "user video: WhatsApp Video 2026-10-23 at 14.34.31(1).mp4",
+    "source": "user supplied video: WhatsApp Video 2026-10-23 at 14.34.31(1).mp4",
     "target_version": "v0.12",
     "reference_document": "docs/CARAVAN_V012_VIDEO_REFERENCE_2026-10-23.md",
-    "required_png": 102,
-    "available_png": 0,
-    "style_css_missing": true,
-    "current_android_scene": "v0.4 is placeholder Canvas artwork; visual regression vs approved v0.12",
-    "gate": "Do not ship as visually approved without restoring source sprite library"
+    "source_code_path": "game/v012_restored/",
+    "archive_path": "game/v012_asset_packs/",
+    "original_image_assets": 103,
+    "archive_parts": 11,
+    "sha256_validation": "PASS",
+    "browser_visual_smoke": "PASS",
+    "original_android_debug_build": "PASS",
+    "original_android_run": "NOT_YET_TESTED_ON_DEVICE",
+    "regression_rule": "Do not replace v0.12 painterly rolling stock with geometric Canvas web/game.js; retain v0.4 only as separate mechanical prototype until gameplay merge."
   }
 }
