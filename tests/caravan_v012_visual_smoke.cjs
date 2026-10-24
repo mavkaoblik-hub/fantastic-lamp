@@ -43,6 +43,20 @@ const {chromium}=require('playwright-core');
  await page.locator('[data-view-mode="train"]').click();
  const train=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(train.mode,'train');
+ await page.waitForTimeout(900);
+ // A tap on the actual illustrated second wagon must resolve to its original world-space ID.
+ const tap=await page.evaluate(()=>{
+   const element=document.getElementById('stage'),box=element.getBoundingClientRect();
+   const W=box.width,H=box.height,cinematic=W/H>2.6;
+   const scale=cinematic?W/1200:Math.min(W/1200,H/605);
+   const offX=(W-1200*scale)/2,offY=cinematic?H*.51-345*scale:(H-605*scale)/2;
+   const cam=window.__CARAVAN_QA.camera().camera;
+   return {x:offX+scale*(600+(795-cam.cx)*cam.zoom),
+           y:offY+scale*(302.5+(420-cam.cy)*cam.zoom)};
+ });
+ await page.locator('#stage').click({position:tap});
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.selectedCarId)),'c2',
+   'Direct click on the art of wagon two must select wagon two at the rendered camera scale');
  await page.locator('#carList [data-carid]').nth(1).click();
  const target=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(target.mode,'wagon','tapping current wagon must focus its original artwork');
@@ -56,6 +70,11 @@ const {chromium}=require('playwright-core');
  await page.locator('#locoUpgrade').click();
  await page.waitForTimeout(400);
  await page.screenshot({path:'caravan-v012-visual/after_interactions.png'});
+ await page.setViewportSize({width:844,height:390});
+ await page.waitForTimeout(500);
+ const size=await page.evaluate(()=>({rect:document.getElementById('stage').getBoundingClientRect(),camera:window.__CARAVAN_QA.camera()}));
+ assert.ok(size.rect.width>500&&size.rect.height>140,'Landscape Android-sized view must retain usable train canvas');
+ await page.screenshot({path:'caravan-v012-visual/android_844x390.png'});
  assert.deepEqual(errors,[],'No JS or static resource loading failures');
  console.log(JSON.stringify({result:'PASS',...score,imageRefs:imgs.length},null,2));
  await browser.close();
