@@ -37,6 +37,61 @@ function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
 let canvas=$('stage'),c=canvas.getContext('2d'),CW=1200,CH=605,scale=1,offX=0,offY=0;let rects=[];
+const CAMERA=globalThis.CaravanV12Camera;
+if(!CAMERA)throw new Error('The verified v0.12 camera module must load before app.js');
+let camera=CAMERA.mode('train'),cameraTarget={...camera},cameraMode='train';
+const pointers=new Map();let gesture=null,pinch=null,multiPointer=false;
+function cameraHud(){
+ const current=currentCar(),slot=selectedSlot(),carTitle=m.wagon[current.kind].title;
+ const wagon=$('currentWagon');if(wagon)wagon.textContent='ВАГОН '+(slot+1)+' / '+state.cars.length+' · '+carTitle+' · L'+levelFor(current);
+ const zoomValue=$('cameraZoom');if(zoomValue)zoomValue.textContent=Math.round(cameraTarget.zoom*100)+'%';
+ const modeLabel=$('cameraMode');if(modeLabel)modeLabel.textContent=({wide:'УВЕСЬ ПОТЯГ',train:'ОГЛЯД ПОТЯГА',wagon:'ОБРАНИЙ ВАГОН',custom:'РУЧНИЙ МАСШТАБ'})[cameraMode]||'КАМЕРА';
+ document.querySelectorAll('[data-view-mode]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.viewMode===cameraMode)));
+}
+function setCameraMode(which){
+ const target=CAMERA.mode(which,selectedSlot());
+ if(!target)return;
+ cameraTarget=target;cameraMode=which;cameraHud();
+}
+function focusSelectedWagon(){
+ cameraTarget=CAMERA.focusWagon(selectedSlot());cameraMode='wagon';cameraHud();
+}
+function smoothCamera(dt){
+ const factor=1-Math.exp(-Math.max(0,Math.min(dt,.05))*9);
+ camera=CAMERA.bound({zoom:camera.zoom+(cameraTarget.zoom-camera.zoom)*factor,
+ cx:camera.cx+(cameraTarget.cx-camera.cx)*factor,
+ cy:camera.cy+(cameraTarget.cy-camera.cy)*factor});
+}
+function manualZoom(factor,atX=600,atY=302.5){
+ camera=CAMERA.zoomAt(camera,camera.zoom*factor,atX,atY);
+ cameraTarget={...camera};cameraMode='custom';cameraHud();
+}
+function canvasLogicalPoint(e){
+ const b=canvas.getBoundingClientRect();
+ return {x:(e.clientX-b.left-offX)/scale,y:(e.clientY-b.top-offY)/scale};
+}
+function touchSceneAt(e){
+ const pos=canvasLogicalPoint(e),world=CAMERA.screenToWorld(camera,pos.x,pos.y),
+ x=world.x,y=world.y;
+ const ci=crew.findIndex(p=>p.mode!=='working'&&x>=p.x-10&&x<=p.x+54&&y>=383&&y<=500);
+ if(ci>=0){chosenCrew=ci;renderCrewPanel();msg('Екіпаж: '+crewNames[ci]);openSidebar('crew');return}
+ for(const r of rects){
+  // Reuse original source-art wagon rectangles; do not infer click regions from the screen's UI boxes.
+  if(x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h){
+   if(r.key!=='engine'){
+    state.selectedCarId=r.id;setChosen();focusSelectedWagon();
+    msg('Вагон №'+(selectedSlot()+1)+': '+m.wagon[r.key].title);
+    openSidebar('modules');
+   }else msg('Локомотив · рівень L'+state.locoLevel);
+   return;
+  }
+ }
+}
+function getPinch(){
+ const [a,b]=[...pointers.values()];
+ return {mid:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},dist:Math.hypot(a.x-b.x,a.y-b.y)};
+}
+
 let bubbles=[],t=0,last=0,moveAmount=0,videoFrames=0,fps=60,frameTime=0,toastT=0,rosterRefresh=0,checkpoints=0;
 function drawImg(meta,x,y,w,h,alpha=1){const im=data[meta?.src];if(im&&im.complete&&im.naturalWidth){c.globalAlpha=alpha;c.drawImage(im,x,y,w,h);c.globalAlpha=1}}
 for(const key of Object.keys(m.wagon)){for(const id of ['wagon','newWagon']){const op=document.createElement('option');op.value=key;op.textContent=m.wagon[key].title;$(id).append(op)}}
@@ -62,7 +117,7 @@ function setChosen(){const car=currentCar();const key=car.kind;
  $('metal').textContent=Math.round(state.metal);$('fuel').textContent=Math.round(state.fuel);$('morale').textContent=Math.round(state.morale);
  $('travel').textContent=state.moving?'⏸ Зупинити':'▶ Рушити вліво';$('travelState').textContent=state.moving?'● Рух ліворуч':'● Стоянка';
  $('speedLabel').textContent=state.speed.toFixed(1)+'×';$('base').style.borderColor=levelFor(car)===1?'#e2a867':'#5b6066';
- renderCarList();markDirty();}
+ renderCarList();cameraHud();markDirty();}
 function msg(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2050)}
 function logEvent(text){eventLog.unshift(text);eventLog=eventLog.slice(0,8);markDirty()}
 function statusText(p){if(p.mode==='walking')return 'Прямує до входу: '+LOCATIONS[p.job.target].label;if(p.mode==='entering')return 'Заходить усередину вагона';if(p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';if(p.mode==='exiting')return 'Виходить із вагона';if(p.mode==='completed')return 'Завершив завдання · '+Math.max(0,3-Math.floor(p.completed))+' с';return 'Патрулює платформу'}
@@ -80,7 +135,7 @@ $('sidebarBackdrop').addEventListener('click',closeSidebar);$('closeSidebar').ad
 $('tasksOpen').onclick=()=>openSidebar('crew');
 $('wagon').onchange=e=>{currentCar().kind=e.target.value;setChosen();store();msg('Тип вагона: '+m.wagon[e.target.value].title)};
 $('newWagon').value='salvage';
-$('carList').onclick=e=>{const b=e.target.closest('[data-carid]');if(!b)return;state.selectedCarId=b.dataset.carid;setChosen();msg('Обрано вагон №'+(selectedSlot()+1))};
+$('carList').onclick=e=>{const b=e.target.closest('[data-carid]');if(!b)return;state.selectedCarId=b.dataset.carid;setChosen();focusSelectedWagon();msg('Обрано вагон №'+(selectedSlot()+1))};
 $('attachCar').onclick=()=>{if(state.cars.length>=3||state.metal<60)return;state.metal-=60;const kind=$('newWagon').value;const id='c'+state.nextCarId++;state.cars.push({id,kind,level:1});state.selectedCarId=id;setChosen();store();msg('Причеплено вагон: '+m.wagon[kind].title)};
 $('detachCar').onclick=()=>{if(state.cars.length<=1)return;const ix=selectedSlot();const car=state.cars.splice(ix,1)[0];state.selectedCarId=state.cars[Math.max(0,ix-1)].id;for(const p of crew){p.queue=p.queue.filter(j=>j.target!=='tail');if(p.job?.target==='tail'&&state.cars.length<3){p.job=null;p.mode='patrol';p.inside=0}}setChosen();renderCrewPanel();store();msg('Відчеплено: '+m.wagon[car.kind].title)};
 $('locoUpgrade').onclick=()=>{if(state.locoLevel>=4||state.metal<80||state.fuel<12)return;state.metal-=80;state.fuel-=12;state.locoLevel++;setChosen();store();msg('Новий корпус локомотива · L'+state.locoLevel)};
@@ -92,10 +147,74 @@ $('newCrew').onclick=()=>{chosenCrew=(chosenCrew+1)%3;renderCrewPanel();markDirt
 $('upgrade').onclick=()=>{const car=currentCar();if(levelFor(car)===2)return;if(state.metal<35){msg('Недостатньо металу');return}state.metal-=35;car.level=2;setChosen();store();msg('Вагон №'+(selectedSlot()+1)+' посилено до L2!')};
 $('base').onclick=()=>{currentCar().level=1;setChosen();store()};
 $('reset').onclick=()=>{state=defaultState();crew=makeCrew();chosenCrew=0;eventLog=[];setChosen();renderCrewPanel();store();msg('Прогрес v0.9 скинуто')};
-$('fit').onclick=()=>msg('Увесь потяг відображено в кадрі');
+$('fit').onclick=()=>setCameraMode('wide');
+$('cameraOut').onclick=()=>manualZoom(1/1.2);
+$('cameraIn').onclick=()=>manualZoom(1.2);
+document.querySelectorAll('[data-view-mode]').forEach(btn=>{
+ btn.onclick=()=>setCameraMode(btn.dataset.viewMode);
+});
+$('sendCrewToCar').onclick=()=>{
+ const ix=selectedSlot(),target=['center','rear','tail'][ix];
+ assignCrew(target);
+ openSidebar('crew');
+};
+
 $('togglePanel').onclick=()=>{if($('sidebar').classList.contains('open'))closeSidebar();else openSidebar('modules')};
 function fit(){const r=canvas.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.round(Math.max(200,r.width)*dpr);canvas.height=Math.round(Math.max(160,r.height)*dpr);const W=canvas.width/dpr,H=canvas.height/dpr,cinematic=W/H>2.6;scale=cinematic?W/CW:Math.min(W/CW,H/CH);offX=(W-CW*scale)/2;offY=cinematic?H*.51-345*scale:(H-CH*scale)/2;c.setTransform(dpr,0,0,dpr,0,0)}window.addEventListener('resize',fit);
-canvas.addEventListener('pointerdown',e=>{const b=canvas.getBoundingClientRect();const x=(e.clientX-b.left-offX)/scale,y=(e.clientY-b.top-offY)/scale;const ci=crew.findIndex(p=>p.mode!=='working'&&x>=p.x-10&&x<=p.x+54&&y>=383&&y<=500);if(ci>=0){chosenCrew=ci;renderCrewPanel();msg('Екіпаж: '+crewNames[ci]);openSidebar('crew');return}for(const r of rects){if(x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h){if(r.key!=='engine'){state.selectedCarId=r.id;setChosen();msg('Вагон №'+(selectedSlot()+1)+': '+m.wagon[r.key].title);openSidebar('modules')}else msg('Локомотив · рівень L'+state.locoLevel);return}}});
+canvas.style.touchAction='none';
+canvas.addEventListener('pointerdown',e=>{
+ e.preventDefault();
+ canvas.setPointerCapture(e.pointerId);
+ const pos=canvasLogicalPoint(e);
+ pointers.set(e.pointerId,pos);
+ if(pointers.size===1){
+  gesture={pointerId:e.pointerId,start:pos,last:pos,moved:false};
+  multiPointer=false;
+ }else{
+  multiPointer=true;gesture=null;
+  if(pointers.size===2)pinch=getPinch();
+ }
+});
+canvas.addEventListener('pointermove',e=>{
+ if(!pointers.has(e.pointerId))return;
+ const prev=pointers.get(e.pointerId),now=canvasLogicalPoint(e);
+ pointers.set(e.pointerId,now);
+ if(pointers.size===2){
+  const next=getPinch();
+  if(pinch&&pinch.dist>10&&next.dist>10){
+   camera=CAMERA.zoomAt(camera,camera.zoom*(next.dist/pinch.dist),pinch.mid.x,pinch.mid.y);
+   camera=CAMERA.pan(camera,next.mid.x-pinch.mid.x,next.mid.y-pinch.mid.y);
+   cameraTarget={...camera};cameraMode='custom';cameraHud();
+  }
+  pinch=next;multiPointer=true;return;
+ }
+ if(pointers.size!==1||!gesture)return;
+ if(Math.hypot(now.x-gesture.start.x,now.y-gesture.start.y)>8)gesture.moved=true;
+ if(gesture.moved){
+  camera=CAMERA.pan(camera,now.x-prev.x,now.y-prev.y);
+  cameraTarget={...camera};cameraMode='custom';cameraHud();
+ }
+ gesture.last=now;
+});
+function finishPointer(e,cancelled){
+ if(!pointers.has(e.pointerId))return;
+ const single=pointers.size===1,dragged=!!gesture?.moved;
+ pointers.delete(e.pointerId);
+ if(single&&!multiPointer&&!dragged&&!cancelled)touchSceneAt(e);
+ if(pointers.size===1){
+  const p=[...pointers.entries()][0];
+  gesture={pointerId:p[0],start:p[1],last:p[1],moved:true};
+  pinch=null;
+ }else if(!pointers.size){gesture=null;pinch=null;multiPointer=false;}
+}
+canvas.addEventListener('pointerup',e=>finishPointer(e,false));
+canvas.addEventListener('pointercancel',e=>finishPointer(e,true));
+canvas.addEventListener('lostpointercapture',e=>finishPointer(e,true));
+canvas.addEventListener('wheel',e=>{
+ e.preventDefault();
+ const p=canvasLogicalPoint(e);
+ manualZoom(e.deltaY<0?1.12:1/1.12,p.x,p.y);
+},{passive:false});
 function circle(x,y,r,color){c.fillStyle=color;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill()}
 function applyReward(p,i){let reward='';const target=p.job?.target;
  const car=target==='center'?carAtSlot(0):target==='rear'?carAtSlot(1):target==='tail'?carAtSlot(2):null;
@@ -129,6 +248,7 @@ function renderCharacter(p,i){const isWalking=p.mode==='walking'||p.mode==='patr
  else if(p.mode==='completed'){c.fillStyle='#a8e8b6';c.font='bold 17px system-ui';c.fillText('✓',cx+12,by-h-9)}
 }
 function paint(){const logicalScale=scale;c.setTransform(canvas.width/(canvas.clientWidth||1),0,0,canvas.height/(canvas.clientHeight||1),0,0);c.fillStyle='#07131a';c.fillRect(0,0,canvas.clientWidth,canvas.clientHeight);c.translate(offX,offY);c.scale(logicalScale,logicalScale);c.save();c.beginPath();c.rect(0,0,CW,CH);c.clip();
+ c.translate(CW/2,CH/2);c.scale(camera.zoom,camera.zoom);c.translate(-camera.cx,-camera.cy);
  const bg=data[m.background.src];if(bg?.complete&&bg.naturalWidth){const bx=-62+Math.min(36,moveAmount*1.7);c.drawImage(bg,bx,-8,1320,506)}
  if(state.night){c.fillStyle='rgba(3,11,30,.38)';c.fillRect(0,0,CW,605)}
  const mist=c.createLinearGradient(0,338,0,575);mist.addColorStop(0,'rgba(20,26,28,0)');mist.addColorStop(1,'rgba(9,14,17,.94)');c.fillStyle=mist;c.fillRect(0,338,CW,240);
@@ -164,8 +284,9 @@ function paint(){const logicalScale=scale;c.setTransform(canvas.width/(canvas.cl
  if(state.night){const lg=c.createRadialGradient(115,394,18,115,394,225);lg.addColorStop(0,'rgba(255,189,96,.10)');lg.addColorStop(1,'rgba(255,189,96,0)');c.fillStyle=lg;c.fillRect(0,280,400,310)}
  c.fillStyle='rgba(9,17,25,.78)';c.fillRect(16,15,455,56);c.fillStyle='#f6d5a5';c.font='bold 15px system-ui';c.fillText('КАРАВАН · РОЗВИТОК ПОТЯГА 0.12',28,38);c.font='12px system-ui';c.fillStyle='#e0c5a7';c.fillText('Причеплення вагонів · рівні локомотива · завдання',28,58);
  c.restore()}
-function tick(ms){if(!last)last=ms;const dt=Math.min(.04,(ms-last)/1000);last=ms;update(dt);paint();videoFrames++;frameTime+=dt;if(frameTime>1){fps=Math.round(videoFrames/frameTime);videoFrames=0;frameTime=0;$('fpsLabel').textContent=fps+' fps'}requestAnimationFrame(tick)}
+function tick(ms){if(!last)last=ms;const dt=Math.min(.04,(ms-last)/1000);last=ms;update(dt);smoothCamera(dt);paint();videoFrames++;frameTime+=dt;if(frameTime>1){fps=Math.round(videoFrames/frameTime);videoFrames=0;frameTime=0;$('fpsLabel').textContent=fps+' fps'}requestAnimationFrame(tick)}
 // Deterministic QA helpers for the shipped test scene; not a gameplay cheat UI.
 globalThis.__CARAVAN_SAVE=store;globalThis.__CARAVAN_QA={snapshot:()=>({state:structuredClone(state),crew:structuredClone(crew),events:[...eventLog]}),advance:(seconds)=>{for(let n=0;n<seconds*30;n++)update(1/30);paint()},assign:(crewIndex,target)=>{chosenCrew=crewIndex;assignCrew(target)},assets:()=>({total:Object.keys(data).length,loaded:Object.values(data).filter(i=>i.complete&&i.naturalWidth).length})};
-fit();setChosen();renderCrewPanel();requestAnimationFrame(tick);
+globalThis.__CARAVAN_QA.camera=()=>({camera:{...camera},target:{...cameraTarget},mode:cameraMode,selectedCarId:state.selectedCarId});
+fit();setChosen();renderCrewPanel();cameraHud();requestAnimationFrame(tick);
 })();
