@@ -38,14 +38,16 @@ let journal=JOURNAL.normalize(state.journal);
 state.route=ROUTES.normalize(state.route);
 // Migrate old free-running prototype saves without inventing a paid-for trip.
 if(!state.route.active)state.moving=false;
-const ROUTE_EVENT_LABELS={cache:'Схованка біля колії',rations:'Покинутий склад',
- breakdown:'Зношені рейки',quiet:'Тихий перехід'};
+const ROUTE_EVENT_LABELS={cache:'Схованка біля колії · +13 металу',rations:'Покинутий склад · +9 припасів',
+ breakdown:'Зношені рейки · −9 стану, +5 металу',quiet:'Тихий перехід · до +4 моралі'};
 function renderRouteProgress(){
  const p=ROUTES.progress(state.route);
  const r=$('routeProgress'),eta=$('routeEta');
  if(!r||!eta)return;
  r.style.width=(p?Math.floor(p.percent):0)+'%';
  eta.textContent=p?'ДО ПРИБУТТЯ: '+Math.ceil(p.remaining/Math.max(.5,state.speed))+' с':'Немає активного рейсу';
+ if(p)$('travelState').textContent='● '+(state.moving?'У дорозі':'Пауза')+' → '+
+   ROUTES.STATIONS[p.to].name+' · '+Math.floor(p.percent)+'%';
 }
 function renderRouteMap(){
  const s=state.route,active=ROUTES.progress(s);
@@ -105,7 +107,7 @@ function renderJournal(){
 }
 
 let saveDirty=true,saveClock=0;
-function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.route=state.route;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
+function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
 function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
