@@ -73,7 +73,7 @@ function canvasLogicalPoint(e){
 function touchSceneAt(e){
  const pos=canvasLogicalPoint(e),world=CAMERA.screenToWorld(camera,pos.x,pos.y),
  x=world.x,y=world.y;
- const ci=crew.findIndex(p=>p.mode!=='working'&&x>=p.x-10&&x<=p.x+54&&y>=383&&y<=500);
+ const ci=crew.findIndex(p=>p.mode!=='working'&&x>=p.x-3&&x<=p.x+43&&y>=395&&y<=496);
  if(ci>=0){chosenCrew=ci;renderCrewPanel();msg('Екіпаж: '+crewNames[ci]);openSidebar('crew');return}
  for(const r of rects){
   // Reuse original source-art wagon rectangles; do not infer click regions from the screen's UI boxes.

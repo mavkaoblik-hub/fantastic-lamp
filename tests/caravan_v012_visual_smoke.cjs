@@ -52,7 +52,7 @@ const {chromium}=require('playwright-core');
    const offX=(W-1200*scale)/2,offY=cinematic?H*.51-345*scale:(H-605*scale)/2;
    const cam=window.__CARAVAN_QA.camera().camera;
    return {x:offX+scale*(600+(795-cam.cx)*cam.zoom),
-           y:offY+scale*(302.5+(420-cam.cy)*cam.zoom)};
+           y:offY+scale*(302.5+(360-cam.cy)*cam.zoom)};
  });
  const stageBox=await page.locator('#stage').boundingBox();
  assert.ok(stageBox && tap.x>0 && tap.y>0 && tap.x<stageBox.width && tap.y<stageBox.height,
