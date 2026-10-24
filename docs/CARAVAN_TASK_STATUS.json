@@ -122,7 +122,7 @@
       "area": "hud",
       "title": "Main resource HUD and icons",
       "status": "IN_PROGRESS",
-      "next_step": "Approved art resource/status icons and actual low-stock highlights added; Android visual testing and full adaptive layout remain.",
+      "next_step": "Verified that active v0.12.5 HUD uses no approved crop asset: first produce alpha-clean existing resource and UI icons, then integrate and test small-screen.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -203,7 +203,7 @@
       "area": "art",
       "title": "100 rectangular art crops from atlases",
       "status": "CODE_READY",
-      "next_step": "Review quality; extract transparency for scene objects",
+      "next_step": "All 100 canonical rectangular crops exist without duplicate IDs/SHA, but 0/100 are alpha isolated; extraction is NOT equivalent to finished game sprites.",
       "evidence": "game/assets/catalog/crops_v1/manifest.json",
       "android_verified": false
     },
@@ -212,7 +212,7 @@
       "area": "art",
       "title": "Canonical icon role catalog",
       "status": "IN_PROGRESS",
-      "next_step": "Existing approved resource and UI icons continue to be reused from canonical crop library; no new duplicate generated; full runtime ID wiring remains.",
+      "next_step": "Canonical registry aligned with verified UI gap audit; 16 missing unique icons and 8 separate interface frames identified; no duplicate currency/task icons to be generated.",
       "evidence": "game/assets/catalog/registry.json",
       "android_verified": false
     },

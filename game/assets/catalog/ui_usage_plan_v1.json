@@ -1,0 +1,220 @@
+{
+  "format": "CARAVAN_UI_RUNTIME_ASSET_MAPPING_DRAFT_V1",
+  "date": "2026-10-24",
+  "verified_source": "game/assets/catalog/crops_v1/manifest.json",
+  "existing_crop_inventory": 100,
+  "source_alpha_ready": 0,
+  "game_runtime_catalog_consumers": 0,
+  "immutable_references": "game/assets/approved_style_20261023/manifest.json",
+  "warning": "A source crop is not an alpha-isolated production icon. Do not ship rectangular crops as tiny HUD sprites without transparent-edge QA.",
+  "duplicate_policy": "One semantic ID = one canonically reused icon; currencies never duplicated; alias resource.supplies -> resource.food until canonical supply art is approved.",
+  "reuse_existing": {
+    "main_hud": {
+      "resource.metal": "resource.metal",
+      "resource.fuel": "resource.fuel",
+      "resource.supplies": "resource.food",
+      "status.morale": "status.morale",
+      "status.warning": "ui.warning"
+    },
+    "toolbar": {
+      "tasks": "ui.tasks_open",
+      "crew": "ui.crew",
+      "routes": "ui.map",
+      "upgrade": "ui.upgrade",
+      "start_trip": "ui.movement",
+      "stop": "ui.stop",
+      "info": "ui.information",
+      "inventory": "ui.inventory"
+    },
+    "crew_and_wagon": {
+      "workshop": "ui.workshop",
+      "confirm": "ui.confirm",
+      "cancel": "ui.cancel"
+    },
+    "quests": {
+      "primary_marker": "task.main_quest",
+      "secondary_marker": "task.side_quest",
+      "repair": "task.repair",
+      "exploration": "task.scouting"
+    },
+    "travel_events": {
+      "repair": "task.repair",
+      "trade": "task.trade",
+      "rescue": "task.rescue",
+      "storm": "task.storm_warning"
+    }
+  },
+  "missing_new_icon_roles": [
+    {
+      "id": "ui.journal",
+      "uk": "Бортовий журнал",
+      "group": "toolbar",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.pause",
+      "uk": "Пауза рейсу",
+      "group": "toolbar",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.resume",
+      "uk": "Продовження рейсу",
+      "group": "toolbar",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.zoom_in",
+      "uk": "Наближення сцени",
+      "group": "camera",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.zoom_out",
+      "uk": "Віддалення сцени",
+      "group": "camera",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.focus_wagon",
+      "uk": "Фокус на вагоні",
+      "group": "camera",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.attach_wagon",
+      "uk": "Причепити вагон",
+      "group": "wagon",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.detach_wagon",
+      "uk": "Відчепити вагон",
+      "group": "wagon",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.speed_up",
+      "uk": "Збільшити швидкість",
+      "group": "travel",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.speed_down",
+      "uk": "Зменшити швидкість",
+      "group": "travel",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.crew_assign",
+      "uk": "Призначити працівника",
+      "group": "crew",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.quest_claimed",
+      "uk": "Нагорода отримана",
+      "group": "quests",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.quest_locked",
+      "uk": "Недоступне завдання",
+      "group": "quests",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.incident",
+      "uk": "Подія в дорозі",
+      "group": "events",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.route_locked",
+      "uk": "Недоступний маршрут",
+      "group": "travel",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    },
+    {
+      "id": "ui.save_status",
+      "uk": "Локальне збереження",
+      "group": "system",
+      "availability": "missing_art",
+      "requires_unique_illustration": true
+    }
+  ],
+  "missing_ui_frame_roles": [
+    {
+      "id": "frame.hud_resource_slot",
+      "uk": "Гніздо показника ресурсу",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    },
+    {
+      "id": "frame.sidebar_frame",
+      "uk": "Рамка бокової панелі",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    },
+    {
+      "id": "frame.journal_card",
+      "uk": "Фон картки завдання",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    },
+    {
+      "id": "frame.route_card",
+      "uk": "Фон картки маршруту",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    },
+    {
+      "id": "frame.incident_frame",
+      "uk": "Рамка події/рішення",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    },
+    {
+      "id": "frame.wagon_context_frame",
+      "uk": "Рамка поточного вагона",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    },
+    {
+      "id": "frame.progress_track",
+      "uk": "Доріжка прогресу роботи/рейсу",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    },
+    {
+      "id": "frame.status_warning_overlay",
+      "uk": "Накладка небезпеки",
+      "availability": "missing_art",
+      "type": "nine_slice_or_ui_texture"
+    }
+  ],
+  "production_pipeline": [
+    "Validate source atlas SHA and crop semantic IDs.",
+    "Inspect each source crop for neighboring frames/text and extract clean RGBA with no false alpha claims.",
+    "Approve 24/48/96dp and 128px versions; test 844x390 and 1280x576.",
+    "Wire existing canonical IDs to runtime HUD/UI and verify no fallback glyph where asset ready.",
+    "Design only missing semantic icons and 9-slice frames in approved v0.12 painterly dieselpunk style.",
+    "Version and commit clean PNGs, checksums and role mappings; avoid copying same image under different names."
+  ],
+  "note": "This file records verified availability and production roles only; it does not claim new graphics were produced."
+}
