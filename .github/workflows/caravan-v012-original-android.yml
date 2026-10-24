@@ -7,6 +7,7 @@ on:
       - 'game/v012_asset_packs/**'
       - 'tools/caravan_restore_v012.py'
       - 'tests/caravan_v012_visual_smoke.cjs'
+      - 'tests/caravan_v012_camera.test.cjs'
       - '.github/workflows/caravan-v012-original-android.yml'
   workflow_dispatch:
 permissions:

@@ -37,7 +37,7 @@ for part in MANIFEST:
             target.parent.mkdir(parents=True,exist_ok=True)
             target.write_bytes(data)
 # The restored code is the same committed files as old v0.12, not rewritten code.
-for file in ["index.html","app.js","style.css"]:
+for file in ["index.html","app.js","style.css","camera.js"]:
     source=ROOT/"game"/"v012_restored"/file
     assert source.is_file(),f"Missing original source: {file}"
     (OUT/file).write_bytes(source.read_bytes())
@@ -57,7 +57,7 @@ report={"format":"CARAVAN_V012_ORIGINAL_SOURCE_VALIDATION_V1",
         "source_archives":[{"name":e["name"],"sha256":e["sha256"],"bytes":e["size"]} for e in MANIFEST],
         "original_art_count":len(images),"unique_image_references_in_html":len(refs),
         "verified_image_references":len(refs),"unresolved_images":missing,
-        "original_render_source":["game/v012_restored/index.html","game/v012_restored/app.js","game/v012_restored/style.css"],
+        "original_render_source":["game/v012_restored/index.html","game/v012_restored/app.js","game/v012_restored/style.css","game/v012_restored/camera.js"],
         "warning":"v0.12 is reference game source; later v0.4 mechanics are NOT yet migrated to it"}
 (OUT/"RESTORE_REPORT.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 print(f"PASS: 11 SHA256-authenticated packs, {len(images)} original sprites, {len(refs)} valid references.")
