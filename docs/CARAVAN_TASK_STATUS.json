@@ -175,9 +175,9 @@
       "id": "S-13",
       "area": "gameplay",
       "title": "Inventory and claimable quest list",
-      "status": "IN_PROGRESS",
-      "next_step": "Quest journal includes 3 milestones and one-time rewards; inventory shows actual resource balances. Full items and crafting remain.",
-      "evidence": "web/index.html",
+      "status": "TESTING",
+      "next_step": "Authentic v0.12.3 now has four claim-once journal milestones wired to real crew done counter, wagon L2, third wagon and locomotive L2; saved within old caravan_v12 localStorage. Node+Chromium test PASS. Item-based inventory, Android touch QA and future route quests remain.",
+      "evidence": "game/v012_restored/journal.js;game/v012_restored/app.js",
       "android_verified": false
     },
     {
@@ -266,7 +266,7 @@
       "area": "platform",
       "title": "Single APK including advanced gameplay",
       "status": "IN_PROGRESS",
-      "next_step": "Separate original-based Android APK now bundles v0.12 with camera and selected wagon improvements. v0.4 quest/inventory/water modules not yet migrated; keep feature sets separate until semantic reconciliation.",
+      "next_step": "v0.12.3 original-based Android source now integrates a saved journal into authentic painterly game instead of mounting v0.4. Gameplay economy and route map are still unfinished; physical Android verification required.",
       "evidence": "web/;game/v012_migration/",
       "android_verified": false
     }
@@ -311,6 +311,13 @@
       "date": "2026-10-24",
       "phase": "M1",
       "change": "Stable two-touch pinch gesture anchored between fingers; wagon-focus zoom 3.30x nearly full scene height; up to 4.75x zoom, real multi-touch simulation regression PASS, offline Android debug APK successful. Original 103 approved images untouched.",
+      "android_verified": false
+    },
+    {
+      "version": "v0.12.3 authentic onboard journal",
+      "date": "2026-10-24",
+      "phase": "M3 integration",
+      "change": "Four real action-linked milestone quests in original painterly v0.12, rewards claimed once, persistent in caravan_v12 save; crew task panel remains separate and original 103 art assets untouched. Automated unit and browser smoke passed.",
       "android_verified": false
     }
   ],
