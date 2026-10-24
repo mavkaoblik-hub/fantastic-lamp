@@ -81,3 +81,18 @@ main{align-items:start}.scene{align-self:start}
 .route-choice button:disabled{opacity:.43}
 .route-event{padding:9px 6px;border-top:1px solid #53625b;margin-top:12px}
 @media(max-width:1050px){.route-choice button,#routePause{min-height:44px}}
+
+/* v0.12.5: road event decision card integrated in original dieselpunk sidebar. */
+.route-incident[hidden]{display:none!important}
+.route-incident{padding:13px;margin:9px 0 15px;border:1px solid #d8a264;
+ border-radius:8px;background:linear-gradient(135deg,#513925,#18232a);box-shadow:0 4px 18px #050e15b8}
+.route-incident h4{margin:0 0 8px;color:#ffdb9f;font-size:16px}
+.route-incident p{color:#e3d6c0;line-height:1.5;font-size:11px}
+.incident-options{display:grid;gap:8px}
+.incident-options button{min-height:54px;padding:9px 10px;text-align:left;border:1px solid #b78751;background:#302c29;color:#f5dcba;border-radius:5px}
+.incident-options button:disabled{opacity:.42}
+.incident-options strong,.incident-options small,.incident-options em{display:block}
+.incident-options strong{font-size:12px}
+.incident-options small{font-size:10px;color:#cfbda3;margin-top:4px}
+.incident-options em{font-style:normal;color:#e5ac76;margin-top:5px;font-size:10px}
+@media(max-width:1050px){.incident-options button{min-height:56px}}

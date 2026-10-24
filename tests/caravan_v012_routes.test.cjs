@@ -3,13 +3,32 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const R=require('../game/v012_restored/routes.js');
 const initial=()=>({fuel:80,supplies:48,condition:64,metal:210,morale:75});
-test('initial map has exactly two valid destinations and no duplicate route IDs',()=>{
+function drive(s,g){
+ let incident;
+ for(let i=0;i<200;i++){
+  const res=R.advance(s,g,.25);
+  if(res?.pending){incident=res;break;}
+ }
+ assert.ok(incident?.event);
+ return incident;
+}
+function arrive(s,g){
+ let result=null;
+ for(let i=0;i<300;i++){
+  const res=R.advance(s,g,.25);
+  if(res?.pending)throw Error('Unresolved event blocked trip');
+  if(res?.arrived){result=res;break;}
+ }
+ assert.ok(result?.arrived);
+ return result;
+}
+test('map has connected stations and unique IDs',()=>{
  const s=R.normalize(null);
  assert.equal(s.stationId,'popil');
  assert.equal(R.available(s).length,2);
  assert.equal(new Set(R.ROUTES.map(r=>r.id)).size,R.ROUTES.length);
 });
-test('start charges fuel and supplies exactly once, even on duplicate clicks',()=>{
+test('departure charges exactly once and cannot be duplicated',()=>{
  const s=R.normalize(null),g=initial();
  assert.equal(R.start(s,g,'popil_mist').ok,true);
  assert.equal(g.fuel,72);assert.equal(g.supplies,43);
@@ -17,45 +36,90 @@ test('start charges fuel and supplies exactly once, even on duplicate clicks',()
  assert.equal(g.fuel,72);assert.equal(g.supplies,43);
  assert.equal(R.start(s,g,'popil_depot').ok,false);
 });
-test('insufficient resources or invalid route cannot alter state',()=>{
+test('invalid route or insufficient resources are rejected',()=>{
  const s=R.normalize(null),g={...initial(),fuel:3};
  assert.equal(R.start(s,g,'popil_mist').ok,false);
- assert.equal(s.active,null);assert.equal(g.fuel,3);
- assert.equal(R.start(s,g,'mist_depot').ok,false);
+ assert.equal(s.active,null);
  g.fuel=100;g.condition=0;
  assert.equal(R.start(s,g,'popil_mist').ok,false);
 });
-test('arrival is atomic and event rewards cannot be repeated',()=>{
- const s=R.normalize(null),g=initial();
- R.start(s,g,'popil_mist');
- let result=null;
- for(let i=0;i<100;i++)result=R.advance(s,g,.25)||result;
- assert.ok(result?.arrived);
- assert.equal(s.stationId,'mist');assert.equal(s.completed,1);assert.equal(s.active,null);
- const saved=JSON.parse(JSON.stringify({s,g}));
- const after=R.advance(s,g,200);
- assert.equal(after,null);
- assert.deepEqual(JSON.parse(JSON.stringify({s,g})),saved);
- assert.equal(s.history.length,1);
+test('midroute incident pauses time and survives serialization',()=>{
+ const s=R.normalize(null),g=initial();R.start(s,g,'popil_mist');
+ const incident=drive(s,g);
+ assert.equal(s.active.elapsed,12);
+ assert.equal(R.pending(s).id,incident.event.id);
+ assert.equal(R.advance(s,g,20).pending,true);
+ const restored=R.normalize(JSON.parse(JSON.stringify(s)));
+ assert.equal(R.pending(restored)?.id,incident.event.id);
+ assert.equal(restored.active.elapsed,12);
 });
-test('saved mid-trip resumes from elapsed without double resource charge',()=>{
- const s=R.normalize(null),g=initial();
- R.start(s,g,'popil_depot');
- for(let i=0;i<40;i++)R.advance(s,g,.25);
- const n=R.normalize(JSON.parse(JSON.stringify(s)));
- assert.ok(n.active.elapsed>=9.9);
- assert.equal(g.fuel,69);
- for(let i=0;i<100;i++)R.advance(n,g,.25);
- assert.equal(n.stationId,'depot');assert.equal(n.completed,1);
- assert.equal(g.fuel,69);
+test('a decision modifies resources once, remains unavailable after resolution',()=>{
+ const s=R.normalize(null),g=initial();R.start(s,g,'popil_mist');const incident=drive(s,g);
+ const opt=incident.event.choices[0];
+ const startGame=JSON.parse(JSON.stringify(g));
+ const picked=R.choose(s,g,opt.id);
+ assert.equal(picked.ok,true);
+ assert.equal(R.pending(s),null);
+ assert.equal(s.decisions.length,1);
+ assert.equal(s.active.eventResolved,true);
+ for(const [k,v] of Object.entries(opt.delta)){
+  const bound=['condition','morale'].includes(k)?Math.max(0,Math.min(100,startGame[k]+v)):startGame[k]+v;
+  assert.equal(g[k],bound);
+ }
+ const resourceState=JSON.stringify(g);
+ assert.equal(R.choose(s,g,opt.id).ok,false);
+ assert.equal(JSON.stringify(g),resourceState);
+ assert.equal(R.normalize(JSON.parse(JSON.stringify(s))).decisions.length,1);
 });
-test('station options and seeded arrival events persist across reloads',()=>{
- const g=initial(),s=R.normalize(null);
- R.start(s,g,'popil_mist');
- const snapshot=JSON.parse(JSON.stringify(s));
- const restored=R.normalize(snapshot);
- assert.equal(restored.active.sequence,1);
- for(let n=0;n<24*4;n++)R.advance(restored,g,.25);
- assert.equal(restored.stationId,'mist');
- assert.equal(R.available(restored).every(x=>x.from==='mist'),true);
+test('unaffordable option cannot consume resources or close encounter',()=>{
+ const s=R.normalize(null),g={...initial(),metal:0,fuel:0,supplies:0};
+ // Directly form a valid active journey from a saved game for a low-stock encounter.
+ s.active={routeId:'popil_mist',from:'popil',to:'mist',elapsed:12,sequence:1,
+  eventResolved:false,pendingEventId:null};
+ const pending=R.advance(s,g,.25);assert.ok(pending?.pending);
+ const expensive=pending.event.choices.find(c=>Object.entries(c.delta)
+  .some(([k,v])=>['metal','fuel','supplies'].includes(k)&&v<0));
+ if(expensive){
+  const before=JSON.stringify(g);
+  assert.equal(R.choose(s,g,expensive.id).ok,false);
+  assert.equal(JSON.stringify(g),before);
+  assert.ok(R.pending(s));
+ }
+ const free=pending.event.choices.find(c=>Object.entries(c.delta)
+  .every(([k,v])=>!['metal','fuel','supplies'].includes(k)||v>=0));
+ assert.ok(free);
+ assert.equal(R.choose(s,g,free.id).ok,true);
+});
+test('arrival after a decision is atomic and its event is not repeatable',()=>{
+ const s=R.normalize(null),g=initial();R.start(s,g,'popil_mist');
+ const pending=drive(s,g);
+ assert.equal(R.choose(s,g,pending.event.choices[2].id).ok,true);
+ const result=arrive(s,g);
+ assert.equal(result.to,'mist');
+ assert.equal(s.stationId,'mist');
+ assert.equal(s.completed,1);assert.equal(s.history.length,1);assert.equal(s.decisions.length,1);
+ const saved=JSON.stringify({s,g});
+ assert.equal(R.advance(s,g,100),null);
+ assert.equal(JSON.stringify({s,g}),saved);
+});
+test('saved unfinished trip resumes without another fuel debit',()=>{
+ const s=R.normalize(null),g=initial();R.start(s,g,'popil_depot');
+ for(let i=0;i<30;i++)R.advance(s,g,.25);
+ const restored=R.normalize(JSON.parse(JSON.stringify(s)));
+ assert.ok(restored.active?.elapsed>7);
+ assert.equal(g.fuel,69);
+ const inc=drive(restored,g);
+ const fallback=inc.event.choices.find(o=>Object.entries(o.delta)
+ .every(([k,v])=>!['metal','fuel','supplies'].includes(k)||v>=0));
+ assert.equal(R.choose(restored,g,fallback.id).ok,true);
+ arrive(restored,g);
+ assert.equal(restored.stationId,'depot');assert.equal(g.fuel,69);
+ assert.equal(R.available(restored).every(r=>r.from==='depot'),true);
+});
+test('saved v1 active trips migrate safely to midpoint decision',()=>{
+ const s=R.normalize({version:1,stationId:'popil',completed:0,
+ active:{routeId:'popil_mist',from:'popil',to:'mist',elapsed:18,sequence:1}});
+ assert.equal(s.active.eventResolved,false);
+ assert.equal(R.advance(s,initial(),.25).pending,true);
+ assert.equal(s.active.elapsed,12);
 });

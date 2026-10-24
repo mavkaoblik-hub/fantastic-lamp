@@ -37,7 +37,7 @@ let eventLog=Array.isArray(state.events)?state.events.slice(0,8):[];
 let journal=JOURNAL.normalize(state.journal);
 state.route=ROUTES.normalize(state.route);
 // Migrate old free-running prototype saves without inventing a paid-for trip.
-if(!state.route.active)state.moving=false;
+if(!state.route.active||ROUTES.pending(state.route))state.moving=false;
 const ROUTE_EVENT_LABELS={cache:'Схованка біля колії · +13 металу',rations:'Покинутий склад · +9 припасів',
  breakdown:'Зношені рейки · −9 стану, +5 металу',quiet:'Тихий перехід · до +4 моралі'};
 function renderRouteProgress(){
@@ -69,9 +69,37 @@ function renderRouteMap(){
  $('routeActive').textContent=active?
   'У дорозі: '+ROUTES.STATIONS[active.from].name+' → '+ROUTES.STATIONS[active.to].name:
   'Стоянка · можна обрати наступну станцію';
- $('routePause').disabled=!active;
- $('routePause').textContent=state.moving?'⏸ Призупинити':'▶ Продовжити';
+ const unresolved=ROUTES.pending(state.route);
+ $('routePause').disabled=!active||!!unresolved;
+ $('routePause').textContent=unresolved?'⚠ Потрібне рішення':state.moving?'⏸ Призупинити':'▶ Продовжити';
+ renderRouteIncident();
  renderRouteProgress();
+}
+function renderRouteIncident(){
+ const node=$('routeIncident');
+ if(!node)return;
+ const event=ROUTES.pending(state.route);
+ if(!event){node.hidden=true;node.innerHTML='';return;}
+ node.hidden=false;
+ node.innerHTML='<h4>⚠ '+event.title+'</h4><p>'+event.description+'</p>'+
+   '<div class="incident-options">'+event.choices.map(choice=>{
+    const quote=ROUTES.choiceStatus(state,choice);
+    const detail=Object.entries(choice.delta).map(([key,val])=>{
+     const label={metal:'метал',fuel:'паливо',supplies:'припаси',morale:'мораль',condition:'стан'}[key];
+     return (val>0?'+':'')+val+' '+label;
+    }).join(' · ')||'Без зміни ресурсів';
+    return '<button type="button" data-incident-option="'+choice.id+'" '+(quote.ok?'':'disabled')+
+     '><strong>'+choice.name+'</strong><small>'+choice.description+'</small><em>'+detail+'</em></button>';
+   }).join('')+'</div>';
+}
+function routeDecision(optionId){
+ const result=ROUTES.choose(state.route,state,optionId);
+ if(!result.ok){msg(result.reason);renderRouteMap();return false;}
+ state.moving=true;
+ logEvent(result.event.title+': '+result.option.name);
+ setChosen();store();
+ msg('Рішення прийнято. Рейс продовжено.');
+ return true;
 }
 function routeStart(id){
  const result=ROUTES.start(state.route,state,id);
@@ -86,6 +114,13 @@ function advanceRoute(dt){
  if(!state.moving||!state.route.active)return;
  const result=ROUTES.advance(state.route,state,dt*state.speed);
  if(!result){renderRouteProgress();markDirty();return;}
+ if(result.pending){
+  state.moving=false;
+  logEvent('⚠ '+result.event.title+' — екіпаж очікує рішення');
+  setChosen();store();openSidebar('routes');
+  msg('Подія у дорозі: оберіть рішення.');
+  return;
+ }
  state.moving=false;state.day=Math.min(100000,Math.max(1,Math.floor(state.day||1)+1));
  logEvent('Прибуття в «'+ROUTES.STATIONS[result.to].name+'». '+result.event.title);
  setChosen();renderRouteMap();store();
@@ -188,7 +223,8 @@ function setChosen(){const car=currentCar();const key=car.kind;
  $('metal').textContent=Math.round(state.metal);$('fuel').textContent=Math.round(state.fuel);
  $('supplies').textContent=Math.round(state.supplies);$('morale').textContent=Math.round(state.morale);
  const p=ROUTES.progress(state.route);
- $('travel').textContent=p?(state.moving?'⏸ Пауза':'▶ Продовжити'):'▶ Обрати рейс';
+ $('travel').textContent=ROUTES.pending(state.route)?'⚠ ОБРАТИ РІШЕННЯ':
+  p?(state.moving?'⏸ Пауза':'▶ Продовжити'):'▶ Обрати рейс';
  $('travelState').textContent=p?'● '+(state.moving?'У дорозі':'Пауза')+' → '+ROUTES.STATIONS[p.to].name:
    '● Станція «'+ROUTES.STATIONS[state.route.stationId].name+'»';
  $('speedLabel').textContent=state.speed.toFixed(1)+'×';$('base').style.borderColor=levelFor(car)===1?'#e2a867':'#5b6066';
@@ -223,13 +259,18 @@ $('sidebarBackdrop').addEventListener('click',closeSidebar);$('closeSidebar').ad
 $('tasksOpen').onclick=()=>openSidebar('crew');
 $('journalOpen').onclick=()=>{renderJournal();openSidebar('journal');};
 $('routeOpen').onclick=()=>{renderRouteMap();openSidebar('routes');};
+$('routeIncident').addEventListener('click',e=>{
+ const button=e.target.closest('[data-incident-option]');
+ if(!button||button.disabled)return;
+ routeDecision(button.dataset.incidentOption);
+});
 $('routeList').addEventListener('click',e=>{
  const b=e.target.closest('[data-route-id]');
  if(!b||b.disabled)return;
  if(routeStart(b.dataset.routeId)&&window.matchMedia('(max-width:1050px)').matches)closeSidebar();
 });
 $('routePause').onclick=()=>{
- if(!state.route.active)return;
+ if(!state.route.active||ROUTES.pending(state.route))return;
  state.moving=!state.moving;setChosen();store();
 };
 $('journalList').addEventListener('click',event=>{
@@ -250,7 +291,9 @@ $('locoUpgrade').onclick=()=>{if(state.locoLevel>=4||state.metal<80||state.fuel<
 $('crewRole').onchange=e=>{state.crew=e.target.value;crew[0].role=state.crew;renderCrewPanel();setChosen()};
 $('timeMode').onchange=e=>{state.night=e.target.value==='night';setChosen()};$('effects').onchange=e=>{state.effects=e.target.checked;setChosen()};
 $('travel').onclick=()=>{
- if(!state.route.active){renderRouteMap();openSidebar('routes');return;}
+ if(!state.route.active||ROUTES.pending(state.route)){
+  renderRouteMap();openSidebar('routes');return;
+ }
  state.moving=!state.moving;setChosen();store();
 };$('slower').onclick=()=>{state.speed=Math.max(.5,Math.round((state.speed-.25)*4)/4);setChosen()};$('faster').onclick=()=>{state.speed=Math.min(3,Math.round((state.speed+.25)*4)/4);setChosen()};
 $('newCrew').onclick=()=>{chosenCrew=(chosenCrew+1)%3;renderCrewPanel();markDirty();msg('Обрано: '+crewNames[chosenCrew])};
@@ -405,5 +448,6 @@ globalThis.__CARAVAN_QA.journal=()=>JOURNAL.status(journal,state,crew);
 globalThis.__CARAVAN_QA.routes=()=>({route:structuredClone(state.route),choices:ROUTES.available(state.route),
  resources:{fuel:state.fuel,supplies:state.supplies,condition:state.condition}});
 globalThis.__CARAVAN_QA.routeStart=(id)=>routeStart(id);
+globalThis.__CARAVAN_QA.routeDecision=(id)=>routeDecision(id);
 fit();setChosen();renderCrewPanel();cameraHud();requestAnimationFrame(tick);
 })();
