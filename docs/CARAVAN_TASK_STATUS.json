@@ -167,7 +167,7 @@
       "area": "world",
       "title": "Interactive route map and remote alarms",
       "status": "TESTING",
-      "next_step": "6 stations and 12 directed available route links, offline planning interface, preview costs, real timed arrival, single event outcome, persistent progression. Distinct station background illustrations/remote alarm remain future work.",
+      "next_step": "Three deterministic mid-route incident scenarios and three choices each now interrupt the actual moving train, preserve decision across restart, and apply exactly one resource effect per decision. Original 6 stations/12 directions unchanged. Physical Android test and illustrated route map pending.",
       "evidence": "game/v012_restored/routes.js;game/v012_restored/app.js",
       "android_verified": false
     },
@@ -184,8 +184,8 @@
       "id": "S-14",
       "area": "economy",
       "title": "Unified economy and resource costs",
-      "status": "IN_PROGRESS",
-      "next_step": "Fuel and supplies are charged at route departure exactly once and arrival event modifies genuine metal/supplies/condition/morale balances; full unified water/item economy and balancing remain.",
+      "status": "TESTING",
+      "next_step": "Route-decision penalties/rewards now use existing metal, fuel, supplies, condition, morale (with resource affordability checks and fallback option). Physical balance and survival tuning remain.",
       "evidence": "game/v012_restored/routes.js",
       "android_verified": false
     },
@@ -265,8 +265,8 @@
       "id": "S-23",
       "area": "platform",
       "title": "Single APK including advanced gameplay",
-      "status": "IN_PROGRESS",
-      "next_step": "Original v0.12.4 Android build integrates full route flow plus v0.12.3 journal and v0.12.2 pinch inside the authentic 103-image scene; on-device acceptance and signed updates pending.",
+      "status": "TESTING",
+      "next_step": "Original-art v0.12.5 includes route event decisions with pause/resume, save recovery, once-only results, Android browser smoke; full Android device sign-off remains pending.",
       "evidence": "game/v012_restored/",
       "android_verified": false
     }
@@ -325,6 +325,13 @@
       "date": "2026-10-24",
       "phase": "M3",
       "change": "6 fictional stations, 12 directed offline routes, costs on departure, pause/resume and persist mid-trip, deterministic one-time arrival event, resource expenditure, trip progress and arrival log; original v0.12 art untouched.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.12.5 event choices",
+      "date": "2026-10-24",
+      "phase": "M3",
+      "change": "Three midroute events with three player decisions each, interruption at halfway, resume only after decision, cost gating, exactly-once consequences and persisted pending encounter. No change to original 103 graphic sprites; automated browser regression passing, physical QA pending.",
       "device_tested": false
     }
   ],
