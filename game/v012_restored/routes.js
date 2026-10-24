@@ -122,7 +122,7 @@
  function choiceStatus(game,option){
   for(const [field,delta] of Object.entries(option.delta)){
    if(!decisionFields.includes(field))return {ok:false,reason:'Невідомий тип ресурсу.'};
-   if(delta<0 && finite(game[field]) < -delta)
+   if(delta<0 && ['metal','fuel','supplies'].includes(field) && finite(game[field]) < -delta)
      return {ok:false,reason:'Недостатньо ресурсів для рішення.'};
   }
   return {ok:true};
