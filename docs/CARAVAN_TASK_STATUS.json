@@ -104,7 +104,7 @@
       "area": "camera",
       "title": "Horizontal viewport pan",
       "status": "TESTING",
-      "next_step": "Camera pan uses zoom-correct world transform, edge clamping and inertia; awaiting touch/device QA.",
+      "next_step": "Authentic v0.12 painterly scene now supports zoom-correct drag/pan and clipping against world bounds; physical Android touch test pending.",
       "evidence": "web/game.js",
       "android_verified": false
     },
@@ -113,7 +113,7 @@
       "area": "camera",
       "title": "Three zoom modes and pinch",
       "status": "TESTING",
-      "next_step": "Macro 0.76x / Operational 1.0x / Micro 1.7x, pinch and zoom buttons integrated into Android source; verify physical touch.",
+      "next_step": "Original v0.12 has wide .78, train 1.0, wagon 1.65 and manual .78–2.15 zoom via buttons, wheel and pinch; device QA pending.",
       "evidence": "web/game.js",
       "android_verified": false
     },
@@ -131,7 +131,7 @@
       "area": "hud",
       "title": "Wagon context panel",
       "status": "TESTING",
-      "next_step": "Selected wagon live context refreshes crew assignments; overlapping current-wagon badge repositioned based on verified browser screenshot; smartphone QA pending.",
+      "next_step": "Source wagon art click selects real car instance, autofocuses camera and displays selected car ID/type/level with quick assigned crew action; physical Android QA pending.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -140,7 +140,7 @@
       "area": "wagons",
       "title": "14 wagon types and locomotive L1-L4",
       "status": "TESTING",
-      "next_step": "Authentic v0.12 source and 103 original image assets restored, SHA-256 and browser render PASS, separate reference Android debug APK PASS. Next migrate later camera/crew/quest mechanics INTO real painterly v0.12 scene, then physical device QA.",
+      "next_step": "Restored authentic 103 sprite library / 14 wagon types / locomotive L1-L4 preserved and packaged into original-based Android APK; physical Android QA pending.",
       "evidence": "game/v012_migration/index.html",
       "android_verified": false
     },
@@ -149,7 +149,7 @@
       "area": "crew",
       "title": "Three workers with queued assignments",
       "status": "TESTING",
-      "next_step": "Live 3-worker timeline now animates patrol, travel to doors, entry, on-wagon work, exit and return using same persisted job progress; worker tap opens exact crew. Physical Android test and final approved RGBA art still needed.",
+      "next_step": "Original v0.12 animated crew walk/door/inside/work/exit/queue and per-wagon rewards preserved; later v0.4 job state was not duplicated.",
       "evidence": "game/v012_migration/app.js",
       "android_verified": false
     },
@@ -266,7 +266,7 @@
       "area": "platform",
       "title": "Single APK including advanced gameplay",
       "status": "IN_PROGRESS",
-      "next_step": "First v0.12 job concepts migrated into unified web/ code; 14 wagons and advanced sprites are still blocked on missing dependencies.",
+      "next_step": "Separate original-based Android APK now bundles v0.12 with camera and selected wagon improvements. v0.4 quest/inventory/water modules not yet migrated; keep feature sets separate until semantic reconciliation.",
       "evidence": "web/;game/v012_migration/",
       "android_verified": false
     }
@@ -297,6 +297,13 @@
       "version": "v0.12 reference restored",
       "date": "2026-10-24",
       "change": "Recovered 11 ZIP parts with original 103 artist-approved assets and original app.js/index.html/style.css from historical branch; separate authenticated offline Android reference APK built and visual browser smoke passed.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.12.1 original + camera",
+      "date": "2026-10-24",
+      "phase": "M0/M1",
+      "change": "Base game is 103 authentic painterly assets, 14 wagon types, locomotive L1–L4, original crew and economy. Integrated independent camera with wide/train/wagon, smooth zoom, panning, pinching, original-art click selection, current wagon HUD and direct crew assignment. Automated browser/Node/Android workflow runs; physical device acceptance remains.",
       "device_tested": false
     }
   ],
