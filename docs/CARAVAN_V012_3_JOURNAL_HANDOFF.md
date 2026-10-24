@@ -34,3 +34,10 @@
 [Репозиторій](https://github.com/mavkaoblik-hub/fantastic-lamp) · [Еталон v0.12](CARAVAN_V012_VIDEO_REFERENCE_2026-10-23.md) · [Матриця готовності](CARAVAN_TASK_STATUS.json).
 
 **Статус: TESTING.** Автоматична перевірка не прирівнюється до тестування на реальному Android.
+
+## Підсумкова перевірка
+
+- [GitHub Actions — PASS](https://github.com/mavkaoblik-hub/fantastic-lamp/actions/runs/40077398554): контроль 11 оригінальних ZIP, усі 103 художні ресурси, Node-тести журналу й камери, браузерний тест отримання винагороди та її стану після перезавантаження, повна Android debug APK і перевірка підпису.
+- APK SHA-256: `3312511c76c505ee557a5db06c61eb6df56fdddb0990b4a805f625d969086c07`.
+- Android APK: 8 946 914 байтів. Всередині підтверджені `assets/game/journal.js`, `app.js`, `camera.js` та `index.html`.
+- **Фізичний Android-тест не проведено**, тому статус журналу залишається `TESTING`.
