@@ -44,7 +44,7 @@
       "id": "M3",
       "title": "Routes, inventory, quests and balanced resources",
       "priority": "P0",
-      "status": "BACKLOG",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "M2"
       ]
@@ -85,9 +85,9 @@
       "id": "S-03",
       "area": "gameplay",
       "title": "Trip, salvage, resource spending and save",
-      "status": "CODE_READY",
-      "next_step": "Android full cycle acceptance",
-      "evidence": "web/game.js",
+      "status": "TESTING",
+      "next_step": "Original sprite-based v0.12.4 now supports named route choice, atomic fuel/supply costs, pause/resume, deterministic arrival events and persistence. Flight-mode/device and balance QA still needed.",
+      "evidence": "game/v012_restored/routes.js",
       "android_verified": false
     },
     {
@@ -166,9 +166,9 @@
       "id": "S-12",
       "area": "world",
       "title": "Interactive route map and remote alarms",
-      "status": "BACKLOG",
-      "next_step": "Add route transitions and camera targeting",
-      "evidence": "web/index.html",
+      "status": "TESTING",
+      "next_step": "6 stations and 12 directed available route links, offline planning interface, preview costs, real timed arrival, single event outcome, persistent progression. Distinct station background illustrations/remote alarm remain future work.",
+      "evidence": "game/v012_restored/routes.js;game/v012_restored/app.js",
       "android_verified": false
     },
     {
@@ -185,8 +185,8 @@
       "area": "economy",
       "title": "Unified economy and resource costs",
       "status": "IN_PROGRESS",
-      "next_step": "Water is earned by station salvage and worker jobs, consumed by trips; morale decreases on travel. Next centralize all balance constants and resource caps.",
-      "evidence": "web/game.js",
+      "next_step": "Fuel and supplies are charged at route departure exactly once and arrival event modifies genuine metal/supplies/condition/morale balances; full unified water/item economy and balancing remain.",
+      "evidence": "game/v012_restored/routes.js",
       "android_verified": false
     },
     {
@@ -266,8 +266,8 @@
       "area": "platform",
       "title": "Single APK including advanced gameplay",
       "status": "IN_PROGRESS",
-      "next_step": "v0.12.3 original-based Android source now integrates a saved journal into authentic painterly game instead of mounting v0.4. Gameplay economy and route map are still unfinished; physical Android verification required.",
-      "evidence": "web/;game/v012_migration/",
+      "next_step": "Original v0.12.4 Android build integrates full route flow plus v0.12.3 journal and v0.12.2 pinch inside the authentic 103-image scene; on-device acceptance and signed updates pending.",
+      "evidence": "game/v012_restored/",
       "android_verified": false
     }
   ],
@@ -319,6 +319,13 @@
       "phase": "M3 integration",
       "change": "Four real action-linked milestone quests in original painterly v0.12, rewards claimed once, persistent in caravan_v12 save; crew task panel remains separate and original 103 art assets untouched. Automated unit and browser smoke passed.",
       "android_verified": false
+    },
+    {
+      "version": "v0.12.4 original route prototype",
+      "date": "2026-10-24",
+      "phase": "M3",
+      "change": "6 fictional stations, 12 directed offline routes, costs on departure, pause/resume and persist mid-trip, deterministic one-time arrival event, resource expenditure, trip progress and arrival log; original v0.12 art untouched.",
+      "device_tested": false
     }
   ],
   "visual_baseline": {
