@@ -40,7 +40,7 @@ let canvas=$('stage'),c=canvas.getContext('2d'),CW=1200,CH=605,scale=1,offX=0,of
 const CAMERA=globalThis.CaravanV12Camera;
 if(!CAMERA)throw new Error('The verified v0.12 camera module must load before app.js');
 let camera=CAMERA.mode('train'),cameraTarget={...camera},cameraMode='train';
-const pointers=new Map();let gesture=null,pinch=null,multiPointer=false;
+const pointers=new Map();let gesture=null,pinchStart=null,multiPointer=false;
 function cameraHud(){
  const current=currentCar(),slot=selectedSlot(),carTitle=m.wagon[current.kind].title;
  const wagon=$('currentWagon');if(wagon)wagon.textContent='ВАГОН '+(slot+1)+' / '+state.cars.length+' · '+carTitle+' · L'+levelFor(current);
@@ -86,10 +86,6 @@ function touchSceneAt(e){
    return;
   }
  }
-}
-function getPinch(){
- const [a,b]=[...pointers.values()];
- return {mid:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},dist:Math.hypot(a.x-b.x,a.y-b.y)};
 }
 
 let bubbles=[],t=0,last=0,moveAmount=0,videoFrames=0,fps=60,frameTime=0,toastT=0,rosterRefresh=0,checkpoints=0;
@@ -172,7 +168,9 @@ canvas.addEventListener('pointerdown',e=>{
   multiPointer=false;
  }else{
   multiPointer=true;gesture=null;
-  if(pointers.size===2)pinch=getPinch();
+  if(pointers.size===2){
+   pinchStart={camera:{...camera},fingers:[...pointers.values()].map(p=>({...p}))};
+  }else pinchStart=null;
  }
 });
 canvas.addEventListener('pointermove',e=>{
@@ -180,13 +178,14 @@ canvas.addEventListener('pointermove',e=>{
  const prev=pointers.get(e.pointerId),now=canvasLogicalPoint(e);
  pointers.set(e.pointerId,now);
  if(pointers.size===2){
-  const next=getPinch();
-  if(pinch&&pinch.dist>10&&next.dist>10){
-   camera=CAMERA.zoomAt(camera,camera.zoom*(next.dist/pinch.dist),pinch.mid.x,pinch.mid.y);
-   camera=CAMERA.pan(camera,next.mid.x-pinch.mid.x,next.mid.y-pinch.mid.y);
+  // Fixed gesture anchor avoids zoom drift when fingers move in separate Android events.
+  if(pinchStart){
+   const current=[...pointers.values()];
+   camera=CAMERA.pinch(pinchStart.camera,
+     pinchStart.fingers[0],pinchStart.fingers[1],current[0],current[1]);
    cameraTarget={...camera};cameraMode='custom';cameraHud();
   }
-  pinch=next;multiPointer=true;return;
+  multiPointer=true;return;
  }
  if(pointers.size!==1||!gesture)return;
  if(Math.hypot(now.x-gesture.start.x,now.y-gesture.start.y)>8)gesture.moved=true;
@@ -204,8 +203,8 @@ function finishPointer(e,cancelled){
  if(pointers.size===1){
   const p=[...pointers.entries()][0];
   gesture={pointerId:p[0],start:p[1],last:p[1],moved:true};
-  pinch=null;
- }else if(!pointers.size){gesture=null;pinch=null;multiPointer=false;}
+  pinchStart=null;
+ }else if(!pointers.size){gesture=null;pinchStart=null;multiPointer=false;}
 }
 canvas.addEventListener('pointerup',e=>finishPointer(e,false));
 canvas.addEventListener('pointercancel',e=>finishPointer(e,true));

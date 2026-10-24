@@ -65,12 +65,42 @@ const {chromium}=require('playwright-core');
  const target=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(target.mode,'wagon','tapping current wagon must focus its original artwork');
  assert.equal(target.selectedCarId,'c2');
- assert.equal(target.target.zoom,1.65);
+ assert.ok(target.target.zoom>3.2,'Selected wagon must occupy almost the whole scene height');
  await page.locator('#sendCrewToCar').click();
  const job=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].job?.target);
  assert.equal(job,'rear','wagon shortcut must assign crew to selected wagon');
  await page.locator('#cameraIn').click();
  await page.locator('#cameraOut').click();
+ // Inject true two-finger touch input (not mouse wheel emulation).
+ await page.locator('[data-view-mode="train"]').click();
+ await page.waitForTimeout(850);
+ const cdp=await page.context().newCDPSession(page);
+ await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:2});
+ const scene=await page.locator('#stage').boundingBox();
+ const mid={x:scene.x+scene.width*.56,y:scene.y+scene.height*.52};
+ async function pinchGesture(startSpan,endSpan){
+  const points=(span)=>[
+   {x:Math.round(mid.x-span/2),y:Math.round(mid.y),id:11},
+   {x:Math.round(mid.x+span/2),y:Math.round(mid.y),id:12}];
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:points(startSpan)});
+  for(let step=1;step<=6;step++){
+   const span=startSpan+(endSpan-startSpan)*step/6;
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:points(span)});
+   await page.waitForTimeout(40);
+  }
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await page.waitForTimeout(80);
+ }
+ await pinchGesture(110,270);
+ const pinchIn=await page.evaluate(()=>window.__CARAVAN_QA.camera().camera.zoom);
+ assert.ok(pinchIn>1.8,'Two fingers moving apart must zoom in inside Android-like touch emulation: '+pinchIn);
+ await pinchGesture(270,110);
+ const pinchOut=await page.evaluate(()=>window.__CARAVAN_QA.camera().camera.zoom);
+ assert.ok(pinchOut<pinchIn-.5,'Two fingers moving together must zoom out: '+pinchOut);
+ await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:false});
+ await page.locator('[data-view-mode="wagon"]').click();
+ await page.waitForTimeout(700);
+ await page.screenshot({path:'caravan-v012-visual/wagon_near_full_scene_1280x576.png'});
  await page.locator('#locoUpgrade').click();
  await page.waitForTimeout(400);
  await page.screenshot({path:'caravan-v012-visual/after_interactions.png'});

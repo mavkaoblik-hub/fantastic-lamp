@@ -11,6 +11,9 @@ test('camera modes and wagon focus preserve their original positions',()=>{
   const screen=C.worldToScreen(car,world,394);
   assert.ok(screen.x>0 && screen.x<1200,'Selected wagon stays visible even against the world edge');
   assert.ok(Math.abs(screen.y-302.5)<155);
+  assert.ok(car.zoom>3.2,'A selected wagon should fill nearly all scene height');
+  const wagonPixelHeight=C.WAGON.height*car.zoom;
+  assert.ok(wagonPixelHeight>605*.85 && wagonPixelHeight<605*.95);
  }
 });
 test('pinch zoom anchors the same source-art pixel and limits drag',()=>{
@@ -33,7 +36,27 @@ test('world-to-screen and screen-to-world are inverse after focus/pan',()=>{
 });
 test('camera remains finite after missing or invalid data',()=>{
  const c=C.bound({zoom:99,cx:-5000,cy:5000});
- assert.equal(c.zoom,2.15);
+ assert.equal(c.zoom,C.MAX_ZOOM);
  assert.ok(c.cx>0&&c.cy<605);
  assert.deepEqual(C.mode('unknown'),null);
+});
+
+test('two-finger pinch zooms in/out around the original world anchor without drift',()=>{
+ const base=C.mode('train');
+ const a={x:495,y:290},b={x:705,y:290};
+ const endA={x:395,y:290},endB={x:805,y:290};
+ const before=C.screenToWorld(base,600,290);
+ const enlarged=C.pinch(base,a,b,endA,endB);
+ assert.ok(enlarged.zoom>1.9);
+ const after=C.screenToWorld(enlarged,600,290);
+ assert.ok(Math.abs(before.x-after.x)<1e-5);
+ assert.ok(Math.abs(before.y-after.y)<1e-5);
+ const smaller=C.pinch(enlarged,endA,endB,a,b);
+ assert.ok(Math.abs(smaller.zoom-1)<1e-5);
+ const translated=C.pinch(base,a,b,{x:415,y:310},{x:825,y:310});
+ const anchor=C.screenToWorld(translated,620,310);
+ assert.ok(Math.abs(anchor.x-before.x)<1e-5);
+ assert.ok(Math.abs(anchor.y-before.y)<1e-5);
+ const capped=C.pinch(base,a,b,{x:0,y:290},{x:1200,y:290});
+ assert.equal(capped.zoom,C.MAX_ZOOM);
 });

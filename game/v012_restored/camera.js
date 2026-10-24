@@ -7,10 +7,14 @@
 })(typeof globalThis==='undefined'?null:globalThis,function(){
   'use strict';
   const WORLD=Object.freeze({width:1200,height:605});
-  const MODES=Object.freeze({wide:.78,train:1,wagon:1.65});
+  const WAGON=Object.freeze({width:256,height:163,centerY:392.5});
+  const MAX_ZOOM=4.75;
+  // The selected cutaway should occupy ~89% of the available scene height.
+  const wagonScale=(WORLD.height*.89)/WAGON.height;
+  const MODES=Object.freeze({wide:.78,train:1,wagon:Math.round(wagonScale*100)/100});
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   function bound(camera){
-    const z=clamp(Number(camera.zoom)||1,.78,2.15);
+    const z=clamp(Number(camera.zoom)||1,.78,MAX_ZOOM);
     const halfX=WORLD.width/(2*z),halfY=WORLD.height/(2*z);
     return {
       zoom:z,
@@ -27,10 +31,22 @@
             y:WORLD.height/2+(y-camera.cy)*camera.zoom};
   }
   function zoomAt(camera,newZoom,px,py){
-    const next=clamp(newZoom,.78,2.15),orig=screenToWorld(camera,px,py);
+    const next=clamp(newZoom,.78,MAX_ZOOM),orig=screenToWorld(camera,px,py);
     return bound({zoom:next,
       cx:orig.x-(px-WORLD.width/2)/next,
       cy:orig.y-(py-WORLD.height/2)/next});
+  }
+  function pinch(startCamera,startA,startB,endA,endB){
+    const startDistance=Math.hypot(startA.x-startB.x,startA.y-startB.y);
+    const finalDistance=Math.hypot(endA.x-endB.x,endA.y-endB.y);
+    if(startDistance<12||finalDistance<12)return bound(startCamera);
+    const startCenter={x:(startA.x+startB.x)/2,y:(startA.y+startB.y)/2};
+    const endCenter={x:(endA.x+endB.x)/2,y:(endA.y+endB.y)/2};
+    const anchor=screenToWorld(startCamera,startCenter.x,startCenter.y);
+    const next=clamp(startCamera.zoom*finalDistance/startDistance,.78,MAX_ZOOM);
+    return bound({zoom:next,
+      cx:anchor.x-(endCenter.x-WORLD.width/2)/next,
+      cy:anchor.y-(endCenter.y-WORLD.height/2)/next});
   }
   function pan(camera,dx,dy){
     return bound({zoom:camera.zoom,cx:camera.cx-dx/camera.zoom,cy:camera.cy-dy/camera.zoom});
@@ -38,12 +54,12 @@
   function focusWagon(carIndex){
     if(!Number.isInteger(carIndex)||carIndex<0||carIndex>2)throw Error('Invalid wagon index');
     const wagonCenters=[535,796,1057];
-    return bound({zoom:MODES.wagon,cx:wagonCenters[carIndex],cy:394});
+    return bound({zoom:MODES.wagon,cx:wagonCenters[carIndex],cy:WAGON.centerY});
   }
   function mode(which,carIndex=0){
     return which==='wagon'?focusWagon(carIndex):
       which==='wide'||which==='train'?bound({zoom:MODES[which],cx:600,cy:302.5}):
       null;
   }
-  return Object.freeze({WORLD,MODES,bound,screenToWorld,worldToScreen,zoomAt,pan,focusWagon,mode});
+  return Object.freeze({WORLD,MODES,WAGON,MAX_ZOOM,bound,screenToWorld,worldToScreen,zoomAt,pinch,pan,focusWagon,mode});
 });
