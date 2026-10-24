@@ -54,7 +54,11 @@ const {chromium}=require('playwright-core');
    return {x:offX+scale*(600+(795-cam.cx)*cam.zoom),
            y:offY+scale*(302.5+(420-cam.cy)*cam.zoom)};
  });
- await page.locator('#stage').click({position:tap});
+ const stageBox=await page.locator('#stage').boundingBox();
+ assert.ok(stageBox && tap.x>0 && tap.y>0 && tap.x<stageBox.width && tap.y<stageBox.height,
+  'Calculated wagon tap must be physically inside the original game canvas');
+ await page.mouse.click(stageBox.x+tap.x,stageBox.y+tap.y);
+ await page.waitForTimeout(300);
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.selectedCarId)),'c2',
    'Direct click on the art of wagon two must select wagon two at the rendered camera scale');
  await page.locator('#carList [data-carid]').nth(1).click();
