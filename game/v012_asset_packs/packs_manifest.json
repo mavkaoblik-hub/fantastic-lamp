@@ -1,0 +1,101 @@
+[
+  {
+    "name": "v012_part_01.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_01.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_01.zip",
+    "size": 949752,
+    "b64_size": 1266336,
+    "items": 47,
+    "sha256": "60deb0ac33f9bfbc68912d7efafadbc0558bffd0189cf8678786006a1cebe311"
+  },
+  {
+    "name": "v012_part_02.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_02.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_02.zip",
+    "size": 665416,
+    "b64_size": 887224,
+    "items": 12,
+    "sha256": "0fa3d40131344d511fbf4320bec8baf4332db9af9b9ba3a0529645a5581aac07"
+  },
+  {
+    "name": "v012_part_03.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_03.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_03.zip",
+    "size": 905976,
+    "b64_size": 1207968,
+    "items": 4,
+    "sha256": "16a108feb76bfd1c879ec3e349aee33b59ca62a60999f735c0fa40aa4a90078d"
+  },
+  {
+    "name": "v012_part_04.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_04.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_04.zip",
+    "size": 826842,
+    "b64_size": 1102456,
+    "items": 5,
+    "sha256": "5e56c6230d0c72c39acaec3873fc7707742b2a3a0fc8d11ce97963118370121a"
+  },
+  {
+    "name": "v012_part_05.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_05.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_05.zip",
+    "size": 633948,
+    "b64_size": 845264,
+    "items": 4,
+    "sha256": "1cefda8fb91d0b732f069383c3ce278c602bb82ce76a39c90bf05e97e960c2cc"
+  },
+  {
+    "name": "v012_part_06.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_06.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_06.zip",
+    "size": 901046,
+    "b64_size": 1201396,
+    "items": 2,
+    "sha256": "ae43d02b6d6ba37c20a54b9802bf3ed32ab58a7b598746f693869e883424fe67"
+  },
+  {
+    "name": "v012_part_07.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_07.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_07.zip",
+    "size": 778070,
+    "b64_size": 1037428,
+    "items": 3,
+    "sha256": "80b6ff71c5359c6e21cbee22c21886ad0c902d21fd84bff7144032ccf64a2568"
+  },
+  {
+    "name": "v012_part_08.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_08.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_08.zip",
+    "size": 940001,
+    "b64_size": 1253336,
+    "items": 6,
+    "sha256": "43871315011be47a52033e164f4eb6053141e43b65e589784f796e50ecdbaff7"
+  },
+  {
+    "name": "v012_part_09.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_09.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_09.zip",
+    "size": 870661,
+    "b64_size": 1160884,
+    "items": 5,
+    "sha256": "6627dd73d53be2929833c0112b1f90854ceea5ba91fc237cfbcc38ae014fd925"
+  },
+  {
+    "name": "v012_part_10.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_10.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_10.zip",
+    "size": 719671,
+    "b64_size": 959564,
+    "items": 2,
+    "sha256": "62a7fb4ba6224324f11196fa0faefb7ad32590b1ec1c8ed84f0408d3891cac9f"
+  },
+  {
+    "name": "v012_part_11.zip",
+    "b64_file": "/mnt/data/CARAVAN_V012_PACKS/v012_part_11.b64.txt",
+    "repo_path": "game/v012_asset_packs/v012_part_11.zip",
+    "size": 761224,
+    "b64_size": 1014968,
+    "items": 16,
+    "sha256": "378a2ecb892f4a08a7f2e2326ff3f3c8d1272701181053aa1f584fe5aa8f06c5"
+  }
+]
