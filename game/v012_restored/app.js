@@ -2,7 +2,8 @@
 const m=globalThis.CARAVAN_MANIFEST,$=id=>document.getElementById(id);
 const KEY='caravan_v12';
 const JOURNAL=globalThis.CaravanV12Journal;
-if(!JOURNAL)throw Error('journal.js must load before app.js');
+const ROUTES=globalThis.CaravanV12Routes;
+if(!JOURNAL||!ROUTES)throw Error('journal.js and routes.js must load before app.js');
 const defaultState=()=>({middle:'workshop',rear:'quarters',levels:{},locoLevel:1,cars:[{id:'c1',kind:'workshop',level:1},{id:'c2',kind:'quarters',level:1}],selectedCarId:'c1',nextCarId:3,crew:'mechanic',moving:false,speed:1,night:false,effects:true,metal:210,fuel:80,morale:75,condition:64,supplies:48,day:1});
 let state=defaultState();
 try{const old=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem('caravan_v09')||localStorage.getItem('caravan_v07')||'null');if(old&&typeof old==='object')Object.assign(state,old)}catch{}
@@ -34,6 +35,61 @@ if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,
 let chosenCrew=Number.isInteger(state.chosenCrew)?Math.max(0,Math.min(2,state.chosenCrew)):0;
 let eventLog=Array.isArray(state.events)?state.events.slice(0,8):[];
 let journal=JOURNAL.normalize(state.journal);
+state.route=ROUTES.normalize(state.route);
+// Migrate old free-running prototype saves without inventing a paid-for trip.
+if(!state.route.active)state.moving=false;
+const ROUTE_EVENT_LABELS={cache:'Схованка біля колії',rations:'Покинутий склад',
+ breakdown:'Зношені рейки',quiet:'Тихий перехід'};
+function renderRouteProgress(){
+ const p=ROUTES.progress(state.route);
+ const r=$('routeProgress'),eta=$('routeEta');
+ if(!r||!eta)return;
+ r.style.width=(p?Math.floor(p.percent):0)+'%';
+ eta.textContent=p?'ДО ПРИБУТТЯ: '+Math.ceil(p.remaining/Math.max(.5,state.speed))+' с':'Немає активного рейсу';
+}
+function renderRouteMap(){
+ const s=state.route,active=ROUTES.progress(s);
+ $('stationName').textContent=ROUTES.STATIONS[s.stationId].name;
+ $('stationSubtitle').textContent=ROUTES.STATIONS[s.stationId].description;
+ $('routeCount').textContent=s.completed+' завершених рейсів · день '+state.day;
+ const last=s.history[s.history.length-1];
+ $('routeLastEvent').textContent=last?
+  'Остання подія: '+(ROUTE_EVENT_LABELS[last.eventId]||'Прибуття'):'Подій у дорозі ще не було';
+ $('routeList').innerHTML=ROUTES.available(s).map(r=>{
+  const check=ROUTES.quote(s,state,r.id);
+  const title=ROUTES.STATIONS[r.to];
+  return '<article class="route-choice"><div class="route-location">'+title.name+'</div>'+
+   '<p>'+title.description+'</p>'+
+   '<small>⛽ '+r.fuel+' палива · ▧ '+r.supplies+' припасів · '+r.duration+' с · '+r.risk+' ризик</small>'+
+   '<button type="button" data-route-id="'+r.id+'" '+(check.ok?'':'disabled')+
+   '>'+(active?'РЕЙС УЖЕ ТРИВАЄ':check.ok?'ВІДПРАВИТИСЯ':'НЕМАЄ ДОСТУПУ')+'</button></article>';
+ }).join('');
+ $('routeActive').textContent=active?
+  'У дорозі: '+ROUTES.STATIONS[active.from].name+' → '+ROUTES.STATIONS[active.to].name:
+  'Стоянка · можна обрати наступну станцію';
+ $('routePause').disabled=!active;
+ $('routePause').textContent=state.moving?'⏸ Призупинити':'▶ Продовжити';
+ renderRouteProgress();
+}
+function routeStart(id){
+ const result=ROUTES.start(state.route,state,id);
+ if(!result.ok){msg(result.reason);renderRouteMap();return false;}
+ state.moving=true;
+ logEvent('Вирушили зі станції «'+ROUTES.STATIONS[result.trip.from].name+'» до «'+ROUTES.STATIONS[result.trip.to].name+'»');
+ setChosen();store();renderRouteMap();
+ msg('Рейс розпочато: паливо −'+result.cost.fuel+', припаси −'+result.cost.supplies);
+ return true;
+}
+function advanceRoute(dt){
+ if(!state.moving||!state.route.active)return;
+ const result=ROUTES.advance(state.route,state,dt*state.speed);
+ if(!result){renderRouteProgress();markDirty();return;}
+ state.moving=false;state.day=Math.min(100000,Math.max(1,Math.floor(state.day||1)+1));
+ logEvent('Прибуття в «'+ROUTES.STATIONS[result.to].name+'». '+result.event.title);
+ setChosen();renderRouteMap();store();
+ msg('Прибуття: '+ROUTES.STATIONS[result.to].name+' · '+result.event.title);
+}
+
 function renderJournal(){
  const rows=JOURNAL.status(journal,state,crew);
  const root=$('journalList');if(!root)return;
@@ -49,7 +105,7 @@ function renderJournal(){
 }
 
 let saveDirty=true,saveClock=0;
-function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
+function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.route=state.route;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
 function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
@@ -127,10 +183,14 @@ function setChosen(){const car=currentCar();const key=car.kind;
  $('locoLevel').textContent='L'+state.locoLevel+' / 4';
  $('locoUpgrade').disabled=state.locoLevel>=4||state.metal<80||state.fuel<12;
  $('locoUpgrade').textContent=state.locoLevel>=4?'✓ Максимальний L4':'⬆ Локомотив · 80 ⚙ / 12 ⛽';
- $('metal').textContent=Math.round(state.metal);$('fuel').textContent=Math.round(state.fuel);$('morale').textContent=Math.round(state.morale);
- $('travel').textContent=state.moving?'⏸ Зупинити':'▶ Рушити вліво';$('travelState').textContent=state.moving?'● Рух ліворуч':'● Стоянка';
+ $('metal').textContent=Math.round(state.metal);$('fuel').textContent=Math.round(state.fuel);
+ $('supplies').textContent=Math.round(state.supplies);$('morale').textContent=Math.round(state.morale);
+ const p=ROUTES.progress(state.route);
+ $('travel').textContent=p?(state.moving?'⏸ Пауза':'▶ Продовжити'):'▶ Обрати рейс';
+ $('travelState').textContent=p?'● '+(state.moving?'У дорозі':'Пауза')+' → '+ROUTES.STATIONS[p.to].name:
+   '● Станція «'+ROUTES.STATIONS[state.route.stationId].name+'»';
  $('speedLabel').textContent=state.speed.toFixed(1)+'×';$('base').style.borderColor=levelFor(car)===1?'#e2a867':'#5b6066';
- renderCarList();cameraHud();renderJournal();markDirty();}
+ renderCarList();cameraHud();renderJournal();renderRouteMap();markDirty();}
 function msg(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2050)}
 function logEvent(text){eventLog.unshift(text);eventLog=eventLog.slice(0,8);markDirty()}
 function statusText(p){if(p.mode==='walking')return 'Прямує до входу: '+LOCATIONS[p.job.target].label;if(p.mode==='entering')return 'Заходить усередину вагона';if(p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';if(p.mode==='exiting')return 'Виходить із вагона';if(p.mode==='completed')return 'Завершив завдання · '+Math.max(0,3-Math.floor(p.completed))+' с';return 'Патрулює платформу'}
@@ -151,7 +211,7 @@ function openSidebar(section){
  }
  requestAnimationFrame(()=>{
   const box=$('sidebar');
-  const target=section==='crew'?'crewpanel':section==='journal'?'journalPanel':null;
+  const target=section==='crew'?'crewpanel':section==='journal'?'journalPanel':section==='routes'?'routePanel':null;
   if(target){
    box.scrollTop+= $(target).getBoundingClientRect().top-box.getBoundingClientRect().top-64;
   }else box.scrollTop=0;
@@ -160,6 +220,16 @@ function openSidebar(section){
 $('sidebarBackdrop').addEventListener('click',closeSidebar);$('closeSidebar').addEventListener('click',closeSidebar);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar()});
 $('tasksOpen').onclick=()=>openSidebar('crew');
 $('journalOpen').onclick=()=>{renderJournal();openSidebar('journal');};
+$('routeOpen').onclick=()=>{renderRouteMap();openSidebar('routes');};
+$('routeList').addEventListener('click',e=>{
+ const b=e.target.closest('[data-route-id]');
+ if(!b||b.disabled)return;
+ if(routeStart(b.dataset.routeId)&&window.matchMedia('(max-width:1050px)').matches)closeSidebar();
+});
+$('routePause').onclick=()=>{
+ if(!state.route.active)return;
+ state.moving=!state.moving;setChosen();store();
+};
 $('journalList').addEventListener('click',event=>{
  const button=event.target.closest('[data-claim]');
  if(!button||button.disabled)return;
@@ -177,11 +247,14 @@ $('locoUpgrade').onclick=()=>{if(state.locoLevel>=4||state.metal<80||state.fuel<
 
 $('crewRole').onchange=e=>{state.crew=e.target.value;crew[0].role=state.crew;renderCrewPanel();setChosen()};
 $('timeMode').onchange=e=>{state.night=e.target.value==='night';setChosen()};$('effects').onchange=e=>{state.effects=e.target.checked;setChosen()};
-$('travel').onclick=()=>{state.moving=!state.moving;setChosen()};$('slower').onclick=()=>{state.speed=Math.max(.5,Math.round((state.speed-.25)*4)/4);setChosen()};$('faster').onclick=()=>{state.speed=Math.min(3,Math.round((state.speed+.25)*4)/4);setChosen()};
+$('travel').onclick=()=>{
+ if(!state.route.active){renderRouteMap();openSidebar('routes');return;}
+ state.moving=!state.moving;setChosen();store();
+};$('slower').onclick=()=>{state.speed=Math.max(.5,Math.round((state.speed-.25)*4)/4);setChosen()};$('faster').onclick=()=>{state.speed=Math.min(3,Math.round((state.speed+.25)*4)/4);setChosen()};
 $('newCrew').onclick=()=>{chosenCrew=(chosenCrew+1)%3;renderCrewPanel();markDirty();msg('Обрано: '+crewNames[chosenCrew])};
 $('upgrade').onclick=()=>{const car=currentCar();if(levelFor(car)===2)return;if(state.metal<35){msg('Недостатньо металу');return}state.metal-=35;car.level=2;setChosen();store();msg('Вагон №'+(selectedSlot()+1)+' посилено до L2!')};
 $('base').onclick=()=>{currentCar().level=1;setChosen();store()};
-$('reset').onclick=()=>{state=defaultState();crew=makeCrew();chosenCrew=0;eventLog=[];journal=JOURNAL.normalize(null);setChosen();renderCrewPanel();store();msg('Тестовий прогрес скинуто')};
+$('reset').onclick=()=>{state=defaultState();crew=makeCrew();chosenCrew=0;eventLog=[];journal=JOURNAL.normalize(null);state.route=ROUTES.normalize(null);setChosen();renderCrewPanel();store();msg('Тестовий прогрес скинуто')};
 $('fit').onclick=()=>setCameraMode('wide');
 $('cameraOut').onclick=()=>manualZoom(1/1.2);
 $('cameraIn').onclick=()=>manualZoom(1.2);
@@ -266,7 +339,7 @@ function applyReward(p,i){let reward='';const target=p.job?.target;
  p.done++;logEvent(crewNames[i]+': '+reward);setChosen();msg(crewNames[i]+': '+reward);store();}
 function finishJob(p,i){applyReward(p,i);startExit(p);p.progress=1;markDirty()}
 function nextOrPatrol(p){p.job=null;p.inside=0;p.completed=0;p.progress=0;p.transition=0;if(p.queue.length){const next=p.queue.shift();beginJob(p,next)}else{p.mode='patrol';p.dir=p.x>=850?-1:1}markDirty()}
-function update(dt){t+=dt;moveAmount+=dt*(state.moving?state.speed:0);const speed=state.moving?state.speed:0;
+function update(dt){t+=dt;advanceRoute(dt);moveAmount+=dt*(state.moving?state.speed:0);const speed=state.moving?state.speed:0;
  for(let i=0;i<crew.length;i++){const p=crew[i];p.phase=p.phase||i*.85;
  if(p.mode==='walking'&&p.job){const delta=LOCATIONS[p.job.target].door-p.x,step=(p.role==='guard'?108:94)*dt;if(Math.abs(delta)<=step){p.x=LOCATIONS[p.job.target].door;p.mode='entering';p.transition=0;p.inside=0}else{p.dir=delta>0?1:-1;p.x+=p.dir*step}markDirty()}
  else if(p.mode==='entering'&&p.job){p.transition=Math.min(1,p.transition+dt/1.35);const easing=p.transition*p.transition*(3-2*p.transition),loc=LOCATIONS[p.job.target];p.x=loc.door+(loc.work-loc.door)*easing;p.inside=easing;if(p.transition>=1){p.mode='working';p.inside=1;p.progress=0}markDirty()}
@@ -327,5 +400,8 @@ function tick(ms){if(!last)last=ms;const dt=Math.min(.04,(ms-last)/1000);last=ms
 globalThis.__CARAVAN_SAVE=store;globalThis.__CARAVAN_QA={snapshot:()=>({state:structuredClone(state),crew:structuredClone(crew),events:[...eventLog]}),advance:(seconds)=>{for(let n=0;n<seconds*30;n++)update(1/30);paint()},assign:(crewIndex,target)=>{chosenCrew=crewIndex;assignCrew(target)},assets:()=>({total:Object.keys(data).length,loaded:Object.values(data).filter(i=>i.complete&&i.naturalWidth).length})};
 globalThis.__CARAVAN_QA.camera=()=>({camera:{...camera},target:{...cameraTarget},mode:cameraMode,selectedCarId:state.selectedCarId});
 globalThis.__CARAVAN_QA.journal=()=>JOURNAL.status(journal,state,crew);
+globalThis.__CARAVAN_QA.routes=()=>({route:structuredClone(state.route),choices:ROUTES.available(state.route),
+ resources:{fuel:state.fuel,supplies:state.supplies,condition:state.condition}});
+globalThis.__CARAVAN_QA.routeStart=(id)=>routeStart(id);
 fit();setChosen();renderCrewPanel();cameraHud();requestAnimationFrame(tick);
 })();

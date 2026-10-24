@@ -55,3 +55,29 @@ main{align-items:start}.scene{align-self:start}
 .journal-entry button:disabled{opacity:.55}
 .journal-entry.claimed{border-color:#58715b}
 @media(max-width:1050px){.journal-entry button{min-height:44px}.journal-panel{margin:12px 0}}
+
+/* V0.12.4 route planning panel; existing cutaway artwork is entirely unchanged. */
+.route-panel{margin:16px 0;padding:14px 12px;border:1px solid #846243;border-radius:8px;
+ background:linear-gradient(140deg,rgba(29,33,32,.96),rgba(11,24,29,.97));color:#e9d4b1}
+.route-head small{font:600 10px system-ui,sans-serif;letter-spacing:.09em;color:#dda869}
+.route-head h3{font:700 19px system-ui,sans-serif;margin:5px 0 10px;color:#f7d3a1}
+.route-station{border:1px solid #836344;border-radius:6px;padding:10px;background:#49372a88}
+.route-station strong,.route-station small{display:block}
+.route-station strong{font-size:17px;color:#ffd79b}
+.route-station small,.route-count,.route-active,.route-event{font-size:11px;line-height:1.5;color:#cfcbc3;margin:6px 0}
+.route-active{color:#f5c487;margin-top:11px;font-weight:700}
+.route-progress{height:8px;background:#29373d;border-radius:8px;overflow:hidden;margin-top:8px}
+.route-progress span{display:block;width:0;height:100%;background:#dba362}
+#routeEta{display:block;font-size:10px;margin:6px 0;color:#c6c1b4}
+#routePause{width:100%;min-height:40px;margin:7px 0 12px;background:#3d4c48;border:1px solid #96795c;border-radius:5px;color:#ecd6b7;font-weight:700}
+#routePause:disabled{opacity:.4}
+.route-list{display:grid;gap:9px}
+.route-choice{border:1px solid #58615b;border-radius:6px;background:#14232cbb;padding:11px}
+.route-location{font-size:14px;font-weight:700;color:#f5c993}
+.route-choice p{font-size:11px;color:#bbc7c4;line-height:1.4;margin:5px 0}
+.route-choice small{display:block;color:#e2b077;font-size:10px;margin:7px 0}
+.route-choice button{width:100%;min-height:40px;border:1px solid #e0ab73;background:#86522c;
+ border-radius:5px;color:#fff3d4;font-weight:700;font-size:11px}
+.route-choice button:disabled{opacity:.43}
+.route-event{padding:9px 6px;border-top:1px solid #53625b;margin-top:12px}
+@media(max-width:1050px){.route-choice button,#routePause{min-height:44px}}
