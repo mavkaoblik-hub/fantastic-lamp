@@ -108,3 +108,35 @@ main{align-items:start}.scene{align-self:start}
  .caravan-resource-icon{width:19px;height:19px;margin-right:2px}}
 @media (max-height:390px) and (orientation:landscape){.caravan-ui-icon{height:15px;width:15px}
  .caravan-resource-icon{height:17px;width:17px}}
+
+/* Eight independent transparent 9-slice frame textures (candidate UI set).
+   Original painterly wagons and crew render unchanged behind these borders. */
+.topstats span{border:5px solid transparent;
+ border-image-source:url("assets/ui_frames/hud_resource_slot.png");
+ border-image-slice:36;border-image-width:5px;border-image-repeat:stretch}
+.sidebar{border:11px solid transparent;
+ border-image-source:url("assets/ui_frames/sidebar_frame.png");
+ border-image-slice:36;border-image-width:11px;border-image-repeat:stretch}
+.journal-entry{border:9px solid transparent;
+ border-image-source:url("assets/ui_frames/journal_card.png");
+ border-image-slice:36;border-image-width:9px;border-image-repeat:stretch}
+.route-choice{border:9px solid transparent;
+ border-image-source:url("assets/ui_frames/route_card.png");
+ border-image-slice:36;border-image-width:9px;border-image-repeat:stretch}
+.route-incident{border:10px solid transparent;
+ border-image-source:url("assets/ui_frames/incident_frame.png");
+ border-image-slice:36;border-image-width:10px;border-image-repeat:stretch}
+.camera-hud{border:7px solid transparent;
+ border-image-source:url("assets/ui_frames/wagon_context_frame.png");
+ border-image-slice:36;border-image-width:7px;border-image-repeat:stretch}
+.route-progress{border:2px solid transparent;
+ border-image-source:url("assets/ui_frames/progress_track.png");
+ border-image-slice:36;border-image-width:2px;border-image-repeat:stretch}
+.route-event{border:9px solid transparent;
+ border-image-source:url("assets/ui_frames/status_warning_overlay.png");
+ border-image-slice:36;border-image-width:9px;border-image-repeat:stretch}
+@media(max-width:1050px){
+ .topstats span{border-width:3px;border-image-width:3px}
+ .sidebar{border-width:7px;border-image-width:7px}
+ .route-choice,.journal-entry,.route-event{border-width:6px;border-image-width:6px}
+}

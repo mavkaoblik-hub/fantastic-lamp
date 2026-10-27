@@ -63,12 +63,23 @@ for item in ui_manifest["items"]:
     dest=OUT/"assets/ui_alpha"/item["path"]
     dest.parent.mkdir(parents=True,exist_ok=True)
     copyfile(src,dest)
+# Eight decorative 9-slice PNG borders are generated deterministically
+# from the same rusty-brass UI palette, not from new wagons or currencies.
+frame_root=ROOT/"game/assets/ui_frames_v1"
+frame_manifest=json.loads((frame_root/"manifest.json").read_text(encoding="utf-8"))
+assert len(frame_manifest["items"])==8,"Expected exactly 8 reviewed candidate frames"
+for item in frame_manifest["items"]:
+    src=frame_root/item["path"]
+    assert hashlib.sha256(src.read_bytes()).hexdigest()==item["sha256"],f"Frame SHA mismatch {item['id']}"
+    dest=OUT/"assets/ui_frames"/item["path"]
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    copyfile(src,dest)
 # The original art manifest stays untouched.
 assert "CARAVAN_MANIFEST" in index
 report={"format":"CARAVAN_V012_ORIGINAL_SOURCE_VALIDATION_V1",
         "source_branch":"caravan-v012-android-migration",
         "source_archives":[{"name":e["name"],"sha256":e["sha256"],"bytes":e["size"]} for e in MANIFEST],
-        "original_art_count":len(images),"approved_ui_rgba_count":len(ui_manifest["items"]),"unique_image_references_in_html":len(refs),
+        "original_art_count":len(images),"approved_ui_rgba_count":len(ui_manifest["items"]),"generated_frame_count":len(frame_manifest["items"]),"unique_image_references_in_html":len(refs),
         "verified_image_references":len(refs),"unresolved_images":missing,
         "original_render_source":["game/v012_restored/index.html","game/v012_restored/app.js","game/v012_restored/style.css","game/v012_restored/camera.js"],
         "warning":"v0.12 is reference game source; later v0.4 mechanics are NOT yet migrated to it"}

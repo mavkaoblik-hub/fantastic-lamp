@@ -36,6 +36,21 @@ const {chromium}=require('playwright-core');
  const countersWithIcons=await page.locator('.caravan-resource-icon').count();
  assert.ok(buttonsWithIcons>=9,'HUD should reuse original approved icon assets instead of placeholder symbols');
  assert.equal(countersWithIcons,4,'Metal, fuel, supplies and morale must use approved art');
+ const frames=await page.evaluate(async()=>{
+  const urls=[
+   'hud_resource_slot','sidebar_frame','journal_card','route_card',
+   'incident_frame','wagon_context_frame','progress_track','status_warning_overlay'
+  ].map(name=>'assets/ui_frames/'+name+'.png');
+  return await Promise.all(urls.map(url=>new Promise(resolve=>{
+   const im=new Image();im.onload=()=>resolve({url,ok:im.naturalWidth===480});
+   im.onerror=()=>resolve({url,ok:false});im.src=url;
+  })));
+ });
+ assert.equal(frames.length,8);
+ assert.ok(frames.every(i=>i.ok),'All eight source-derived frame PNGs must load');
+ const border=await page.evaluate(()=>getComputedStyle(document.querySelector('.sidebar')).borderImageSource);
+ assert.ok(border.includes('sidebar_frame.png'),'Sprite texture must be used in the active interface, not only copied');
+
 
  const imgs=await page.evaluate(()=>Object.values(window.CARAVAN_MANIFEST.wagon).flatMap(x=>x.levels.map(y=>y.src))
    .concat(window.CARAVAN_MANIFEST.train?.variants?.map(x=>x.src)||[]));

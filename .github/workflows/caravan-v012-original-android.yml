@@ -6,6 +6,7 @@ on:
       - 'game/v012_restored/**'
       - 'game/v012_asset_packs/**'
       - 'game/assets/ui_alpha_v1/**'
+      - 'game/assets/ui_frames_v1/**'
       - 'tools/caravan_restore_v012.py'
       - 'tests/caravan_v012_visual_smoke.cjs'
       - 'tests/caravan_v012_camera.test.cjs'
@@ -85,6 +86,8 @@ jobs:
           test -s "$GAME/ui_icons.js"
           test -s "$GAME/assets/ui_alpha/ui/ui_tasks_open.png"
           test -s "$GAME/assets/ui_alpha/resource/resource_metal.png"
+          test -s "$GAME/assets/ui_frames/incident_frame.png"
+          test -s "$GAME/assets/ui_frames/journal_card.png"
           python3 - <<'PY'
           from pathlib import Path
           root=Path("android/app/src/main/assets/game")
@@ -93,10 +96,12 @@ jobs:
               if not line.lstrip().startswith("@import url("))+"\n",encoding="utf-8")
           assert "app.js" in (root/"index.html").read_text()
           art=root/"assets"
-          original=[p for p in art.rglob("*") if p.is_file() and p.suffix.lower() in (".png",".jpg") and "ui_alpha" not in p.parts]
+          original=[p for p in art.rglob("*") if p.is_file() and p.suffix.lower() in (".png",".jpg") and "ui_alpha" not in p.parts and "ui_frames" not in p.parts]
           new_ui=[p for p in (art/"ui_alpha").rglob("*.png") if p.is_file()]
+          frames=[p for p in (art/"ui_frames").rglob("*.png") if p.is_file()]
           assert len(original)==103,f"Original source art count changed: {len(original)}"
           assert len(new_ui)==16,f"Wrong count of approved UI icons: {len(new_ui)}"
+          assert len(frames)==8,f"Missing decorative UI frames: {len(frames)}"
           PY
       - name: Compile original restored Android build
         run: gradle -p android --no-daemon --stacktrace :app:assembleDebug
