@@ -95,6 +95,10 @@ const {chromium}=require('playwright-core');
    'Art tap should open a small contextual wagon card instead of requiring constructor panel');
  assert.equal(await page.locator('#quickWagonCrew [data-quick-worker]').count(),3,
    'Player can assign three existing crew from the wagon card');
+ await page.locator('#quickWagonClose').click();
+ assert.equal(await page.locator('#wagonQuick').isVisible(),false,'Quick card can be dismissed without a large modal');
+ await page.mouse.click(stageBox.x+tap.x,stageBox.y+tap.y);
+ assert.equal(await page.locator('#wagonQuick').isVisible(),true,'Tapping the train reopens contextual card');
  await page.locator('#carList [data-carid]').nth(1).click();
  const target=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(target.mode,'wagon','tapping current wagon must focus its original artwork');
@@ -216,10 +220,6 @@ const {chromium}=require('playwright-core');
  await page.waitForTimeout(500);
  const menuBox=await page.locator('#togglePanel').boundingBox();
  assert.ok(menuBox && menuBox.x+menuBox.width<=844,'Sidebar opener must not be cropped by resource HUD on phone');
- await page.locator('#carList [data-carid]').first().click();
- // The contextual card is opt-in and may be dismissed: it must never swallow a pinch.
- await page.locator('#quickWagonClose').click();
- assert.equal(await page.locator('#wagonQuick').isVisible(),false);
 
 
  const size=await page.evaluate(()=>({rect:document.getElementById('stage').getBoundingClientRect(),camera:window.__CARAVAN_QA.camera()}));
