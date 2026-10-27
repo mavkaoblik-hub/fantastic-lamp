@@ -61,6 +61,7 @@
    for(const [elementId,role] of Object.entries(resourceIds)){
      const label=document.getElementById(elementId)?.parentElement;
      install(label,role,'caravan-resource-icon');
+     if(label)label.title=({metal:'Метал',fuel:'Паливо',supplies:'Припаси',morale:'Мораль'})[elementId];
    }
  }
  function sources(){return Object.entries(icons).map(([id,path])=>({id,path:prefix+path}));}

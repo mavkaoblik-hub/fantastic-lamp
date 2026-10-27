@@ -210,6 +210,9 @@ const {chromium}=require('playwright-core');
  await page.screenshot({path:'caravan-v012-visual/after_interactions.png'});
  await page.setViewportSize({width:844,height:390});
  await page.waitForTimeout(500);
+ const menuBox=await page.locator('#togglePanel').boundingBox();
+ assert.ok(menuBox && menuBox.x+menuBox.width<=844,'Sidebar opener must not be cropped by resource HUD on phone');
+
  const size=await page.evaluate(()=>({rect:document.getElementById('stage').getBoundingClientRect(),camera:window.__CARAVAN_QA.camera()}));
  assert.ok(size.rect.width>500&&size.rect.height>140,'Landscape Android-sized view must retain usable train canvas');
  await page.screenshot({path:'caravan-v012-visual/android_844x390.png'});

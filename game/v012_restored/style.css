@@ -140,3 +140,17 @@ main{align-items:start}.scene{align-self:start}
  .sidebar{border-width:7px;border-image-width:7px}
  .route-choice,.journal-entry,.route-event{border-width:6px;border-image-width:6px}
 }
+
+/* Compact landscape header: show graphical resources, counts and menu without clipping. */
+@media (orientation:landscape) and (min-width:651px) and (max-width:1050px){
+ header{gap:5px;padding:4px 8px}
+ .brand{gap:7px;flex:0 0 auto;letter-spacing:.035em}
+ .brand b{font-size:14px}
+ .brand small{font-size:7px;letter-spacing:.045em}
+ .emblem{width:27px;height:27px;font-size:15px}
+ .topstats{gap:3px;min-width:0;flex:1 1 auto;justify-content:center}
+ .topstats span{font-size:0;padding:2px 3px;border-width:2px;border-image-width:2px}
+ .topstats b{font-size:12px}
+ .topstats .caravan-resource-icon{width:16px;height:16px;margin-right:2px}
+ .menu{flex:0 0 auto;font-size:10px;padding:6px 7px}
+}
