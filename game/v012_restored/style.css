@@ -187,3 +187,20 @@ main{align-items:start}.scene{align-self:start}
  .wagon-quick-actions button{min-height:30px;font-size:9px}
  .wagon-quick-detail{min-height:24px!important;font-size:9px!important}
 }
+
+/* V13-B: real room production, limited to two collected-on-demand batches. */
+.wagon-quick-production{margin-top:6px;padding-top:5px;border-top:1px solid #77634e}
+.wagon-quick-output{display:flex;justify-content:space-between;gap:5px;align-items:center}
+.wagon-quick-output span{font-size:11px;color:#f5d19d;font-weight:650}
+.wagon-quick-output small{font-size:10px;color:#bad3be;white-space:nowrap}
+.wagon-quick-track{height:5px;border-radius:5px;overflow:hidden;background:#283842;margin-top:5px}
+.wagon-quick-track>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#b47a47,#f6c97d)}
+#quickCollect{width:100%;min-height:33px!important;padding:4px!important;margin-top:5px;
+ background:#70512d;border:1px solid #c8a36d;color:#ffdea7;font-size:11px!important;font-weight:750}
+#quickCollect:disabled{opacity:.5}
+@media (orientation:landscape) and (max-height:390px){
+ .wagon-quick{width:min(360px,calc(100% - 12px));padding:4px 6px}
+ .wagon-quick-production{margin-top:4px;padding-top:4px}
+ .wagon-quick-output span,.wagon-quick-output small{font-size:9px}
+ #quickCollect{min-height:30px!important;font-size:10px!important}
+}

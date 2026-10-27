@@ -109,6 +109,22 @@ const {chromium}=require('playwright-core');
  await page.locator('#quickWagonCrew [data-quick-worker="0"]').click();
  const job=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].job?.target);
  assert.equal(job,'rear','wagon shortcut must assign crew to selected wagon');
+ // A long-term worker is not paid by the old one-off reward system.
+ // Real production yields ready batches in the wagon and only pays on collection.
+ await page.evaluate(()=>window.__CARAVAN_QA.advance(100));
+ const pending=await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'));
+ assert.equal(pending.ready,2,'Wagon must accumulate at most two batches with a staffed worker');
+ const beforeCollect=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.morale);
+ await page.locator('#quickCollect').click();
+ const afterCollect=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.morale);
+ assert.ok(afterCollect>=beforeCollect,'Only collect button may grant goods');
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'))).ready,0);
+ assert.equal(await page.locator('#quickCollect').isDisabled(),true,'Second click cannot award stock');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForTimeout(200);
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'))).ready,0,
+   'Claim-once state must persist across reload');
+
  await page.locator('#cameraIn').click();
  await page.locator('#cameraOut').click();
  // Inject true two-finger touch input (not mouse wheel emulation).

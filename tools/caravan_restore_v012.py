@@ -37,7 +37,7 @@ for part in MANIFEST:
             target.parent.mkdir(parents=True,exist_ok=True)
             target.write_bytes(data)
 # The restored code is the same committed files as old v0.12, not rewritten code.
-for file in ["index.html","app.js","style.css","camera.js","journal.js","routes.js","ui_icons.js"]:
+for file in ["index.html","app.js","style.css","camera.js","journal.js","routes.js","production.js","ui_icons.js"]:
     source=ROOT/"game"/"v012_restored"/file
     assert source.is_file(),f"Missing original source: {file}"
     (OUT/file).write_bytes(source.read_bytes())
