@@ -49,3 +49,16 @@ test('time step cap and timeout fallback guarantee completion',()=>{
  assert.equal(state.elapsed,10);
  assert.ok(c.every(p=>p.boardingState==='aboard'));
 });
+
+test('departing during an exit cannot restart a completed engine repair',()=>{
+ const c=roster();c[0].mode='exiting';c[0].inside=.35;
+ c[0].job={target:'engine'};c[0].done=4;c[0].progress=1;
+ const b=B.begin('popil_mist',c,cars());
+ assert.equal(c[0].job,null);
+ const result=finish(b,c,cars());
+ assert.equal(result.done,true);
+ assert.equal(c[0].mode,'aboard');
+ assert.equal(c[0].done,4);
+ assert.equal(B.cancel(b,c),true);
+ assert.equal(c[0].job.target,'engine','Cancelling recovers original station job state');
+});
