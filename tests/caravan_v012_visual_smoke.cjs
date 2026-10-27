@@ -93,6 +93,8 @@ const {chromium}=require('playwright-core');
    'Direct click on the art of wagon two must select wagon two at the rendered camera scale');
  assert.equal(await page.locator('#wagonQuick').isVisible(),true,
    'Art tap should open a small contextual wagon card instead of requiring constructor panel');
+ await page.waitForFunction(()=>document.getElementById('quickRoomPreview').naturalWidth>0);
+ assert.equal(await page.locator('#quickRoomPreview').isVisible(),true,'Art is visible in compact workroom card');
  assert.equal(await page.locator('#quickWagonCrew [data-quick-worker]').count(),3,
    'Player can assign three existing crew from the wagon card');
  await page.screenshot({path:'caravan-v012-visual/v013_wagon_quick_action_card.png'});
@@ -190,6 +192,8 @@ const {chromium}=require('playwright-core');
  // Plan a physical route using the real original v0.12 scene, then arrive exactly once.
  await page.locator('#routeOpen').click();
  assert.equal(await page.locator('#routeList .route-choice').count(),2);
+ assert.equal(await page.locator('#routeList .route-landmark-art').count(),2);
+ await page.waitForFunction(()=>document.getElementById('stationArt').naturalWidth>0);
  const depart=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state);
  await page.locator('[data-route-id="popil_mist"]').click();
  const started=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state);
@@ -220,6 +224,7 @@ const {chromium}=require('playwright-core');
   'Incident must survive restart');
  await page.locator('#routeOpen').click();
  assert.equal(await page.locator('#routeIncident').isVisible(),true,'Decision panel must be visible');
+ await page.waitForFunction(()=>document.querySelector('#routeIncident .incident-art')?.naturalWidth>0);
  assert.equal(await page.locator('#routeList [data-route-id="popil_mist"]').count(),1);
  const choices=page.locator('#routeIncident [data-incident-option]:not([disabled])');
  assert.ok(await choices.count()>=1,'Player always has a feasible decision');
