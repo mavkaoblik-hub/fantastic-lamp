@@ -30,6 +30,14 @@
     carId:carIndex>=0?cars[carIndex].id:null}};
  }
  function preparePerson(person,cars,i){
+  // An exiting/completed employee has already finished the previous job.
+  // Never reactivate a completed engine repair and award it a second time
+  // simply because the train departs during the exit animation.
+  if(person.mode==='exiting'||person.mode==='completed'){
+   const next=Array.isArray(person.queue)?person.queue.find(q=>validJob({job:q},cars)):null;
+   person.job=next?{target:next.target}:null;
+   person.queue=[];
+  }
   const target=validJob(person,cars)||'engine';
   const assigned=Boolean(validJob(person,cars));
   person.boardingTarget=target;
