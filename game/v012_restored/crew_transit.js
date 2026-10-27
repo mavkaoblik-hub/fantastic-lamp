@@ -56,7 +56,7 @@
       p.location={kind:'platform',carId:null};
       p.boardingState='none';changed=true;
     }
-    if(p.location?.kind!=='platform')aboard++;
+    if(p.location?.kind==='locomotive'||p.location?.kind==='wagon'||(p.inside===1&&p.mode==='working'))aboard++;
    }
   }
   return {changed,aboard};
