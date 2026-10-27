@@ -229,3 +229,18 @@ main{align-items:start}.scene{align-self:start}
  #crewAboard{font-size:9px;white-space:nowrap}
  .sceneheading .chips{gap:3px;flex-wrap:wrap}
 }
+
+/* v0.13-D2 animated boarding and reversible pre-departure state. */
+.boarding-overlay[hidden],.boarding-cancel[hidden],#boardingCancelRoute[hidden]{display:none!important}
+.boarding-overlay{position:absolute;z-index:6;left:12px;top:12px;
+ background:rgba(22,34,37,.94);border:1px solid #c39864;color:#ffe0a4;
+ border-radius:5px;padding:7px 11px;font-size:12px;font-weight:700;pointer-events:none}
+.boarding-cancel{position:absolute;z-index:7;left:12px;top:48px;min-height:32px;
+ padding:4px 12px;border:1px solid #a77352;border-radius:5px;
+ background:#3d2a25;color:#f8c3a7;font-size:11px}
+#boardingCancelRoute{width:100%;margin:5px 0;padding:9px 12px;
+ background:#422d29;color:#f6c4aa;border:1px solid #bc8c6b}
+@media(max-width:1050px) and (orientation:landscape){
+ .boarding-overlay{left:6px;top:5px;padding:3px 6px;font-size:10px}
+ .boarding-cancel{left:6px;top:30px;min-height:26px;font-size:9px;padding:3px 7px}
+}
