@@ -1,0 +1,119 @@
+{
+  "format": "CARAVAN_UI_FRAMES_V1",
+  "items": [
+    {
+      "id": "frame.hud_resource_slot",
+      "path": "hud_resource_slot.png",
+      "sha256": "fb9516630c113a6ac9d777afe25b90593a973c189718108a7a194bfc8aa0b26a",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    },
+    {
+      "id": "frame.sidebar_frame",
+      "path": "sidebar_frame.png",
+      "sha256": "9656f024a569c5b9ce5f5ad8c02ce4416d7661e3efeab590afc1c7aa8a60125e",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    },
+    {
+      "id": "frame.journal_card",
+      "path": "journal_card.png",
+      "sha256": "59102ecf3d7d198cd7600c68d94dbbd79f28f52a023a4b5417795cdf17e54660",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    },
+    {
+      "id": "frame.route_card",
+      "path": "route_card.png",
+      "sha256": "f30c81e5c78ee11db82b9c373c20dfcda76d6e150ed073941c15727d5d3a749f",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    },
+    {
+      "id": "frame.incident_frame",
+      "path": "incident_frame.png",
+      "sha256": "bf11d5f912b66c76aaba0174d0678247c039ec5970736ead5bf7a5d0a2c5694d",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    },
+    {
+      "id": "frame.wagon_context_frame",
+      "path": "wagon_context_frame.png",
+      "sha256": "c570160523f6a8a16893b00a73c628f302f59037de5218afc59be2a0d9d8b44f",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    },
+    {
+      "id": "frame.progress_track",
+      "path": "progress_track.png",
+      "sha256": "ee65263dea9be72621fabadccef9f21b2bd537c4feb772c1ab551f23d5c66b3c",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    },
+    {
+      "id": "frame.status_warning_overlay",
+      "path": "status_warning_overlay.png",
+      "sha256": "dc26b47d117bb2cd9c487ef580d1560831661188f7493411f963a058a4536668",
+      "nine_slice_source": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "width": 480,
+      "height": 240,
+      "status": "design_candidate"
+    }
+  ],
+  "no_existing_art_replaced": true,
+  "approval_state": "pending_visual_review"
+}
