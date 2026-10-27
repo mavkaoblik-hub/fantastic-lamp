@@ -212,7 +212,7 @@
       "area": "art",
       "title": "Canonical icon role catalog",
       "status": "TESTING",
-      "next_step": "Canonical 12 UI + 4 resource runtime mapping now working; 16 additional semantic art icons rendered as external review pack (NOT yet in GitHub), eight frame candidate assets committed and bundled. No duplicates of currency/task icons.",
+      "next_step": "Art pack v0.13-C: 36 individual candidate sprites/72 transparent PNGs from prior source sheets, 12 UI variants (do not duplicate canon), 12 world landmarks, 12 production room illustrations. Local ZIP generated, checksum verified, GitHub registry and safe importer committed; binary PNGs NOT uploaded into GitHub or Android. Next review appearance and import approved subset.",
       "evidence": "game/assets/catalog/registry.json",
       "android_verified": false
     },
@@ -398,6 +398,13 @@
       "date": "2026-10-27",
       "phase": "M2",
       "change": "Persistent staffed production in original 14 cutaway wagons, specialization and room tiers, two-batch capped warehouse, claim-once resources, old reward path disabled for wagon work, existing locomotive repair retained. Backward-compatible caravan_v12 save. Automated tests PASS; physical Android QA pending.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.13-C graphic art review pack",
+      "date": "2026-10-27",
+      "phase": "art",
+      "change": "36 unique concept illustrations extracted to 72 transparent PNGs with SHA-256 manifest, local gallery, review ZIP; safe import tool and catalog metadata added to GitHub. No overwrite of original 103 art assets and not yet integrated into APK.",
       "device_tested": false
     }
   ],
