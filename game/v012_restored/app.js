@@ -158,6 +158,12 @@ function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,ph
 function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
+const wagonBadges={
+ ready:new Image(),working:new Image(),warning:new Image()
+};
+wagonBadges.ready.src='assets/ui_alpha/ui/ui_confirm.png';
+wagonBadges.working.src='assets/ui_alpha/ui/ui_workshop.png';
+wagonBadges.warning.src='assets/ui_alpha/ui/ui_warning.png';
 let canvas=$('stage'),c=canvas.getContext('2d'),CW=1200,CH=605,scale=1,offX=0,offY=0;let rects=[];
 const CAMERA=globalThis.CaravanV12Camera;
 if(!CAMERA)throw new Error('The verified v0.12 camera module must load before app.js');
@@ -586,6 +592,24 @@ function paint(){const logicalScale=scale;c.setTransform(canvas.width/(canvas.cl
    }
    if(w.id===state.selectedCarId){c.strokeStyle='rgba(255,204,137,.8)';c.lineWidth=2;c.setLineDash([8,7]);c.strokeRect(w.x+6,w.y+3,w.w-12,w.h-7);c.setLineDash([])}
  }
+ // Small fixed-screen-size approved icons show READY / WORKING without
+ // replacing the original sprites or creating another quest/currency icon.
+ // World-space anchors remain correct after one- or two-finger zoom.
+ for(const w of wagons){
+  if(!w.car)continue;
+  const info=PRODUCTION.inspect(production,state.cars,crew,w.id,state.morale);
+  if(!info)continue;
+  const marker=info.ready>0?wagonBadges.ready:
+    info.workers.length?wagonBadges.working:null;
+  if(marker?.complete&&marker.naturalWidth){
+   const unit=24/camera.zoom,space=5/camera.zoom;
+   c.drawImage(marker,w.x+w.w-unit-space,w.y-unit-space,unit,unit);
+  }
+ }
+ if(state.condition<30&&wagonBadges.warning.complete&&wagonBadges.warning.naturalWidth){
+   const unit=26/camera.zoom;
+   c.drawImage(wagonBadges.warning,335,280-unit,unit,unit);
+ }
  // Modular engine protection overlays rendered independently.
  if(state.locoLevel>=2)drawImg(m.attachments.plow_L2,20,413,78,64,.95);
  if(state.locoLevel>=3)drawImg(m.attachments.headlamp_L3,43,358,41,39,.92);
@@ -611,6 +635,10 @@ globalThis.__CARAVAN_QA.routeStart=(id)=>routeStart(id);
 globalThis.__CARAVAN_QA.routeDecision=(id)=>routeDecision(id);
 globalThis.__CARAVAN_QA.production=()=>structuredClone(production);
 globalThis.__CARAVAN_QA.productionInspect=(id)=>PRODUCTION.inspect(production,state.cars,crew,id,state.morale);
+globalThis.__CARAVAN_QA.wagonBadgeState=()=>state.cars.map(car=>{
+ const i=PRODUCTION.inspect(production,state.cars,crew,car.id,state.morale);
+ return {id:car.id,role:i.ready>0?'ready':i.workers.length?'working':'none'};
+});
 globalThis.__CARAVAN_QA.quick=()=>({visible:!$('wagonQuick').hidden,
  selectedCarId:state.selectedCarId,armedCrew,buttons:[...$('quickWagonCrew').querySelectorAll('[data-quick-worker]')].length});
 fit();setChosen();renderCrewPanel();cameraHud();requestAnimationFrame(tick);
