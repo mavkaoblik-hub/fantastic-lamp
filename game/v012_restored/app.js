@@ -690,44 +690,72 @@ function renderCharacter(p,i){const isWalking=p.mode==='walking'||p.mode==='patr
 }
 // D3 crew lives inside the existing approved v0.12 cutaway sprites.
 // This is presentation only; workers, production and saved state are untouched.
+// D4: individual motion and work cues follow the painted equipment for each
+// cutaway kind. Keep the original character artwork and clip to the room.
 function drawInteriorLife(){
  const actors=LIFE.build(crew,state.cars);
  for(const actor of actors){
   const person=crew[actor.personIndex];
   const frames=m.crew[person.role]?.idle;
   if(!frames?.length)continue;
-  const sprite=frames[Math.floor((t+(person.phase||0))*(actor.activity==='rest'?1.6:3.6))%frames.length];
+  const motion=LIFE.pose(actor,t);
+  const sprite=frames[Math.floor((t+(person.phase||0))*motion.frameRate)%frames.length];
   const bounds=actor.bounds;
   c.save();
   c.beginPath();c.rect(bounds.x,bounds.y,bounds.w,bounds.h);c.clip();
-  // Shadows and modest warm task lighting stay inside the existing window.
+  // Existing amber lamps and scene highlights remain visible. A gentle
+  // localized glow signals interaction without introducing new UI icons.
   if(state.effects){
-   const glow=c.createRadialGradient(actor.x+actor.width*.5,actor.y+actor.height*.63,2,
-     actor.x+actor.width*.5,actor.y+actor.height*.63,actor.height*.93);
-   glow.addColorStop(0,actor.activity==='repair'?'rgba(255,175,77,.23)':
-     actor.activity==='rest'?'rgba(248,183,94,.11)':'rgba(124,190,178,.14)');
-   glow.addColorStop(1,'rgba(0,0,0,0)');
+   const r=Math.max(20,actor.height*.88);
+   const glow=c.createRadialGradient(actor.fxX,actor.fxY,1,actor.fxX,actor.fxY,r);
+   const alpha=Math.max(0,Math.min(.36,motion.light));
+   const warm=actor.activity==='repair'?'232,162,84':
+     actor.activity==='care'?'140,204,141':
+     actor.activity==='watch'?'125,186,177':'240,182,113';
+   glow.addColorStop(0,'rgba('+warm+','+alpha.toFixed(3)+')');
+   glow.addColorStop(1,'rgba('+warm+',0)');
    c.fillStyle=glow;c.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   }
-  const bounce=(actor.activity==='rest'?.45:1.25)*Math.sin(t*(actor.activity==='watch'?1.3:3.1)+actor.personIndex);
-  c.fillStyle='rgba(2,9,13,.36)';
-  c.beginPath();c.ellipse(actor.x+actor.width*.5,actor.y+actor.height-1,actor.width*.65,3,0,0,6.283);c.fill();
-  drawImg(sprite,actor.x,actor.y+bounce,actor.width,actor.height);
-  // Small readable activity cues, not new canonical resource or quest icons.
+  c.fillStyle='rgba(2,9,13,.34)';
+  c.beginPath();c.ellipse(actor.x+actor.width*.5,actor.y+actor.height-1,actor.width*.62,3,0,0,6.283);c.fill();
+  // Rotate around the feet, not the head: the figure appears to lean to a
+  // bench or watch a panel and cannot jump out of the cutout.
+  c.save();
+  const footX=actor.x+actor.width*.5,footY=actor.y+actor.height;
+  c.translate(footX,footY);
+  c.rotate(motion.angle);
+  c.scale(1,motion.stretchY);
+  drawImg(sprite,-actor.width*.5+motion.shiftX,
+    -actor.height+motion.shiftY,actor.width,actor.height);
+  c.restore();
+  // Detail cues timed to actual activity. They are atmosphere only, not
+  // collectible resource counters or alternate quest/currency icons.
   if(state.effects){
-   if(actor.activity==='repair'&&Math.sin(t*8+actor.personIndex*1.9)>.54){
-    for(let n=0;n<3;n++)circle(actor.x+actor.width+2+n*3,
-      actor.y+actor.height*.49+Math.sin(t*10+n)*4,1.2,'rgba(255,196,107,.82)');
+   const f=motion.flare;
+   if(actor.activity==='repair'&&f>.05){
+    for(let n=0;n<3;n++){
+     const x=actor.fxX+Math.sin(t*7+n*2)*4;
+     const y=actor.fxY+Math.cos(t*11+n*2)*4;
+     circle(x,y,(.9+n*.27)*f+.3,'rgba(255,198,106,.82)');
+    }
+   }else if(actor.activity==='care'&&f>.1){
+    c.strokeStyle='rgba(169,220,167,'+(.2+f*.34).toFixed(2)+')';
+    c.lineWidth=1.1;c.beginPath();
+    c.moveTo(actor.fxX-3,actor.fxY+5);
+    c.quadraticCurveTo(actor.fxX+Math.sin(t*2)*3,actor.fxY-4,actor.fxX+3,actor.fxY-8);
+    c.stroke();
    }else if(actor.activity==='watch'){
-    c.strokeStyle='rgba(146,210,182,.46)';c.lineWidth=1.1;
-    c.beginPath();c.moveTo(actor.x+actor.width*.55,actor.y+8);
-    c.lineTo(actor.x+actor.width*.55+6,actor.y+8);c.stroke();
-   }else if(actor.activity==='care'){
-    c.fillStyle='rgba(149,222,185,.62)';
-    c.fillRect(actor.x+actor.width+1,actor.y+actor.height*.45,7,2);
+    const angle=Math.sin(t*.85+actor.personIndex)*.55;
+    c.strokeStyle='rgba(157,210,195,'+(.15+f*.25).toFixed(2)+')';
+    c.lineWidth=.9;c.beginPath();c.moveTo(actor.fxX,actor.fxY);
+    c.lineTo(actor.fxX+Math.cos(angle)*13,actor.fxY-8+Math.sin(angle)*4);c.stroke();
+   }else if(actor.activity==='rest'){
+    // Slow rise-and-fall in the shoulder line suggests breathing.
+    c.strokeStyle='rgba(252,218,168,.13)';c.lineWidth=.7;
+    c.beginPath();c.moveTo(actor.x+4,actor.y+10+motion.shiftY);
+    c.lineTo(actor.x+actor.width-4,actor.y+10+motion.shiftY);c.stroke();
    }
   }
-  // Space-conscious status label only when the car itself is focused.
   if(cameraMode==='wagon'&&state.selectedCarId===actor.carId){
    c.font='bold 9px system-ui';c.fillStyle='#f1ddb4';
    c.fillText(crewNames[actor.personIndex],actor.x-6,actor.y-3);
@@ -819,6 +847,10 @@ globalThis.__CARAVAN_QA.boarding=()=>({
 globalThis.__CARAVAN_QA.routeDecision=(id)=>routeDecision(id);
 globalThis.__CARAVAN_QA.production=()=>structuredClone(production);
 globalThis.__CARAVAN_QA.productionInspect=(id)=>PRODUCTION.inspect(production,state.cars,crew,id,state.morale);
+globalThis.__CARAVAN_QA.interiorMotionAt=(seconds)=>LIFE.build(crew,state.cars).map(a=>({
+ index:a.personIndex,carId:a.carId,wagonKind:a.wagonKind,activity:a.activity,
+ caption:a.caption,fxX:a.fxX,fxY:a.fxY,pose:LIFE.pose(a,seconds)
+}));
 globalThis.__CARAVAN_QA.interiorLife=()=>LIFE.build(crew,state.cars).map(a=>({
  index:a.personIndex,carId:a.carId,location:a.location,
  activity:a.activity,seat:a.seat,bounds:a.bounds,
