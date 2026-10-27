@@ -15,6 +15,7 @@ on:
       - 'tests/caravan_v012_journal.test.cjs'
       - 'tests/caravan_v012_routes.test.cjs'
       - 'tests/caravan_v013_production.test.cjs'
+      - 'tests/caravan_v013_crew_transit.test.cjs'
       - '.github/workflows/caravan-v012-original-android.yml'
   workflow_dispatch:
 permissions:
@@ -35,10 +36,11 @@ jobs:
           node --check game/v012_restored/journal.js
           node --check game/v012_restored/routes.js
           node --check game/v012_restored/production.js
+          node --check game/v012_restored/crew_transit.js
           node --check game/v012_restored/art_bridge_v013c.js
           node --check game/v012_restored/ui_icons.js
           node --check game/v012_restored/app.js
-          node --test tests/caravan_v012_camera.test.cjs tests/caravan_v012_journal.test.cjs tests/caravan_v012_routes.test.cjs tests/caravan_v013_production.test.cjs
+          node --test tests/caravan_v012_camera.test.cjs tests/caravan_v012_journal.test.cjs tests/caravan_v012_routes.test.cjs tests/caravan_v013_production.test.cjs tests/caravan_v013_crew_transit.test.cjs
       - name: Node and browser setup
         uses: actions/setup-node@v4
         with:
@@ -89,6 +91,7 @@ jobs:
           test -s "$GAME/journal.js"
           test -s "$GAME/routes.js"
           test -s "$GAME/production.js"
+          test -s "$GAME/crew_transit.js"
           test -s "$GAME/art_bridge_v013c.js"
           test -s "$GAME/art_config_v013c.js"
           test -s "$GAME/assets/locations/signal_relay_post.png"

@@ -222,3 +222,10 @@ main{align-items:start}.scene{align-self:start}
  #stationArt{width:80px;height:62px}
  .wagon-quick-room{min-height:36px;margin:3px 0;padding:2px 4px}
  #quickRoomPreview{width:68px;height:37px}.quick-room-state{font-size:9px}}
+
+/* v0.13-D1 compact route-aware onboard status. */
+#crewAboard{font-size:10px;letter-spacing:.02em;color:#f6d39c;white-space:nowrap}
+@media(max-width:1050px) and (orientation:landscape){
+ #crewAboard{font-size:9px;white-space:nowrap}
+ .sceneheading .chips{gap:3px;flex-wrap:wrap}
+}
