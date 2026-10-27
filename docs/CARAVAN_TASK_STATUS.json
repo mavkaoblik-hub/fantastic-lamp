@@ -269,6 +269,51 @@
       "next_step": "Original-art v0.12.5 includes route event decisions with pause/resume, save recovery, once-only results, Android browser smoke; full Android device sign-off remains pending.",
       "evidence": "game/v012_restored/",
       "android_verified": false
+    },
+    {
+      "id": "S-24",
+      "area": "interaction",
+      "title": "Compact contextual wagon management and direct crew placement",
+      "status": "IN_PROGRESS",
+      "next_step": "Implement V13-A without losing pinch or full-wagon focus",
+      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "android_verified": false
+    },
+    {
+      "id": "S-25",
+      "area": "production",
+      "title": "Persistent occupied workstations, timed production and claim-once collection",
+      "status": "BACKLOG",
+      "next_step": "V13-B replace old one-off reward source to prevent double payouts",
+      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "android_verified": false
+    },
+    {
+      "id": "S-26",
+      "area": "crew",
+      "title": "Character specializations, training, fatigue and resting",
+      "status": "BACKLOG",
+      "next_step": "V13-C persist specialization and avoid S.P.E.C.I.A.L. copying",
+      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "android_verified": false
+    },
+    {
+      "id": "S-27",
+      "area": "incidents",
+      "title": "Emergent wagon incidents and visual urgency indicators",
+      "status": "BACKLOG",
+      "next_step": "V13-D reuse source artwork with new approved UI",
+      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "android_verified": false
+    },
+    {
+      "id": "S-28",
+      "area": "balance",
+      "title": "Resource loop and route preparation balancing",
+      "status": "BACKLOG",
+      "next_step": "V13-E reconcile supply production/route spending and avoid duplicated currencies",
+      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "android_verified": false
     }
   ],
   "release_notes": [
@@ -355,5 +400,11 @@
     "original_android_debug_build": "PASS",
     "original_android_run": "NOT_YET_TESTED_ON_DEVICE",
     "regression_rule": "Do not replace v0.12 painterly rolling stock with geometric Canvas web/game.js; retain v0.4 only as separate mechanical prototype until gameplay merge."
+  },
+  "gameplay_reference": {
+    "source": "user-uploaded 89.51s gameplay video of v0.12, 27 Oct 2026",
+    "external_reference": "Fallout Shelter mechanics only, Bethesda official",
+    "document": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+    "preserve_art": "103 v0.12 sprites; no visual redesign"
   }
 }
