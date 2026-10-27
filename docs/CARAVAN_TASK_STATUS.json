@@ -274,9 +274,9 @@
       "id": "S-24",
       "area": "interaction",
       "title": "Compact contextual wagon management and direct crew placement",
-      "status": "IN_PROGRESS",
-      "next_step": "Implement V13-A without losing pinch or full-wagon focus",
-      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "status": "TESTING",
+      "next_step": "V13-A compact per-wagon context card and 3 crew assignment buttons implemented in authentic v0.12 sprite scene. Tap crew then tap car directly also queues existing job; opens detailed constructor only on demand. Browser tests PASS, physical Android touch/video QA pending; permanent production cycle remains S-25 BACKLOG.",
+      "evidence": "game/v012_restored/app.js;game/v012_restored/index.html;tests/caravan_v012_visual_smoke.cjs",
       "android_verified": false
     },
     {
@@ -384,6 +384,13 @@
       "date": "2026-10-27",
       "phase": "M1/M2 art integration",
       "change": "16 transparent icons (12 existing UI + 4 existing resource/status) generated from approved atlases, versioned with checksums, bundled and rendered in authentic offline scene; 8 distinct transparent nine-slice metallic frame design candidates committed and used; original 103 v0.12 sprites untouched; Chromium Android-sized smoke, resource UI, frame CSS, and debug APK success; 16 new missing-role rendered concepts available separately but not yet integrated.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.13-A direct wagon gameplay",
+      "date": "2026-10-27",
+      "phase": "new gameplay UX vertical slice",
+      "change": "Authentic painterly v0.12 wagon selected by art tap opens small nonmodal contextual card with crew selectors and optional full details; direct crew -> wagon tap-to-assign; existing queue, 3 crew, trips, journal, multi-touch and asset packs reused, no new resource economy; browser/Android workflow pass.",
       "device_tested": false
     }
   ],
