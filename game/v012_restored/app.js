@@ -5,6 +5,8 @@ const JOURNAL=globalThis.CaravanV12Journal;
 const ROUTES=globalThis.CaravanV12Routes;
 const PRODUCTION=globalThis.CaravanV13Production;
 const TRANSIT=globalThis.CaravanCrewTransit;
+const BOARDING=globalThis.CaravanBoardingD2;
+if(!BOARDING)throw Error('boarding.js must load before app.js');
 if(!TRANSIT)throw Error('crew_transit.js must load before app.js');
 const ART=globalThis.CaravanArtBridgeV13C;
 if(!ART)throw Error('art_bridge_v013c.js must load before app.js');
@@ -34,19 +36,29 @@ state.nextCarId=Math.max(3,Number(state.nextCarId)||3);
 
 const crewNames=['Марко','Олена','Данило'],crewSymbols=['⚒','✚','◈'];
 function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0}))}
-const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard']);
+const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding']);
 let crew=makeCrew();
-if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job)p.mode='patrol';return p})}
+if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job&&!['aboard','boarding'].includes(p.mode))p.mode='patrol';return p})}
 let chosenCrew=Number.isInteger(state.chosenCrew)?Math.max(0,Math.min(2,state.chosenCrew)):0;
 let eventLog=Array.isArray(state.events)?state.events.slice(0,8):[];
 let journal=JOURNAL.normalize(state.journal);
 let production=PRODUCTION.normalize(state.production,state.cars);
 state.route=ROUTES.normalize(state.route);
+// D2 pending boarding is not a paid trip. Keep it only if the saved route
+// remains valid and affordable; invalid pending work restores station crew.
+if(state.route.active)state.boarding=null;
+else if(state.boarding){
+ const previous=state.boarding;
+ const recovered=BOARDING.recover(previous,crew,state.cars,
+   id=>ROUTES.quote(state.route,state,id).ok);
+ if(!recovered){BOARDING.cancel(previous,crew);state.boarding=null;}
+ else state.boarding=recovered;
+}
 // Migrate old free-running prototype saves without inventing a paid-for trip.
 if(!state.route.active||ROUTES.pending(state.route))state.moving=false;
-// D1 safety migration for older saves that used exterior patrol mid-route.
-// No new job, resource debit, or reward is issued by this transition.
-TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
+// D1 safety migration for legacy active trips. D2 boarding is separate
+// and must not disembark early-arriving passengers.
+if(!state.boarding)TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
 const ROUTE_EVENT_LABELS={cache:'Схованка біля колії · +13 металу',rations:'Покинутий склад · +9 припасів',
  breakdown:'Зношені рейки · −9 стану, +5 металу',quiet:'Тихий перехід · до +4 моралі'};
 function renderRouteProgress(){
@@ -118,16 +130,51 @@ function routeDecision(optionId){
  msg('Рішення прийнято. Рейс продовжено.');
  return true;
 }
-function routeStart(id){
- const result=ROUTES.start(state.route,state,id);
- if(!result.ok){msg(result.reason);renderRouteMap();return false;}
- // D1: instant all-aboard safety while D2 boarding animation is unfinished.
- TRANSIT.synchronize(crew,state.cars,true);
- state.moving=true;
- logEvent('Вирушили зі станції «'+ROUTES.STATIONS[result.trip.from].name+'» до «'+ROUTES.STATIONS[result.trip.to].name+'»');
- setChosen();store();renderRouteMap();
- msg('Рейс розпочато: паливо −'+result.cost.fuel+', припаси −'+result.cost.supplies);
+function cancelBoarding(){
+ if(!state.boarding)return false;
+ const reverted=BOARDING.cancel(state.boarding,crew);
+ state.boarding=null;state.moving=false;
+ armedCrew=null;
+ setChosen();renderCrewPanel();store();
+ msg(reverted?'Посадку скасовано · запаси не витрачено':'Посадку скасовано');
  return true;
+}
+function routeStart(id){
+ if(state.route.active||state.boarding){msg('Посадка або рейс уже тривають');return false;}
+ const check=ROUTES.quote(state.route,state,id);
+ if(!check.ok){msg(check.reason);renderRouteMap();return false;}
+ const boarding=BOARDING.begin(id,crew,state.cars);
+ if(!boarding)return false;
+ state.boarding=boarding;state.moving=false;armedCrew=null;
+ logEvent('Посадка: '+ROUTES.STATIONS[check.spec.to].name);
+ setChosen();renderCrewPanel();store();
+ msg('Посадка перед відправленням · '+crew.length+' людини');
+ return true;
+}
+function advanceBoarding(dt){
+ if(!state.boarding||state.route.active)return;
+ const quote=ROUTES.quote(state.route,state,state.boarding.routeId);
+ if(!quote.ok){cancelBoarding();msg('Рейс недоступний: '+quote.reason);return;}
+ const done=BOARDING.tick(state.boarding,crew,state.cars,dt);
+ if(done.done){
+  const depart=ROUTES.start(state.route,state,state.boarding.routeId);
+  if(!depart.ok){cancelBoarding();msg(depart.reason);return;}
+  state.boarding=null;TRANSIT.synchronize(crew,state.cars,true);
+  state.moving=true;
+  logEvent('Вирушили: '+ROUTES.STATIONS[depart.trip.from].name+' → '+ROUTES.STATIONS[depart.trip.to].name);
+  setChosen();renderCrewPanel();store();
+  msg('Усі на борту · паливо −'+depart.cost.fuel+', припаси −'+depart.cost.supplies);
+ }else{
+  markDirty();
+  if(Math.floor((state.boarding.elapsed-dt)*4)!==Math.floor(state.boarding.elapsed*4))updateBoardingHud();
+ }
+}
+function updateBoardingHud(){
+ if(!state.boarding)return;
+ const count=crew.filter(p=>p.boardingState==='aboard').length;
+ $('crewAboard').textContent='ПОСАДКА · '+count+'/'+crew.length;
+ $('boardingNotice').textContent='ПОСАДКА · '+count+'/'+crew.length+' на борту';
+ $('routeActive').textContent='Посадка · '+count+'/'+crew.length+' на борту';
 }
 function advanceRoute(dt){
  if(!state.moving||!state.route.active)return;
@@ -263,7 +310,7 @@ function closeQuickWagon(){$('wagonQuick').hidden=true;}
 function touchSceneAt(e){
  const pos=canvasLogicalPoint(e),world=CAMERA.screenToWorld(camera,pos.x,pos.y),
  x=world.x,y=world.y;
- const ci=crew.findIndex(p=>!state.route.active&&p.mode!=='working'&&x>=p.x-3&&x<=p.x+43&&y>=395&&y<=496);
+ const ci=crew.findIndex(p=>!state.route.active&&!state.boarding&&p.mode!=='working'&&x>=p.x-3&&x<=p.x+43&&y>=395&&y<=496);
  if(ci>=0){
  chosenCrew=ci;
  armedCrew=ci;
@@ -564,8 +611,9 @@ function finishJob(p,i){
 }
 function nextOrPatrol(p){p.job=null;p.inside=0;p.completed=0;p.progress=0;p.transition=0;if(p.queue.length){const next=p.queue.shift();beginJob(p,next)}else{p.mode='patrol';p.dir=p.x>=850?-1:1}markDirty()}
 function update(dt){
- t+=dt;advanceRoute(dt);
- const onboard=TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
+ t+=dt;advanceBoarding(dt);advanceRoute(dt);
+ const onboard=state.boarding?{changed:false}:
+  TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
  if(onboard.changed)markDirty();
  moveAmount+=dt*(state.moving?state.speed:0);const speed=state.moving?state.speed:0;
  for(let i=0;i<crew.length;i++){const p=crew[i];p.phase=p.phase||i*.85;
@@ -589,9 +637,13 @@ function update(dt){
   // Passenger is inside the locomotive. No exterior patrol or rewards.
   p.inside=1;
  }
+ else if(p.mode==='boarding'){
+  // The pure boarding controller already advanced this animation.
+ }
  else{p.x+=p.dir*(p.role==='guard'?23:17);if(p.x<245){p.x=245;p.dir=1}if(p.x>1100){p.x=1100;p.dir=-1}markDirty()}}
  // Guard even against a legacy animation that completed mid-frame.
- const checked=TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
+ const checked=state.boarding?{changed:false}:
+   TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
  if(checked.changed)markDirty();
  // Advance once per frame; production ONLY accumulates claimable batches.
  // Original repair tasks remain available for the locomotive, not wagons.
@@ -605,11 +657,12 @@ function update(dt){
  }
  if(state.effects){const target=state.moving?13*state.speed:2.3;if(Math.random()<target*dt){bubbles.push({x:193+Math.random()*11,y:289,r:7+Math.random()*3,life:0,vx:20+speed*65+Math.random()*13,vy:26+Math.random()*11,opacity:.23+Math.random()*.15})}for(const p of bubbles){p.life+=dt;p.x+=dt*p.vx;p.y-=dt*p.vy;p.r+=dt*13}bubbles=bubbles.filter(p=>p.life<3.4)}else bubbles=[];
  rosterRefresh+=dt;if(rosterRefresh>.35){renderCrewPanel();renderQuickWagon();rosterRefresh=0}saveClock+=dt;if(saveClock>1.2){if(saveDirty)store();saveClock=0}}
-function renderCharacter(p,i){const isWalking=p.mode==='walking'||p.mode==='patrol'||p.mode==='entering'||p.mode==='exiting';const frames=m.crew[p.role]?.[isWalking?'walk':'idle'];if(!frames?.length)return;const idx=Math.floor((t+p.phase)*(isWalking?9:3))%frames.length,im=frames[idx];const cx=p.x,inside=p.inside||0;const factor=1-.26*inside,h=91*factor,w=43*factor,by=492-inside*50,bounce=isWalking?Math.abs(Math.sin((t+p.phase)*9))*2:Math.sin(t*3+i)*.3;
+function renderCharacter(p,i){const isWalking=p.mode==='walking'||p.mode==='patrol'||p.mode==='entering'||p.mode==='exiting'||(p.mode==='boarding'&&p.boardingState==='approaching');const frames=m.crew[p.role]?.[isWalking?'walk':'idle'];if(!frames?.length)return;const idx=Math.floor((t+p.phase)*(isWalking?9:3))%frames.length,im=frames[idx];const cx=p.x,inside=p.inside||0;const factor=1-.26*inside,h=91*factor,w=43*factor,by=492-inside*50,bounce=isWalking?Math.abs(Math.sin((t+p.phase)*9))*2:Math.sin(t*3+i)*.3;
  c.fillStyle=`rgba(0,0,0,${(0.48-.2*inside).toFixed(3)})`;c.beginPath();c.ellipse(cx+17,by,22*factor,5,0,0,6.283);c.fill();
  c.save();if(p.dir<0){c.translate(cx+w,0);c.scale(-1,1);drawImg(im,0,by-h-bounce,w,h)}else drawImg(im,cx,by-h-bounce,w,h);c.restore();
  if(i===chosenCrew){c.strokeStyle='#ffd391';c.lineWidth=2;c.setLineDash([4,3]);c.strokeRect(cx-3,by-h-4,w+6,h+8);c.setLineDash([])}
  if(p.mode==='working'){const jx=cx+14,jy=by-h-9;c.fillStyle='rgba(10,18,26,.85)';c.fillRect(jx-27,jy-12,62,12);c.fillStyle='#eec286';c.fillRect(jx-25,jy-10,58*p.progress,7);if(state.effects){for(let q=0;q<4;q++){const px=jx+Math.sin(t*13+q*2.2)*13,py=by-h*.47+Math.cos(t*11+q)*9;circle(px,py,1.4+q*.3,'rgba(255,188,79,.82)')}}}
+ else if(p.mode==='boarding'){c.fillStyle='#ffdfad';c.font='bold 11px system-ui';c.fillText('ПОСАДКА',cx-3,by-h-9)}
  else if(p.mode==='walking'){c.fillStyle='#ffdfad';c.font='bold 15px system-ui';c.fillText('➜',cx+8,by-h-9)}
  else if(p.mode==='entering'||p.mode==='exiting'){c.fillStyle='#ffd69a';c.font='bold 11px system-ui';c.fillText(p.mode==='entering'?'ВХІД':'ВИХІД',cx,by-h-9)}
  else if(p.mode==='completed'){c.fillStyle='#a8e8b6';c.font='bold 17px system-ui';c.fillText('✓',cx+12,by-h-9)}
@@ -683,6 +736,12 @@ globalThis.__CARAVAN_QA.journal=()=>JOURNAL.status(journal,state,crew);
 globalThis.__CARAVAN_QA.routes=()=>({route:structuredClone(state.route),choices:ROUTES.available(state.route),
  resources:{fuel:state.fuel,supplies:state.supplies,condition:state.condition}});
 globalThis.__CARAVAN_QA.routeStart=(id)=>routeStart(id);
+globalThis.__CARAVAN_QA.cancelBoarding=()=>cancelBoarding();
+globalThis.__CARAVAN_QA.boarding=()=>({
+ pending:state.boarding?{routeId:state.boarding.routeId,elapsed:state.boarding.elapsed}:null,
+ aboard:crew.filter(p=>p.boardingState==='aboard').length,
+ crew:crew.map(p=>({mode:p.mode,inside:p.inside,boardingState:p.boardingState}))
+});
 globalThis.__CARAVAN_QA.routeDecision=(id)=>routeDecision(id);
 globalThis.__CARAVAN_QA.production=()=>structuredClone(production);
 globalThis.__CARAVAN_QA.productionInspect=(id)=>PRODUCTION.inspect(production,state.cars,crew,id,state.morale);
