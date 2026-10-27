@@ -117,14 +117,18 @@ const {chromium}=require('playwright-core');
  const afterCollect=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.morale);
  assert.ok(afterCollect>=beforeCollect,'Only collect button may grant goods');
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'))).ready,0);
+ const collectedBeforeReload=await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2').collected);
  assert.equal(await page.locator('#quickCollect').isDisabled(),true,'Second click cannot award stock');
  await page.locator('#quickWagonClose').click();
  assert.equal(await page.locator('#wagonQuick').isVisible(),false,
    'Wagon context must close without opening the full constructor');
  await page.reload({waitUntil:'domcontentloaded'});
  await page.waitForTimeout(200);
- assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'))).ready,0,
-   'Claim-once state must persist across reload');
+ const claimedAfterReload=await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'));
+ assert.equal(claimedAfterReload.collected,collectedBeforeReload,
+   'Reload cannot duplicate the earlier claim transaction');
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.morale)),afterCollect,
+   'Newly produced stock may be ready, but cannot auto-credit resources');
 
  await page.locator('#cameraIn').click();
  await page.locator('#cameraOut').click();
