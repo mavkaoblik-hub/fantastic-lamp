@@ -6,6 +6,8 @@ const ROUTES=globalThis.CaravanV12Routes;
 const PRODUCTION=globalThis.CaravanV13Production;
 const TRANSIT=globalThis.CaravanCrewTransit;
 const BOARDING=globalThis.CaravanBoardingD2;
+const LIFE=globalThis.CaravanInteriorLifeD3;
+if(!LIFE)throw Error('interior_life.js must load before app.js');
 if(!BOARDING)throw Error('boarding.js must load before app.js');
 if(!TRANSIT)throw Error('crew_transit.js must load before app.js');
 const ART=globalThis.CaravanArtBridgeV13C;
@@ -280,9 +282,13 @@ function renderQuickWagon(){
   badge.textContent=({full:'СКЛАД ПОВНИЙ',ready:'Є ГОТОВА ПАРТІЯ',
     active:'ВИРОБНИЦТВО',idle:'ПРИЗНАЧТЕ ПРАЦІВНИКА'})[st];
  }
+ const liveActors=LIFE.build(crew,state.cars).filter(a=>a.carId===car.id);
  $('quickWagonStatus').textContent=(assigned.length?
   'Персонал: '+assigned.map(p=>crewNames[crew.indexOf(p)]).join(', '):
   'Вакантний вагон')+' · місця '+PRODUCTION.assigned(state.cars,crew,slot).length+'/'+PRODUCTION.capacity(car);
+ $('quickRoomCrewList').textContent=liveActors.length?
+  liveActors.map(a=>crewNames[a.personIndex]+' · '+a.caption).join(' / '):
+  'У приміщенні поки нікого немає';
  if(model){
   $('quickProductionName').textContent=model.label+' · '+model.amount+' за партію';
   $('quickProductionProgress').style.width=Math.floor(model.progress*100)+'%';
@@ -682,6 +688,54 @@ function renderCharacter(p,i){const isWalking=p.mode==='walking'||p.mode==='patr
  else if(p.mode==='entering'||p.mode==='exiting'){c.fillStyle='#ffd69a';c.font='bold 11px system-ui';c.fillText(p.mode==='entering'?'ВХІД':'ВИХІД',cx,by-h-9)}
  else if(p.mode==='completed'){c.fillStyle='#a8e8b6';c.font='bold 17px system-ui';c.fillText('✓',cx+12,by-h-9)}
 }
+// D3 crew lives inside the existing approved v0.12 cutaway sprites.
+// This is presentation only; workers, production and saved state are untouched.
+function drawInteriorLife(){
+ const actors=LIFE.build(crew,state.cars);
+ for(const actor of actors){
+  const person=crew[actor.personIndex];
+  const frames=m.crew[person.role]?.idle;
+  if(!frames?.length)continue;
+  const sprite=frames[Math.floor((t+(person.phase||0))*(actor.activity==='rest'?1.6:3.6))%frames.length];
+  const bounds=actor.bounds;
+  c.save();
+  c.beginPath();c.rect(bounds.x,bounds.y,bounds.w,bounds.h);c.clip();
+  // Shadows and modest warm task lighting stay inside the existing window.
+  if(state.effects){
+   const glow=c.createRadialGradient(actor.x+actor.width*.5,actor.y+actor.height*.63,2,
+     actor.x+actor.width*.5,actor.y+actor.height*.63,actor.height*.93);
+   glow.addColorStop(0,actor.activity==='repair'?'rgba(255,175,77,.23)':
+     actor.activity==='rest'?'rgba(248,183,94,.11)':'rgba(124,190,178,.14)');
+   glow.addColorStop(1,'rgba(0,0,0,0)');
+   c.fillStyle=glow;c.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
+  }
+  const bounce=(actor.activity==='rest'?.45:1.25)*Math.sin(t*(actor.activity==='watch'?1.3:3.1)+actor.personIndex);
+  c.fillStyle='rgba(2,9,13,.36)';
+  c.beginPath();c.ellipse(actor.x+actor.width*.5,actor.y+actor.height-1,actor.width*.65,3,0,0,6.283);c.fill();
+  drawImg(sprite,actor.x,actor.y+bounce,actor.width,actor.height);
+  // Small readable activity cues, not new canonical resource or quest icons.
+  if(state.effects){
+   if(actor.activity==='repair'&&Math.sin(t*8+actor.personIndex*1.9)>.54){
+    for(let n=0;n<3;n++)circle(actor.x+actor.width+2+n*3,
+      actor.y+actor.height*.49+Math.sin(t*10+n)*4,1.2,'rgba(255,196,107,.82)');
+   }else if(actor.activity==='watch'){
+    c.strokeStyle='rgba(146,210,182,.46)';c.lineWidth=1.1;
+    c.beginPath();c.moveTo(actor.x+actor.width*.55,actor.y+8);
+    c.lineTo(actor.x+actor.width*.55+6,actor.y+8);c.stroke();
+   }else if(actor.activity==='care'){
+    c.fillStyle='rgba(149,222,185,.62)';
+    c.fillRect(actor.x+actor.width+1,actor.y+actor.height*.45,7,2);
+   }
+  }
+  // Space-conscious status label only when the car itself is focused.
+  if(cameraMode==='wagon'&&state.selectedCarId===actor.carId){
+   c.font='bold 9px system-ui';c.fillStyle='#f1ddb4';
+   c.fillText(crewNames[actor.personIndex],actor.x-6,actor.y-3);
+  }
+  c.restore();
+ }
+ return actors;
+}
 function paint(){const logicalScale=scale;c.setTransform(canvas.width/(canvas.clientWidth||1),0,0,canvas.height/(canvas.clientHeight||1),0,0);c.fillStyle='#07131a';c.fillRect(0,0,canvas.clientWidth,canvas.clientHeight);c.translate(offX,offY);c.scale(logicalScale,logicalScale);c.save();c.beginPath();c.rect(0,0,CW,CH);c.clip();
  c.translate(CW/2,CH/2);c.scale(camera.zoom,camera.zoom);c.translate(-camera.cx,-camera.cy);
  const bg=data[m.background.src];if(bg?.complete&&bg.naturalWidth){const bx=-62+Math.min(36,moveAmount*1.7);c.drawImage(bg,bx,-8,1320,506)}
@@ -705,6 +759,8 @@ function paint(){const logicalScale=scale;c.setTransform(canvas.width/(canvas.cl
    }
    if(w.id===state.selectedCarId){c.strokeStyle='rgba(255,204,137,.8)';c.lineWidth=2;c.setLineDash([8,7]);c.strokeRect(w.x+6,w.y+3,w.w-12,w.h-7);c.setLineDash([])}
  }
+ // D3: show living crew inside wagon cutaways, not hovering over platforms.
+ drawInteriorLife();
  // Small fixed-screen-size approved icons show READY / WORKING without
  // replacing the original sprites or creating another quest/currency icon.
  // World-space anchors remain correct after one- or two-finger zoom.
@@ -736,6 +792,9 @@ function paint(){const logicalScale=scale;c.setTransform(canvas.width/(canvas.cl
   // Additional rendering guard: active route means NO platform figures,
   // even if an external save or future interaction creates a transient mode.
   if(state.route.active && (person.inside<.99 || !['working','aboard'].includes(person.mode)))continue;
+  // D3 interior occupants were already drawn in their assigned room.
+  // Remaining visible characters are station patrol or approaching doors.
+  if(LIFE.validLocation(person,state.cars))continue;
   renderCharacter(person,i);
  }
  if(state.effects&&state.cars.some(car=>car.kind==='workshop')&&Math.sin(t*7)>.84){for(let i=0;i<7;i++)circle(569+Math.sin(i*3+t*2)*i*3,370+Math.cos(i+t*3)*i*3,1.5,'rgba(255,177,67,.85)')}
@@ -760,6 +819,11 @@ globalThis.__CARAVAN_QA.boarding=()=>({
 globalThis.__CARAVAN_QA.routeDecision=(id)=>routeDecision(id);
 globalThis.__CARAVAN_QA.production=()=>structuredClone(production);
 globalThis.__CARAVAN_QA.productionInspect=(id)=>PRODUCTION.inspect(production,state.cars,crew,id,state.morale);
+globalThis.__CARAVAN_QA.interiorLife=()=>LIFE.build(crew,state.cars).map(a=>({
+ index:a.personIndex,carId:a.carId,location:a.location,
+ activity:a.activity,seat:a.seat,bounds:a.bounds,
+ x:a.x,y:a.y,width:a.width,height:a.height
+}));
 globalThis.__CARAVAN_QA.wagonBadgeState=()=>state.cars.map(car=>{
  const i=PRODUCTION.inspect(production,state.cars,crew,car.id,state.morale);
  return {id:car.id,role:i.ready>0?'ready':i.workers.length?'working':'none'};

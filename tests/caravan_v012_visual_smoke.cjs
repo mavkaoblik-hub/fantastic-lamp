@@ -110,6 +110,14 @@ const {chromium}=require('playwright-core');
  // A long-term worker is not paid by the old one-off reward system.
  // Real production yields ready batches in the wagon and only pays on collection.
  await page.evaluate(()=>window.__CARAVAN_QA.advance(100));
+ const interiorStation=await page.evaluate(()=>window.__CARAVAN_QA.interiorLife());
+ assert.ok(interiorStation.some(x=>x.carId==='c2'&&x.activity==='rest'),
+   'The assigned worker must appear within the actual residence cutaway');
+ assert.ok(interiorStation.every(x=>x.x>=x.bounds.x&&x.x+x.width<=x.bounds.x+x.bounds.w),
+   'Living crew must stay inside compartment bounds');
+ assert.ok(await page.locator('#quickRoomCrewList').innerText().then(t=>t.includes('Марко')),
+   'The contextual panel must show actual crew activity');
+ await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d3_living_room.png'});
  const pending=await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'));
  assert.ok(pending.ready>=1 && pending.ready<=2,'Working specialist must produce stock within the two-batch warehouse cap');
  const beforeCollect=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.morale);
@@ -221,6 +229,13 @@ const {chromium}=require('playwright-core');
  const cabin=await page.evaluate(()=>window.__CARAVAN_QA.transit());
  assert.equal(cabin.phase,'TRAVELLING');
  assert.equal(cabin.aboard,3,'All three workers must be inside during motion');
+ const living=await page.evaluate(()=>window.__CARAVAN_QA.interiorLife());
+ assert.equal(living.length,3,'All crew should be represented in train interiors during travel');
+ assert.ok(living.every(p=>p.location==='wagon'||p.location==='locomotive'),
+   'Crew visuals must not float over outside tracks');
+ assert.ok(living.every(p=>p.x>=p.bounds.x&&p.y>=p.bounds.y&&
+   p.x+p.width<=p.bounds.x+p.bounds.w&&p.y+p.height<=p.bounds.y+p.bounds.h),
+   'Interior sprites must be clipped and placed inside room openings');
  assert.equal(cabin.outside,0,'No character may patrol outside while train moves');
  assert.ok(cabin.crew.every(x=>x.inside===1));
  await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d1_train_all_aboard.png'});
