@@ -7,6 +7,8 @@ on:
       - 'game/v012_asset_packs/**'
       - 'game/assets/ui_alpha_v1/**'
       - 'game/assets/ui_frames_v1/**'
+      - 'game/assets/review_v013c/**'
+      - 'game/assets/painterly_v021/assets/locations/**'
       - 'tools/caravan_restore_v012.py'
       - 'tests/caravan_v012_visual_smoke.cjs'
       - 'tests/caravan_v012_camera.test.cjs'
@@ -33,6 +35,7 @@ jobs:
           node --check game/v012_restored/journal.js
           node --check game/v012_restored/routes.js
           node --check game/v012_restored/production.js
+          node --check game/v012_restored/art_bridge_v013c.js
           node --check game/v012_restored/ui_icons.js
           node --check game/v012_restored/app.js
           node --test tests/caravan_v012_camera.test.cjs tests/caravan_v012_journal.test.cjs tests/caravan_v012_routes.test.cjs tests/caravan_v013_production.test.cjs
@@ -86,6 +89,9 @@ jobs:
           test -s "$GAME/journal.js"
           test -s "$GAME/routes.js"
           test -s "$GAME/production.js"
+          test -s "$GAME/art_bridge_v013c.js"
+          test -s "$GAME/art_config_v013c.js"
+          test -s "$GAME/assets/locations/signal_relay_post.png"
           test -s "$GAME/ui_icons.js"
           test -s "$GAME/assets/ui_alpha/ui/ui_tasks_open.png"
           test -s "$GAME/assets/ui_alpha/resource/resource_metal.png"
@@ -99,12 +105,16 @@ jobs:
               if not line.lstrip().startswith("@import url("))+"\n",encoding="utf-8")
           assert "app.js" in (root/"index.html").read_text()
           art=root/"assets"
-          original=[p for p in art.rglob("*") if p.is_file() and p.suffix.lower() in (".png",".jpg") and "ui_alpha" not in p.parts and "ui_frames" not in p.parts]
+          original=[p for p in art.rglob("*") if p.is_file() and p.suffix.lower() in (".png",".jpg") and "ui_alpha" not in p.parts and "ui_frames" not in p.parts and "locations" not in p.parts and "review_v013c" not in p.parts]
           new_ui=[p for p in (art/"ui_alpha").rglob("*.png") if p.is_file()]
           frames=[p for p in (art/"ui_frames").rglob("*.png") if p.is_file()]
+          locations=[p for p in (art/"locations").rglob("*.png") if p.is_file()]
+          review=[p for p in (art/"review_v013c").rglob("*.png") if p.is_file()]
           assert len(original)==103,f"Original source art count changed: {len(original)}"
           assert len(new_ui)==16,f"Wrong count of approved UI icons: {len(new_ui)}"
           assert len(frames)==8,f"Missing decorative UI frames: {len(frames)}"
+          assert len(locations)==8,f"Missing fallback landscapes: {len(locations)}"
+          assert len(review) in (0,72),f"Partial review pack: {len(review)}"
           PY
       - name: Compile original restored Android build
         run: gradle -p android --no-daemon --stacktrace :app:assembleDebug

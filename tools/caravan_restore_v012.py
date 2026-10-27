@@ -37,7 +37,7 @@ for part in MANIFEST:
             target.parent.mkdir(parents=True,exist_ok=True)
             target.write_bytes(data)
 # The restored code is the same committed files as old v0.12, not rewritten code.
-for file in ["index.html","app.js","style.css","camera.js","journal.js","routes.js","production.js","ui_icons.js"]:
+for file in ["index.html","app.js","style.css","camera.js","journal.js","routes.js","production.js","ui_icons.js","art_bridge_v013c.js"]:
     source=ROOT/"game"/"v012_restored"/file
     assert source.is_file(),f"Missing original source: {file}"
     (OUT/file).write_bytes(source.read_bytes())
@@ -74,12 +74,37 @@ for item in frame_manifest["items"]:
     dest=OUT/"assets/ui_frames"/item["path"]
     dest.parent.mkdir(parents=True,exist_ok=True)
     copyfile(src,dest)
+# Reuse eight painterly location illustrations already committed to GitHub.
+# These are separate from the immutable 103 scene/wagon/crew files.
+fallback_root=ROOT/"game/assets/painterly_v021/assets/locations"
+fallback_files=sorted(fallback_root.glob("*.png"))
+assert len(fallback_files)==8,"Expected eight painterly location fallback files"
+for source in fallback_files:
+    target=OUT/"assets/locations"/source.name
+    target.parent.mkdir(parents=True,exist_ok=True)
+    copyfile(source,target)
+# Review pack is optional, never silently invented from metadata alone.
+review_root=ROOT/"game/assets/review_v013c"
+review_enabled=False
+if (review_root/"manifest.json").exists():
+    review=json.loads((review_root/"manifest.json").read_text(encoding="utf-8"))
+    assert len(review["assets"])==72,"Partial review pack"
+    for item in review["assets"]:
+        source=review_root/item["path"]
+        assert hashlib.sha256(source.read_bytes()).hexdigest()==item["sha256"],f"Unverified sprite {item['id']}"
+        dest=OUT/"assets/review_v013c"/item["path"]
+        dest.parent.mkdir(parents=True,exist_ok=True)
+        copyfile(source,dest)
+    review_enabled=True
+(OUT/"art_config_v013c.js").write_text(
+    "globalThis.CARAVAN_ARTPACK_V013C="+("true" if review_enabled else "false")+";\n",
+    encoding="utf-8")
 # The original art manifest stays untouched.
 assert "CARAVAN_MANIFEST" in index
 report={"format":"CARAVAN_V012_ORIGINAL_SOURCE_VALIDATION_V1",
         "source_branch":"caravan-v012-android-migration",
         "source_archives":[{"name":e["name"],"sha256":e["sha256"],"bytes":e["size"]} for e in MANIFEST],
-        "original_art_count":len(images),"approved_ui_rgba_count":len(ui_manifest["items"]),"generated_frame_count":len(frame_manifest["items"]),"unique_image_references_in_html":len(refs),
+        "original_art_count":len(images),"approved_ui_rgba_count":len(ui_manifest["items"]),"generated_frame_count":len(frame_manifest["items"]),"fallback_scenery_count":len(fallback_files),"review_art_count":72 if review_enabled else 0,"unique_image_references_in_html":len(refs),
         "verified_image_references":len(refs),"unresolved_images":missing,
         "original_render_source":["game/v012_restored/index.html","game/v012_restored/app.js","game/v012_restored/style.css","game/v012_restored/camera.js"],
         "warning":"v0.12 is reference game source; later v0.4 mechanics are NOT yet migrated to it"}
