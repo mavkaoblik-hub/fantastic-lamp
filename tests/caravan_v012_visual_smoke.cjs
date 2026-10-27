@@ -115,9 +115,21 @@ const {chromium}=require('playwright-core');
    'The assigned worker must appear within the actual residence cutaway');
  assert.ok(interiorStation.every(x=>x.x>=x.bounds.x&&x.x+x.width<=x.bounds.x+x.bounds.w),
    'Living crew must stay inside compartment bounds');
+ const workPose=await page.evaluate(()=>({
+  before:window.__CARAVAN_QA.interiorMotionAt(1.2),
+  after:window.__CARAVAN_QA.interiorMotionAt(2.1)
+ }));
+ assert.equal(workPose.before.length,workPose.after.length);
+ assert.ok(workPose.before.some((a,i)=>a.carId==='c2'&&a.wagonKind==='quarters'&&
+   JSON.stringify(a.pose)!==JSON.stringify(workPose.after[i].pose)),
+   'Residential crew should breathe and shift naturally between frames');
+ assert.ok(workPose.before.every(p=>p.fxX>=0&&p.fxY>=0),
+   'Equipment effect anchors must remain within positive scene coordinates');
  assert.ok(await page.locator('#quickRoomCrewList').innerText().then(t=>t.includes('Марко')),
    'The contextual panel must show actual crew activity');
  await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d3_living_room.png'});
+ await page.evaluate(()=>window.__CARAVAN_QA.advance(.9));
+ await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d4_workstation_motions.png'});
  const pending=await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'));
  assert.ok(pending.ready>=1 && pending.ready<=2,'Working specialist must produce stock within the two-batch warehouse cap');
  const beforeCollect=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.morale);
