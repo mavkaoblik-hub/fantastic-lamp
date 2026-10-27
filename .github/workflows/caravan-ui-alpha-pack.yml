@@ -1,0 +1,46 @@
+name: CARAVAN - Approved UI RGBA Candidate Pack
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/caravan_alpha_icons.py'
+      - '.github/workflows/caravan-ui-alpha-pack.yml'
+      - 'game/assets/catalog/crops_v1/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  extract-approved-icons:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install extraction and pixel QA dependencies
+        run: pip install --disable-pip-version-check --no-cache-dir pillow==11.3.0 numpy==2.2.6 opencv-python-headless==4.12.0.88
+      - name: Segment existing approved source art into transparent candidates
+        run: python tools/caravan_alpha_icons.py --out build/caravan_alpha_v1
+      - name: Verify alpha and canonical count
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          output=Path('build/caravan_alpha_v1')
+          report=json.loads((output/'manifest.json').read_text())
+          assert len(report['items'])==16
+          for x in report['items']:
+            im=Image.open(output/x['path'])
+            assert im.mode=='RGBA' and im.size==(128,128)
+            assert im.getextrema()[3][0]==0 and im.getextrema()[3][1]==255
+          assert (output/'CONTACT_SHEET.png').is_file()
+          print('All 16 original-style alpha PNG candidates passed integrity checks')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CARAVAN-Approved-UI-Alpha-Candidates-16
+          path: build/caravan_alpha_v1/
+          if-no-files-found: error
+          retention-days: 30
