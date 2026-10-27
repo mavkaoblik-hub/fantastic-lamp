@@ -192,7 +192,7 @@ const {chromium}=require('playwright-core');
  assert.equal(cabin.aboard,3,'All three workers must be inside during motion');
  assert.equal(cabin.outside,0,'No character may patrol outside while train moves');
  assert.ok(cabin.crew.every(x=>x.inside===1));
- await page.screenshot({path:'caravan-v012-visual/v013d1_train_all_aboard.png'});
+ await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d1_train_all_aboard.png'});
  assert.equal(await page.locator('#travel').innerText(),'⏸ Пауза');
  await page.locator('#travel').click();
  const paused=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state);
@@ -202,6 +202,14 @@ const {chromium}=require('playwright-core');
  const parkedProgress=paused.route.active.elapsed;
  await page.evaluate(()=>window.__CARAVAN_QA.advance(3));
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.route.active.elapsed)),parkedProgress);
+ // Simulate legacy save made while an exterior character was erroneously
+ // patrolling during the existing trip. D1 must rehouse them on the train.
+ await page.evaluate(()=>{
+  const key='caravan_v12',saved=JSON.parse(localStorage.getItem(key));
+  saved.crewData[2].mode='patrol';saved.crewData[2].inside=0;
+  saved.crewData[2].location={kind:'platform',carId:null};
+  localStorage.setItem(key,JSON.stringify(saved));
+ });
  await page.reload({waitUntil:'domcontentloaded'});
  await page.waitForTimeout(400);
  const savedJourney=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state);
