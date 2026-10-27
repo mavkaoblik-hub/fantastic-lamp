@@ -318,10 +318,10 @@
     {
       "id": "S-29",
       "title": "Crew stays aboard train during active routes; boarding and internal work lifecycle",
-      "status": "READY_FOR_IMPLEMENTATION",
+      "status": "TESTING",
       "area": "gameplay",
-      "next_step": "D1 safety: hide exterior crew and normalize existing trip saves for any route.active; D2 boarding/allAboard and route start; D3 interior sprites and role indicators. TC-01..TC-18. Do not change original art.",
-      "evidence": "docs/CARAVAN_V013D_CREW_ABOARD_TZ.md",
+      "next_step": "D1 implemented: absolute shelter invariant during active route (travelling/manual pause/incident/reload), no exterior patrol or rendering, existing repair one-shot safe, worker production preserved, wagon detach/reassignment blocked while route active. 6 pure transit tests + browser regression. D2 boarding animation and D3 full interior living scenes remain NOT implemented. Physical Android touch verification required.",
+      "evidence": "game/v012_restored/crew_transit.js;tests/caravan_v013_crew_transit.test.cjs;tests/caravan_v012_visual_smoke.cjs",
       "android_verified": false
     }
   ],
@@ -421,6 +421,13 @@
       "date": "2026-10-27",
       "phase": "art-game integration",
       "change": "Real station images (6 station roles), midroute incident images (3 roles), working wagon preview (14 types), two approved status badges drawn above wagons at camera-stable size; uses 8 existing painterly location fallback assets in signed offline APK. Separate playable web demo overlays 72 SHA-verified v0.13C candidate PNGs (36 unique roles) without modifying original 103 sprites. Binary review art not yet in GitHub or Android; physical touch test pending.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.13-D1 crew onboard safety",
+      "date": "2026-10-27",
+      "phase": "D1",
+      "change": "All 3 crew inside loco/cars during active route, including paused and incident, old save migration, no exterior scene render. Prevent route-time reassignment and car attach/detach, avoid repeated loco repair payouts. Boarding animation D2 and full room-life D3 still pending.",
       "device_tested": false
     }
   ],
