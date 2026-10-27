@@ -204,3 +204,21 @@ main{align-items:start}.scene{align-self:start}
  .wagon-quick-output span,.wagon-quick-output small{font-size:9px}
  #quickCollect{min-height:30px!important;font-size:10px!important}
 }
+
+/* V13-C painterly station art & room cards, optional review pack with safe fallback. */
+.route-landmark-art{width:100%;height:112px;object-fit:contain;display:block;background:#17252a;margin-bottom:8px}
+#stationArt{float:right;width:104px;height:80px;object-fit:contain;margin:0 0 6px 8px}
+.route-station::after{content:"";display:table;clear:both}
+.incident-art{display:block;width:100%;height:112px;object-fit:contain;background:#182329;margin:0 0 8px}
+.wagon-quick-room{display:flex;align-items:center;gap:8px;margin:5px 0 3px;padding:3px 5px;
+ min-height:44px;border:1px solid #736049;border-radius:4px;background:#151f22}
+#quickRoomPreview{width:83px;height:50px;object-fit:contain;flex:0 0 auto}
+.quick-room-state{font-size:10px;font-weight:750;letter-spacing:.03em;color:#b9bbac}
+.quick-room-state[data-room-state="ready"]{color:#e6c175}
+.quick-room-state[data-room-state="full"]{color:#e29b69}
+.quick-room-state[data-room-state="active"]{color:#9bc5a0}
+@media(max-width:1050px) and (orientation:landscape){
+ .route-landmark-art,.incident-art{height:86px}
+ #stationArt{width:80px;height:62px}
+ .wagon-quick-room{min-height:36px;margin:3px 0;padding:2px 4px}
+ #quickRoomPreview{width:68px;height:37px}.quick-room-state{font-size:9px}}

@@ -4,6 +4,8 @@ const KEY='caravan_v12';
 const JOURNAL=globalThis.CaravanV12Journal;
 const ROUTES=globalThis.CaravanV12Routes;
 const PRODUCTION=globalThis.CaravanV13Production;
+const ART=globalThis.CaravanArtBridgeV13C;
+if(!ART)throw Error('art_bridge_v013c.js must load before app.js');
 if(!JOURNAL||!ROUTES||!PRODUCTION)throw Error('journal.js, routes.js and production.js must load before app.js');
 const defaultState=()=>({middle:'workshop',rear:'quarters',levels:{},locoLevel:1,cars:[{id:'c1',kind:'workshop',level:1},{id:'c2',kind:'quarters',level:1}],selectedCarId:'c1',nextCarId:3,crew:'mechanic',moving:false,speed:1,night:false,effects:true,metal:210,fuel:80,morale:75,condition:64,supplies:48,day:1});
 let state=defaultState();
@@ -55,6 +57,12 @@ function renderRouteMap(){
  const s=state.route,active=ROUTES.progress(s);
  $('stationName').textContent=ROUTES.STATIONS[s.stationId].name;
  $('stationSubtitle').textContent=ROUTES.STATIONS[s.stationId].description;
+ const stationThumb=$('stationArt');
+ if(stationThumb){
+  const next=ART.station(s.stationId);
+  if(next&&stationThumb.getAttribute('src')!==next)stationThumb.src=next;
+  stationThumb.hidden=!next;
+ }
  $('routeCount').textContent=s.completed+' завершених рейсів · день '+state.day;
  const last=s.history[s.history.length-1];
  $('routeLastEvent').textContent=last?
@@ -62,7 +70,8 @@ function renderRouteMap(){
  $('routeList').innerHTML=ROUTES.available(s).map(r=>{
   const check=ROUTES.quote(s,state,r.id);
   const title=ROUTES.STATIONS[r.to];
-  return '<article class="route-choice"><div class="route-location">'+title.name+'</div>'+
+  return '<article class="route-choice">'+ART.image(ART.station(r.to),'route-landmark-art')+
+   '<div class="route-location">'+title.name+'</div>'+
    '<p>'+title.description+'</p>'+
    '<small>⛽ '+r.fuel+' палива · ▧ '+r.supplies+' припасів · '+r.duration+' с · '+r.risk+' ризик</small>'+
    '<button type="button" data-route-id="'+r.id+'" '+(check.ok?'':'disabled')+
@@ -83,7 +92,8 @@ function renderRouteIncident(){
  const event=ROUTES.pending(state.route);
  if(!event){node.hidden=true;node.innerHTML='';return;}
  node.hidden=false;
- node.innerHTML='<h4>⚠ '+event.title+'</h4><p>'+event.description+'</p>'+
+ node.innerHTML=ART.image(ART.incident(event.id),'incident-art')+
+  '<h4>⚠ '+event.title+'</h4><p>'+event.description+'</p>'+
    '<div class="incident-options">'+event.choices.map(choice=>{
     const quote=ROUTES.choiceStatus(state,choice);
     const detail=Object.entries(choice.delta).map(([key,val])=>{
@@ -191,6 +201,19 @@ function renderQuickWagon(){
  $('quickWagonName').textContent='ВАГОН '+(slot+1)+' · '+m.wagon[car.kind].title+' · L'+levelFor(car);
  const assigned=crew.filter(p=>p.job?.target===target);
  const model=PRODUCTION.inspect(production,state.cars,crew,car.id,state.morale);
+ const picture=$('quickRoomPreview'),badge=$('quickRoomState');
+ if(picture){
+  const src=ART.room(car.kind,m.wagon[car.kind]?.levels?.[0]?.src);
+  if(src&&picture.getAttribute('src')!==src)picture.src=src;
+  picture.hidden=!src;
+ }
+ if(model&&badge){
+  const st=model.ready>=2?'full':model.ready>0?'ready':
+    model.workers.length?'active':'idle';
+  badge.dataset.roomState=st;
+  badge.textContent=({full:'СКЛАД ПОВНИЙ',ready:'Є ГОТОВА ПАРТІЯ',
+    active:'ВИРОБНИЦТВО',idle:'ПРИЗНАЧТЕ ПРАЦІВНИКА'})[st];
+ }
  $('quickWagonStatus').textContent=(assigned.length?
   'Персонал: '+assigned.map(p=>crewNames[crew.indexOf(p)]).join(', '):
   'Вакантний вагон')+' · місця '+PRODUCTION.assigned(state.cars,crew,slot).length+'/'+PRODUCTION.capacity(car);
