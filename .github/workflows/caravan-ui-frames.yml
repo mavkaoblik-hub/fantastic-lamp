@@ -1,0 +1,54 @@
+name: CARAVAN - UI Frames Production Candidates
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/caravan_ui_frames.py'
+      - '.github/workflows/caravan-ui-frames.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  frames:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install image generation dependency
+        run: pip install --disable-pip-version-check pillow==11.3.0
+      - name: Produce consistent alpha 9-slice UI frame candidates
+        run: python tools/caravan_ui_frames.py --out build/caravan_ui_frames
+      - name: Verify all generated frame assets
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          p=Path('build/caravan_ui_frames')
+          data=json.loads((p/'manifest.json').read_text())
+          assert len(data['items'])==8
+          for row in data['items']:
+            im=Image.open(p/row['path'])
+            assert im.mode=='RGBA' and im.size==(480,240)
+            assert im.getpixel((240,120))[3]==0
+          print('PASS eight transparent reviewed-candidate frames')
+          PY
+      - name: Commit canonical frame candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p game/assets/ui_frames_v1
+          cp -a build/caravan_ui_frames/. game/assets/ui_frames_v1/
+          git add game/assets/ui_frames_v1/
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Add 8 new reusable original-style UI frame candidates"
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CARAVAN-8-UI-FRAMES-review
+          path: build/caravan_ui_frames/
+          retention-days: 30
