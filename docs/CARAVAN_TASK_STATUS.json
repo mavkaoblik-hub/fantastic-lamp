@@ -212,7 +212,7 @@
       "area": "art",
       "title": "Canonical icon role catalog",
       "status": "TESTING",
-      "next_step": "Art pack v0.13-C: 36 individual candidate sprites/72 transparent PNGs from prior source sheets, 12 UI variants (do not duplicate canon), 12 world landmarks, 12 production room illustrations. Local ZIP generated, checksum verified, GitHub registry and safe importer committed; binary PNGs NOT uploaded into GitHub or Android. Next review appearance and import approved subset.",
+      "next_step": "Integrated visual placement system for 6 route stations, 3 incidents, 14 wagon production room types. Eight pre-existing painterly location files bundled in Android as fallback; all 36 v0.13-C candidate roles (72 PNG files) verified and merged into an isolated playable WEB ZIP in conversation. Binary v0.13-C sprites are NOT in GitHub/APK; staging importer verifies SHA before promotion.",
       "evidence": "game/assets/catalog/registry.json",
       "android_verified": false
     },
@@ -275,7 +275,7 @@
       "area": "interaction",
       "title": "Compact contextual wagon management and direct crew placement",
       "status": "TESTING",
-      "next_step": "V13-A compact per-wagon context card and 3 crew assignment buttons implemented in authentic v0.12 sprite scene. Tap crew then tap car directly also queues existing job; opens detailed constructor only on demand. Browser tests PASS, physical Android touch/video QA pending; permanent production cycle remains S-25 BACKLOG.",
+      "next_step": "Art tap still selects the authentic wagon, opens contextual card with original or optional new room illustration; two-finger camera and original character animations preserved.",
       "evidence": "game/v012_restored/app.js;game/v012_restored/index.html;tests/caravan_v012_visual_smoke.cjs",
       "android_verified": false
     },
@@ -284,7 +284,7 @@
       "area": "production",
       "title": "Persistent occupied workstations, timed production and claim-once collection",
       "status": "TESTING",
-      "next_step": "V13-B real wagon production integrated: 14 kinds with per-kind output, worker specialization speed, L1=1/L2=2 places, 2-batch storage cap, collection via in-scene card only, no duplicate legacy wagon payouts, local save migration. Node unit and Chrome browser PASS; physical Android/touch QA pending. No offline time credit yet.",
+      "next_step": "Production with contextual room illustrations and in-scene approved READY / WORKING indicator markers; visual source picks optional v0.13C room candidates only in locally overlaid web demo, preserves original train art. No additional automatic resource payout.",
       "evidence": "game/v012_restored/production.js;tests/caravan_v013_production.test.cjs;tests/caravan_v012_visual_smoke.cjs",
       "android_verified": false
     },
@@ -405,6 +405,13 @@
       "date": "2026-10-27",
       "phase": "art",
       "change": "36 unique concept illustrations extracted to 72 transparent PNGs with SHA-256 manifest, local gallery, review ZIP; safe import tool and catalog metadata added to GitHub. No overwrite of original 103 art assets and not yet integrated into APK.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.13-C art-linked map / room cards",
+      "date": "2026-10-27",
+      "phase": "art-game integration",
+      "change": "Real station images (6 station roles), midroute incident images (3 roles), working wagon preview (14 types), two approved status badges drawn above wagons at camera-stable size; uses 8 existing painterly location fallback assets in signed offline APK. Separate playable web demo overlays 72 SHA-verified v0.13C candidate PNGs (36 unique roles) without modifying original 103 sprites. Binary review art not yet in GitHub or Android; physical touch test pending.",
       "device_tested": false
     }
   ],
