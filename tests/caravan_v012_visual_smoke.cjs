@@ -95,6 +95,8 @@ const {chromium}=require('playwright-core');
    'Art tap should open a small contextual wagon card instead of requiring constructor panel');
  assert.equal(await page.locator('#quickWagonCrew [data-quick-worker]').count(),3,
    'Player can assign three existing crew from the wagon card');
+ await page.screenshot({path:'caravan-v012-visual/v013_wagon_quick_action_card.png'});
+
  await page.locator('#quickWagonClose').click();
  assert.equal(await page.locator('#wagonQuick').isVisible(),false,'Quick card can be dismissed without a large modal');
  await page.mouse.click(stageBox.x+tap.x,stageBox.y+tap.y);
