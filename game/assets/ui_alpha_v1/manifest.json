@@ -1,0 +1,265 @@
+{
+  "format": "CARAVAN_APPROVED_ALPHA_ICONS_V1",
+  "source": "game/assets/catalog/crops_v1/manifest.json",
+  "not_reinvented": true,
+  "requires_art_direction_review": true,
+  "output": "RGBA 128x128",
+  "items": [
+    {
+      "id": "ui.tasks_open",
+      "path": "ui/ui_tasks_open.png",
+      "source_sha256": "c3f5f5fc0018c90ffa8d2ae1476c3f2709e53bce9f22f4403827ca0c40166f3d",
+      "sha256": "92ab45071fae6ac6e7677d5fc208eb656dab35b203359889dd9e10254dc89646",
+      "bbox_source": [
+        15,
+        6,
+        197,
+        119
+      ],
+      "foreground_pixels": 6300,
+      "transparent_pixels": 9749,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.map",
+      "path": "ui/ui_map.png",
+      "source_sha256": "fd0cdd86fef4282ca0e11af0f67885874a2ef5641836e47cf2203346fd90dbde",
+      "sha256": "538d8c0065f79ed461ad0332d11bd60c6f2263e4c5081b11dca7f2bac3954528",
+      "bbox_source": [
+        23,
+        6,
+        207,
+        121
+      ],
+      "foreground_pixels": 7009,
+      "transparent_pixels": 9115,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.crew",
+      "path": "ui/ui_crew.png",
+      "source_sha256": "b4e984996deec0c1d1adb5d7f42b9fc010d7baf46b901fccb0b0506d076bc57c",
+      "sha256": "95fd69dfd6b87bae64110c77608f25cb4642e881f7351a7e013ee02b9ea88220",
+      "bbox_source": [
+        12,
+        9,
+        210,
+        122
+      ],
+      "foreground_pixels": 5482,
+      "transparent_pixels": 10673,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.inventory",
+      "path": "ui/ui_inventory.png",
+      "source_sha256": "6039f256f27f0895c6288059c74099239260f6d3942714af909ca7e19a53ff0d",
+      "sha256": "805457455da53ed592d419005b79acb3f12b5f2a7dc888ef17b38015ad320a85",
+      "bbox_source": [
+        21,
+        10,
+        210,
+        121
+      ],
+      "foreground_pixels": 6478,
+      "transparent_pixels": 9683,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.upgrade",
+      "path": "ui/ui_upgrade.png",
+      "source_sha256": "753689bf8884ab3f8fae946dd1aedaa0c4af29c25398284a0aa551e64f01a2e5",
+      "sha256": "d56202752e0b7b3ec5ac53ae7be44b529a3a40a640c7b6de6e708a10b7f51038",
+      "bbox_source": [
+        29,
+        6,
+        174,
+        122
+      ],
+      "foreground_pixels": 7399,
+      "transparent_pixels": 8674,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.workshop",
+      "path": "ui/ui_workshop.png",
+      "source_sha256": "f5210d432b3bf4dfe084dd869735ea467b194f9c0cc2e51248169fac1a9bef3b",
+      "sha256": "b1c78a78c9e2e7d306209fa8838e65699510255bafd53409c9b8f31ff154a0e6",
+      "bbox_source": [
+        12,
+        11,
+        198,
+        122
+      ],
+      "foreground_pixels": 6213,
+      "transparent_pixels": 9913,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.movement",
+      "path": "ui/ui_movement.png",
+      "source_sha256": "2067ec704ca32fb1bb96e8e5519d01a4ad6a95922ed9f0708a103b4edb6cd66a",
+      "sha256": "f262b9ce59a21e5819e3329b76cdf3738d677dfec07ca6dd4745eaa9bc42e612",
+      "bbox_source": [
+        23,
+        15,
+        207,
+        117
+      ],
+      "foreground_pixels": 5007,
+      "transparent_pixels": 10947,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.stop",
+      "path": "ui/ui_stop.png",
+      "source_sha256": "991c1ac13b0791cb5df2111fd27699fb044e7039137f95956107aaf25cb34136",
+      "sha256": "bab001b5120568abbfdd68f38f62bdc3d252408fbe412c994be6f1877d76c548",
+      "bbox_source": [
+        23,
+        6,
+        204,
+        118
+      ],
+      "foreground_pixels": 4062,
+      "transparent_pixels": 12079,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.confirm",
+      "path": "ui/ui_confirm.png",
+      "source_sha256": "f51dca72b7835a47d46309a6b27a4bbcb7262e03c775d376a880061573dc5d5a",
+      "sha256": "e096f81605d20d6b49f692aa4c099bd88a1fa6ef303bc7e2d12a3ae79d8a9336",
+      "bbox_source": [
+        23,
+        10,
+        176,
+        118
+      ],
+      "foreground_pixels": 5905,
+      "transparent_pixels": 10250,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.cancel",
+      "path": "ui/ui_cancel.png",
+      "source_sha256": "0a29b9c92d31606f334d298eb67a12279d24bf2548f57588e368d5d45e249765",
+      "sha256": "c0b533ca8a8824d0d82e844dc5a6ce138d3e30602198237cbe718ec52c5b070d",
+      "bbox_source": [
+        15,
+        10,
+        203,
+        118
+      ],
+      "foreground_pixels": 3961,
+      "transparent_pixels": 12172,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.information",
+      "path": "ui/ui_information.png",
+      "source_sha256": "1783ab4a6608b1e69e54351bc5c386372b59b2c33b04df9c29a45e80bad4a8c5",
+      "sha256": "1b2172ffb40e348fbe7dadafc8d9da22f52e8fbecaf848c987e1618c391ccf6b",
+      "bbox_source": [
+        23,
+        7,
+        205,
+        118
+      ],
+      "foreground_pixels": 3069,
+      "transparent_pixels": 13008,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ui.warning",
+      "path": "ui/ui_warning.png",
+      "source_sha256": "b8aed02b8ee7f07f1478bc852e6b71b26012bc9fb0112fbe49a24ec78e8b0b48",
+      "sha256": "95926af623cad1ef2ef3066f37955cec91a7a335cfc84b8628c20706440fd98c",
+      "bbox_source": [
+        21,
+        6,
+        207,
+        119
+      ],
+      "foreground_pixels": 5029,
+      "transparent_pixels": 11130,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "resource.metal",
+      "path": "resource/resource_metal.png",
+      "source_sha256": "816cdeb8a74862e8767934a0b7ab683e185e4789e8ed8a0e1ccfde07042cae24",
+      "sha256": "0cfd8941cbe8a7c3160adde42a703b275e318f52a4b7c60dbe52e12048bedde6",
+      "bbox_source": [
+        15,
+        29,
+        134,
+        137
+      ],
+      "foreground_pixels": 7712,
+      "transparent_pixels": 8376,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "resource.fuel",
+      "path": "resource/resource_fuel.png",
+      "source_sha256": "99950c356799e60f833755eeca6ca989ff884b814ad04849c1b4427707f5f7f2",
+      "sha256": "c7e59b225fdbd3329ec28a37885e39532277628d6a7d8accddddd87a2667c221",
+      "bbox_source": [
+        20,
+        11,
+        137,
+        143
+      ],
+      "foreground_pixels": 9062,
+      "transparent_pixels": 7073,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "resource.food",
+      "path": "resource/resource_food.png",
+      "source_sha256": "43a3a27a91e2de5d5ea489b745c338aac01f9302b70749979ae81c136ae9a9f0",
+      "sha256": "bded8e2c2822f95ba0538450476a247b032227306a5e2e6458335554ac050595",
+      "bbox_source": [
+        12,
+        15,
+        132,
+        147
+      ],
+      "foreground_pixels": 9265,
+      "transparent_pixels": 6737,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "status.morale",
+      "path": "status/status_morale.png",
+      "source_sha256": "55146727628a2907930e4a8d192e5e24e924afa609a1d3b0a9dcf4cce8ab9d06",
+      "sha256": "179cc56d75be21de0e39925afe456882fe584561978cf75231ff2ffe5e76e324",
+      "bbox_source": [
+        15,
+        7,
+        128,
+        122
+      ],
+      "foreground_pixels": 9590,
+      "transparent_pixels": 6565,
+      "width": 128,
+      "height": 128
+    }
+  ]
+}
