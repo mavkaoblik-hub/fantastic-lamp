@@ -66,7 +66,8 @@ function renderRouteProgress(){
  const r=$('routeProgress'),eta=$('routeEta');
  if(!r||!eta)return;
  r.style.width=(p?Math.floor(p.percent):0)+'%';
- eta.textContent=p?'ДО ПРИБУТТЯ: '+Math.ceil(p.remaining/Math.max(.5,state.speed))+' с':'Немає активного рейсу';
+ eta.textContent=p?'ДО ПРИБУТТЯ: '+Math.ceil(p.remaining/Math.max(.5,state.speed))+' с':
+  state.boarding?'Посадка перед відправленням · без витрат':'Немає активного рейсу';
  if(p)$('travelState').textContent='● '+(state.moving?'У дорозі':'Пауза')+' → '+
    ROUTES.STATIONS[p.to].name+' · '+Math.floor(p.percent)+'%';
 }
@@ -91,12 +92,14 @@ function renderRouteMap(){
    '<div class="route-location">'+title.name+'</div>'+
    '<p>'+title.description+'</p>'+
    '<small>⛽ '+r.fuel+' палива · ▧ '+r.supplies+' припасів · '+r.duration+' с · '+r.risk+' ризик</small>'+
-   '<button type="button" data-route-id="'+r.id+'" '+(check.ok?'':'disabled')+
-   '>'+(active?'РЕЙС УЖЕ ТРИВАЄ':check.ok?'ВІДПРАВИТИСЯ':'НЕМАЄ ДОСТУПУ')+'</button></article>';
+   '<button type="button" data-route-id="'+r.id+'" '+(check.ok&&!state.boarding?'':'disabled')+
+   '>'+(active?'РЕЙС УЖЕ ТРИВАЄ':state.boarding?'ПОСАДКА ТРИВАЄ':check.ok?'ВІДПРАВИТИСЯ':'НЕМАЄ ДОСТУПУ')+'</button></article>';
  }).join('');
  $('routeActive').textContent=active?
   'У дорозі: '+ROUTES.STATIONS[active.from].name+' → '+ROUTES.STATIONS[active.to].name:
+  state.boarding?'Посадка · запаси ще не списані':
   'Стоянка · можна обрати наступну станцію';
+ $('boardingCancelRoute').hidden=!state.boarding;
  const unresolved=ROUTES.pending(state.route);
  $('routePause').disabled=!active||!!unresolved;
  $('routePause').textContent=unresolved?'⚠ Потрібне рішення':state.moving?'⏸ Призупинити':'▶ Продовжити';
@@ -344,8 +347,8 @@ function currentGameLabel(){return crewNames[chosenCrew]+' · '+statusText(crew[
 function renderCarList(){
  $('carList').innerHTML=state.cars.map((car,i)=>`<button type="button" class="carbutton ${car.id===state.selectedCarId?'selected':''}" data-carid="${car.id}">${i+1}. ${m.wagon[car.kind].title}<br><small>L${levelFor(car)}</small></button>`).join('');
  $('carCapacity').textContent=state.cars.length+' / 3 вагонів';
- $('attachCar').disabled=state.cars.length>=3||state.metal<60;
- $('detachCar').disabled=state.cars.length<=1;
+ $('attachCar').disabled=Boolean(state.boarding||state.route.active)||state.cars.length>=3||state.metal<60;
+ $('detachCar').disabled=Boolean(state.boarding||state.route.active)||state.cars.length<=1;
  $('tailAssignment').disabled=state.cars.length<3;
 }
 function setChosen(){const car=currentCar();const key=car.kind;
@@ -353,7 +356,8 @@ function setChosen(){const car=currentCar();const key=car.kind;
  if(indicator){
   const count=crew.filter(p=>p.inside===1 && p.location?.kind!=='platform').length;
   const phase=TRANSIT.phase(Boolean(state.route.active),state.moving,Boolean(ROUTES.pending(state.route)));
-  indicator.textContent=state.route.active?'НА БОРТУ '+count+'/'+crew.length+' · '+({
+  indicator.textContent=state.boarding?'ПОСАДКА · '+crew.filter(p=>p.boardingState==='aboard').length+'/'+crew.length:
+   state.route.active?'НА БОРТУ '+count+'/'+crew.length+' · '+({
    TRAVELLING:'В ДОРОЗІ',PAUSED_MANUAL:'ПАУЗА',PAUSED_EVENT:'ПОДІЯ'
   }[phase]||'В ДОРОЗІ'):'СТАНЦІЯ · ЕКІПАЖ '+crew.length;
  }
@@ -368,10 +372,15 @@ function setChosen(){const car=currentCar();const key=car.kind;
  $('metal').textContent=Math.round(state.metal);$('fuel').textContent=Math.round(state.fuel);
  $('supplies').textContent=Math.round(state.supplies);$('morale').textContent=Math.round(state.morale);
  const p=ROUTES.progress(state.route);
- $('travel').textContent=ROUTES.pending(state.route)?'⚠ ОБРАТИ РІШЕННЯ':
+ $('travel').textContent=state.boarding?'ПОСАДКА · '+crew.filter(p=>p.boardingState==='aboard').length+'/'+crew.length:
+  ROUTES.pending(state.route)?'⚠ ОБРАТИ РІШЕННЯ':
   p?(state.moving?'⏸ Пауза':'▶ Продовжити'):'▶ Обрати рейс';
  $('travelState').textContent=p?'● '+(state.moving?'У дорозі':'Пауза')+' → '+ROUTES.STATIONS[p.to].name:
+   state.boarding?'● Посадка перед відправленням':
    '● Станція «'+ROUTES.STATIONS[state.route.stationId].name+'»';
+ $('boardingNotice').hidden=!state.boarding;
+ $('boardingCancel').hidden=!state.boarding;
+ if(state.boarding)updateBoardingHud();
  $('speedLabel').textContent=state.speed.toFixed(1)+'×';$('base').style.borderColor=levelFor(car)===1?'#e2a867':'#5b6066';
  renderCarList();cameraHud();renderJournal();renderRouteMap();
  if(globalThis.CaravanApprovedUI)globalThis.CaravanApprovedUI.refresh(state);
@@ -380,17 +389,20 @@ function setChosen(){const car=currentCar();const key=car.kind;
 function msg(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2050)}
 function logEvent(text){eventLog.unshift(text);eventLog=eventLog.slice(0,8);markDirty()}
 function statusText(p){
+ if(state.boarding&&p.boardingState==='approaching')return 'Посадка · іде до входу';
+ if(state.boarding&&p.boardingState==='entering')return 'Посадка · заходить усередину';
+ if(state.boarding&&p.boardingState==='aboard')return 'Готовий до рейсу';
  if(state.route.active && p.mode==='aboard')return 'На борту · очікує у службовій зоні';
  if(state.route.active && p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';
  if(p.mode==='walking')return 'Прямує до входу: '+LOCATIONS[p.job.target].label;if(p.mode==='entering')return 'Заходить усередину вагона';if(p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';if(p.mode==='exiting')return 'Виходить із вагона';if(p.mode==='completed')return 'Завершив завдання · '+Math.max(0,3-Math.floor(p.completed))+' с';return 'Патрулює платформу'}
-function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
- $('cancelJob').disabled=Boolean(state.route.active)||(!crew[chosenCrew].job&&!crew[chosenCrew].queue.length);
+function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active||state.boarding)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
+ $('cancelJob').disabled=Boolean(state.route.active||state.boarding)||(!crew[chosenCrew].job&&!crew[chosenCrew].queue.length);
 }
 $('crewList').onclick=e=>{const btn=e.target.closest('[data-crew]');if(!btn)return;chosenCrew=+btn.dataset.crew;markDirty();renderCrewPanel();msg('Обрано: '+crewNames[chosenCrew])};
 function startExit(p){p.exitStartX=p.x;p.exitInside=p.inside;p.mode='exiting';p.transition=0;p.progress=0}
 function beginJob(p,job){p.job={target:job.target};p.mode='walking';p.progress=0;p.transition=0;p.inside=0;p.completed=0;p.dir=LOCATIONS[job.target].door>p.x?1:-1;markDirty()}
 function assignCrew(target){
- if(state.route.active){msg('Призначення та переведення доступні після прибуття');return false;}
+ if(state.route.active||state.boarding){msg('Призначення доступне після скасування посадки або прибуття');return false;}
  if(target==='tail'&&state.cars.length<3){msg('Третій вагон ще не причеплено');return false;}
  if(target==='rear'&&state.cars.length<2){msg('Другого вагона немає');return false;}
  const p=crew[chosenCrew],ix=['center','rear','tail'].indexOf(target);
@@ -422,8 +434,8 @@ function assignCrew(target){
  renderCrewPanel();renderQuickWagon();store();return true;
 }
 document.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>assignCrew(b.dataset.target));
-$('cancelJob').onclick=()=>{if(state.route.active){msg('Зміну доручення дозволено після прибуття');return;}const p=crew[chosenCrew];if(p.queue.length){const j=p.queue.pop();msg('Скасовано останнє доручення: '+LOCATIONS[j.target].label)}else if(p.job){if(p.inside>0||p.mode==='working'||p.mode==='entering'){startExit(p)}else{p.mode='patrol';p.job=null}msg('Поточну роботу припинено')}renderCrewPanel();store()};
-$('crewHome').onclick=()=>{if(state.route.active){msg('Під час рейсу весь екіпаж залишається на борту');return;}const p=crew[chosenCrew];p.queue=[];if(p.job&&(p.mode==='entering'||p.mode==='working'||p.mode==='exiting')){startExit(p)}else{p.job=null;p.mode='patrol';p.inside=0}renderCrewPanel();store();msg(crewNames[chosenCrew]+': повертається на патруль')};
+$('cancelJob').onclick=()=>{if(state.route.active||state.boarding){msg('Зміну доручення дозволено після скасування посадки або прибуття');return;}const p=crew[chosenCrew];if(p.queue.length){const j=p.queue.pop();msg('Скасовано останнє доручення: '+LOCATIONS[j.target].label)}else if(p.job){if(p.inside>0||p.mode==='working'||p.mode==='entering'){startExit(p)}else{p.mode='patrol';p.job=null}msg('Поточну роботу припинено')}renderCrewPanel();store()};
+$('crewHome').onclick=()=>{if(state.route.active||state.boarding){msg('Під час посадки та рейсу екіпаж прямує на борт');return;}const p=crew[chosenCrew];p.queue=[];if(p.job&&(p.mode==='entering'||p.mode==='working'||p.mode==='exiting')){startExit(p)}else{p.job=null;p.mode='patrol';p.inside=0}renderCrewPanel();store();msg(crewNames[chosenCrew]+': повертається на патруль')};
 function closeSidebar(){$('sidebar').classList.remove('open');$('sidebarBackdrop').hidden=true;$('togglePanel').setAttribute('aria-expanded','false')}
 function openSidebar(section){
  const compact=window.matchMedia('(max-width:1050px)').matches;
@@ -472,6 +484,8 @@ $('routeList').addEventListener('click',e=>{
  if(!b||b.disabled)return;
  if(routeStart(b.dataset.routeId)&&window.matchMedia('(max-width:1050px)').matches)closeSidebar();
 });
+$('boardingCancel').onclick=cancelBoarding;
+$('boardingCancelRoute').onclick=cancelBoarding;
 $('routePause').onclick=()=>{
  if(!state.route.active||ROUTES.pending(state.route))return;
  state.moving=!state.moving;setChosen();store();
@@ -484,12 +498,12 @@ $('journalList').addEventListener('click',event=>{
  setChosen();store();renderJournal();
  msg('Нагороду отримано. Ресурси зараховано лише один раз.');
 });
-$('wagon').onchange=e=>{if(state.route.active){e.target.value=currentCar().kind;msg('Зміна вагона можлива лише на станції');return;}currentCar().kind=e.target.value;production=PRODUCTION.normalize(production,state.cars);setChosen();store();msg('Тип вагона: '+m.wagon[e.target.value].title)};
+$('wagon').onchange=e=>{if(state.route.active||state.boarding){e.target.value=currentCar().kind;msg('Зміна вагона після скасування посадки або прибуття');return;}currentCar().kind=e.target.value;production=PRODUCTION.normalize(production,state.cars);setChosen();store();msg('Тип вагона: '+m.wagon[e.target.value].title)};
 $('newWagon').value='salvage';
 $('carList').onclick=e=>{const b=e.target.closest('[data-carid]');if(!b)return;state.selectedCarId=b.dataset.carid;setChosen();focusSelectedWagon();msg('Обрано вагон №'+(selectedSlot()+1))};
-$('attachCar').onclick=()=>{if(state.route.active){msg('Причеплення вагона можливе лише на станції');return;}if(state.cars.length>=3||state.metal<60)return;state.metal-=60;const kind=$('newWagon').value;const id='c'+state.nextCarId++;state.cars.push({id,kind,level:1});production=PRODUCTION.normalize(production,state.cars);state.selectedCarId=id;setChosen();store();msg('Причеплено вагон: '+m.wagon[kind].title)};
+$('attachCar').onclick=()=>{if(state.route.active||state.boarding){msg('Причеплення до посадки або після прибуття');return;}if(state.cars.length>=3||state.metal<60)return;state.metal-=60;const kind=$('newWagon').value;const id='c'+state.nextCarId++;state.cars.push({id,kind,level:1});production=PRODUCTION.normalize(production,state.cars);state.selectedCarId=id;setChosen();store();msg('Причеплено вагон: '+m.wagon[kind].title)};
 $('detachCar').onclick=()=>{
- if(state.route.active){msg('Не можна відчеплювати вагон під час рейсу');return;}
+ if(state.route.active||state.boarding){msg('Не можна відчеплювати вагон під час посадки чи рейсу');return;}
  if(state.cars.length<=1)return;
  const ix=selectedSlot(),car=state.cars.splice(ix,1)[0];
  state.selectedCarId=state.cars[Math.max(0,ix-1)].id;
@@ -508,6 +522,7 @@ $('locoUpgrade').onclick=()=>{if(state.locoLevel>=4||state.metal<80||state.fuel<
 $('crewRole').onchange=e=>{state.crew=e.target.value;crew[0].role=state.crew;renderCrewPanel();setChosen()};
 $('timeMode').onchange=e=>{state.night=e.target.value==='night';setChosen()};$('effects').onchange=e=>{state.effects=e.target.checked;setChosen()};
 $('travel').onclick=()=>{
+ if(state.boarding){msg('Посадка триває · скористайтеся кнопкою скасування');return;}
  if(!state.route.active||ROUTES.pending(state.route)){
   renderRouteMap();openSidebar('routes');return;
  }
