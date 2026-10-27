@@ -320,8 +320,8 @@
       "title": "Crew stays aboard train during active routes; boarding and internal work lifecycle",
       "status": "TESTING",
       "area": "gameplay",
-      "next_step": "D1 safety invariant retained. D2 implemented in boarding.js and app.js: players start an animated pre-departure boarding phase, already-employed staff stay aboard, free crew approach locomotive doors, 0 resource charge until all aboard, cancel restores previous crew state, boarding persists across reload, 10 s safe fallback, blocked duplicate starts/coach changes. D2 unit and browser tests added; Android physical validation pending. D3 interior worker-life animation not implemented.",
-      "evidence": "game/v012_restored/boarding.js;tests/caravan_v013_boarding.test.cjs;tests/caravan_v012_visual_smoke.cjs;docs/CARAVAN_V013D_D2_BOARDING_HANDOFF.md",
+      "next_step": "D1+D2 passed. D3 first cutaway living scene implemented: original v0.12 idle frames are anchored and clipped into actual locomotive/wagon interiors, animated task lighting and repair/care/watch/rest cues, names/activity in context card, stable per-wagon seating and no exterior ghost duplicates. Node + browser smoke + Android signed CI PASS (40518905403). Physical Android and full equipment-specific character animations NOT verified; D3 remains TESTING.",
+      "evidence": "game/v012_restored/interior_life.js;game/v012_restored/app.js;tests/caravan_v013_interior_life.test.cjs;tests/caravan_v012_visual_smoke.cjs;docs/CARAVAN_V013D_D3_INTERIOR_LIFE_HANDOFF.md",
       "android_verified": false
     }
   ],
@@ -436,6 +436,13 @@
       "phase": "D2",
       "device_tested": false,
       "change": "Pre-departure animated crew walk/entry, station cancel action, persistent boarding reload, all-aboard gate to ROUTES.start and once-only fuel/supplies debit, button/roster guards; 10 s safe boarding timeout, original v0.12 artwork untouched; physical Android acceptance outstanding."
+    },
+    {
+      "version": "v0.13-D3 interior life first slice",
+      "date": "2026-10-27",
+      "phase": "D3",
+      "change": "New read-only layout module places original crew idle animations within engine/cutaway wagon interiors (14 room types), supports repair/care/watch/rest/standby cues, small contextual crew labels, no exterior double-draw and no economy changes. Automated browser, Node, Android signed build PASS; user physical test pending.",
+      "device_tested": false
     }
   ],
   "visual_baseline": {
