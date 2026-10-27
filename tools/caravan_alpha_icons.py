@@ -82,6 +82,14 @@ def extract(image, semantic_id):
     result=Image.new("RGBA",(128,128),(0,0,0,0))
     isolated.thumbnail((112,112),Image.Resampling.LANCZOS)
     result.alpha_composite(isolated,((128-isolated.width)//2,(128-isolated.height)//2))
+    # A few short golden base lines belong to the source atlas's card border,
+    # not to the actual icon. They appear as anomalously wide late rows.
+    trim_lines={"ui.stop":93,"ui.confirm":97,"ui.cancel":91,
+                "ui.information":94,"ui.warning":94}
+    if semantic_id in trim_lines:
+        pixels=np.array(result)
+        pixels[trim_lines[semantic_id]:,:,3]=0
+        result=Image.fromarray(pixels,"RGBA")
     return result, bbox
 def run(target:Path):
     source=json.loads(MANIFEST.read_text(encoding="utf-8"))
