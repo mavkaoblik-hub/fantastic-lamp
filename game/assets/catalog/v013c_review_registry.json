@@ -1,0 +1,67 @@
+{
+  "format": "CARAVAN_V013C_STAGED_GRAPHIC_ROLES_V1",
+  "status": "LOCAL_PACK_CREATED_NOT_GITHUB_ASSET_IMPORT",
+  "latest_artifact_filename": "CARAVAN_v013C_36_SPRITES_PACK.zip",
+  "expected_unique": 36,
+  "expected_png": 72,
+  "original_v012_train_art_changed": false,
+  "storage_target": "game/assets/review_v013c/",
+  "group_roles": {
+    "ui_variants": [
+      "pause_button_variant",
+      "resume_button_variant",
+      "speed_up_variant",
+      "wagon_repair_badge",
+      "crew_group_portrait",
+      "production_upgrade_badge",
+      "wagon_attachment_preview",
+      "wagon_output_boost_badge",
+      "route_preview_badge",
+      "locked_route_badge",
+      "road_incident_alarm",
+      "mission_complete_badge"
+    ],
+    "landmarks": [
+      "rail_signal_post",
+      "merchant_outpost",
+      "collapsed_bridge",
+      "rail_switch",
+      "watchtower_sniper",
+      "mutant_hounds",
+      "fuel_reserve_station",
+      "salvage_bunker",
+      "water_tower",
+      "survivor_camp",
+      "radio_beacon",
+      "minefield"
+    ],
+    "room_previews": [
+      "workshop_room",
+      "bunks_room",
+      "cargo_room",
+      "medical_room",
+      "greenhouse_room",
+      "power_generator",
+      "scrap_processor",
+      "defense_outpost",
+      "ammo_storage",
+      "navigation_table",
+      "radio_communications",
+      "cargo_hoist"
+    ]
+  },
+  "protection": {
+    "reserved_canonical_ids": [
+      "ui.pause",
+      "ui.resume",
+      "ui.speed_up",
+      "ui.tasks_open",
+      "resource.metal",
+      "resource.fuel",
+      "resource.food"
+    ],
+    "ui_approved_only_after_visual_review": true,
+    "not_substitutes_for_103_original_train_sprites": true,
+    "no_duplicate_currency_icons": true
+  }
+}
