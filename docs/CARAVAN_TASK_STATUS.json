@@ -314,6 +314,15 @@
       "next_step": "V13-E reconcile supply production/route spending and avoid duplicated currencies",
       "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
       "android_verified": false
+    },
+    {
+      "id": "S-29",
+      "title": "Crew stays aboard train during active routes; boarding and internal work lifecycle",
+      "status": "READY_FOR_IMPLEMENTATION",
+      "area": "gameplay",
+      "next_step": "D1 safety: hide exterior crew and normalize existing trip saves for any route.active; D2 boarding/allAboard and route start; D3 interior sprites and role indicators. TC-01..TC-18. Do not change original art.",
+      "evidence": "docs/CARAVAN_V013D_CREW_ABOARD_TZ.md",
+      "android_verified": false
     }
   ],
   "release_notes": [
@@ -434,5 +443,6 @@
     "external_reference": "Fallout Shelter mechanics only, Bethesda official",
     "document": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
     "preserve_art": "103 v0.12 sprites; no visual redesign"
-  }
+  },
+  "next_gameplay_spec": "docs/CARAVAN_V013D_CREW_ABOARD_TZ.md"
 }
