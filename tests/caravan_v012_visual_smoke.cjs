@@ -22,6 +22,21 @@ const {chromium}=require('playwright-core');
  assert.equal(score.manifest,14,'14 wagon kinds in original v0.12');
  assert.ok(score.canvas>500,'Native original canvas must render');
  assert.ok(score.styles,'Original CSS must load');
+ const approved=await page.evaluate(()=>window.CaravanApprovedUI.sources());
+ assert.equal(approved.length,16,'Exactly 16 canonical approved alpha icons should be available');
+ const assetState=await page.evaluate(async()=>{
+  const src=window.CaravanApprovedUI.sources();
+  return await Promise.all(src.map(item=>new Promise(done=>{
+    const icon=new Image();icon.onload=()=>done({id:item.id,ok:true,loaded:icon.naturalWidth});
+    icon.onerror=()=>done({id:item.id,ok:false});icon.src=item.path;
+  })));
+ });
+ assert.ok(assetState.every(i=>i.ok&&i.loaded===128),'Every isolated UI PNG must load in the real offline scene');
+ const buttonsWithIcons=await page.locator('.caravan-ui-icon').count();
+ const countersWithIcons=await page.locator('.caravan-resource-icon').count();
+ assert.ok(buttonsWithIcons>=9,'HUD should reuse original approved icon assets instead of placeholder symbols');
+ assert.equal(countersWithIcons,4,'Metal, fuel, supplies and morale must use approved art');
+
  const imgs=await page.evaluate(()=>Object.values(window.CARAVAN_MANIFEST.wagon).flatMap(x=>x.levels.map(y=>y.src))
    .concat(window.CARAVAN_MANIFEST.train?.variants?.map(x=>x.src)||[]));
  assert.ok(imgs.length>=20,'Original wagon/locomotive sprite manifest incomplete');

@@ -228,7 +228,9 @@ function setChosen(){const car=currentCar();const key=car.kind;
  $('travelState').textContent=p?'● '+(state.moving?'У дорозі':'Пауза')+' → '+ROUTES.STATIONS[p.to].name:
    '● Станція «'+ROUTES.STATIONS[state.route.stationId].name+'»';
  $('speedLabel').textContent=state.speed.toFixed(1)+'×';$('base').style.borderColor=levelFor(car)===1?'#e2a867':'#5b6066';
- renderCarList();cameraHud();renderJournal();renderRouteMap();markDirty();}
+ renderCarList();cameraHud();renderJournal();renderRouteMap();
+ if(globalThis.CaravanApprovedUI)globalThis.CaravanApprovedUI.refresh(state);
+ markDirty();}
 function msg(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2050)}
 function logEvent(text){eventLog.unshift(text);eventLog=eventLog.slice(0,8);markDirty()}
 function statusText(p){if(p.mode==='walking')return 'Прямує до входу: '+LOCATIONS[p.job.target].label;if(p.mode==='entering')return 'Заходить усередину вагона';if(p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';if(p.mode==='exiting')return 'Виходить із вагона';if(p.mode==='completed')return 'Завершив завдання · '+Math.max(0,3-Math.floor(p.completed))+' с';return 'Патрулює платформу'}

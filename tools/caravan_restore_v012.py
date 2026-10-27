@@ -37,7 +37,7 @@ for part in MANIFEST:
             target.parent.mkdir(parents=True,exist_ok=True)
             target.write_bytes(data)
 # The restored code is the same committed files as old v0.12, not rewritten code.
-for file in ["index.html","app.js","style.css","camera.js","journal.js","routes.js"]:
+for file in ["index.html","app.js","style.css","camera.js","journal.js","routes.js","ui_icons.js"]:
     source=ROOT/"game"/"v012_restored"/file
     assert source.is_file(),f"Missing original source: {file}"
     (OUT/file).write_bytes(source.read_bytes())
@@ -51,11 +51,24 @@ for essential in ["assets/train/locomotive_L1.png","assets/train/locomotive_L4.p
                   "assets/wagons/reactor.png","assets/crew/mechanic_walk_00.png",
                   "assets/backdrop.jpg"]:
     assert (OUT/essential).is_file(),f"Missing original game art: {essential}"
+# The 16 approved-source icon derivatives are independent of the 103
+# train/crew scenery sprites. Their SHA and alpha are verified before bundling.
+from shutil import copyfile
+ui_root=ROOT/"game/assets/ui_alpha_v1"
+ui_manifest=json.loads((ui_root/"manifest.json").read_text(encoding="utf-8"))
+assert len(ui_manifest["items"])==16,"Expected the exact 16 canonical approved UI sprites"
+for item in ui_manifest["items"]:
+    src=ui_root/item["path"]
+    assert hashlib.sha256(src.read_bytes()).hexdigest()==item["sha256"],f"UI sprite checksum mismatch {item['id']}"
+    dest=OUT/"assets/ui_alpha"/item["path"]
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    copyfile(src,dest)
+# The original art manifest stays untouched.
 assert "CARAVAN_MANIFEST" in index
 report={"format":"CARAVAN_V012_ORIGINAL_SOURCE_VALIDATION_V1",
         "source_branch":"caravan-v012-android-migration",
         "source_archives":[{"name":e["name"],"sha256":e["sha256"],"bytes":e["size"]} for e in MANIFEST],
-        "original_art_count":len(images),"unique_image_references_in_html":len(refs),
+        "original_art_count":len(images),"approved_ui_rgba_count":len(ui_manifest["items"]),"unique_image_references_in_html":len(refs),
         "verified_image_references":len(refs),"unresolved_images":missing,
         "original_render_source":["game/v012_restored/index.html","game/v012_restored/app.js","game/v012_restored/style.css","game/v012_restored/camera.js"],
         "warning":"v0.12 is reference game source; later v0.4 mechanics are NOT yet migrated to it"}
