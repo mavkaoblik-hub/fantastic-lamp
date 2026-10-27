@@ -320,8 +320,8 @@
       "title": "Crew stays aboard train during active routes; boarding and internal work lifecycle",
       "status": "TESTING",
       "area": "gameplay",
-      "next_step": "D1+D2 passed. D3 first cutaway living scene implemented: original v0.12 idle frames are anchored and clipped into actual locomotive/wagon interiors, animated task lighting and repair/care/watch/rest cues, names/activity in context card, stable per-wagon seating and no exterior ghost duplicates. Node + browser smoke + Android signed CI PASS (40518905403). Physical Android and full equipment-specific character animations NOT verified; D3 remains TESTING.",
-      "evidence": "game/v012_restored/interior_life.js;game/v012_restored/app.js;tests/caravan_v013_interior_life.test.cjs;tests/caravan_v012_visual_smoke.cjs;docs/CARAVAN_V013D_D3_INTERIOR_LIFE_HANDOFF.md",
+      "next_step": "D4 work-area art calibration now implemented: distinct positioning beside equipment for all 14 canonical wagon types, time-varying repair/care/watch/rest/standby idle sprite poses and tiny bounded glows/FX, 2-place layouts. No new duplicate UI art, economy mutation, or route regressions. PASS Node, Chrome browser, signed debug APK CI run 40522041627; physical Android and sophisticated bespoke sprite animation still pending.",
+      "evidence": "game/v012_restored/interior_life.js;game/v012_restored/app.js;tests/caravan_v013_interior_life.test.cjs;tests/caravan_v012_visual_smoke.cjs;docs/CARAVAN_V013D_D4_WORKSTATION_HANDOFF.md",
       "android_verified": false
     }
   ],
@@ -443,6 +443,13 @@
       "phase": "D3",
       "change": "New read-only layout module places original crew idle animations within engine/cutaway wagon interiors (14 room types), supports repair/care/watch/rest/standby cues, small contextual crew labels, no exterior double-draw and no economy changes. Automated browser, Node, Android signed build PASS; user physical test pending.",
       "device_tested": false
+    },
+    {
+      "version": "v0.13-D4 workstation animations",
+      "date": "2026-10-27",
+      "phase": "D4",
+      "device_tested": false,
+      "change": "Calibrated 14 wagon-specific worker stations based on existing painterly wagon PNGs; real D4 subtle worker sprite lean/sway/breathing actions for repair, care, watch, rest, standby; task-specific captions, bounded timed glow/equipment cues, no duplicate art/currency, no payout logic modifications; 4 additional Node tests + browser dynamic motion QA, debug APK signed workflow PASS."
     }
   ],
   "visual_baseline": {
