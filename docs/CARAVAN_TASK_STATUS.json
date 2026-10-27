@@ -34,7 +34,7 @@
       "id": "M2",
       "title": "Crew, wagons and living scene",
       "priority": "P0",
-      "status": "BACKLOG",
+      "status": "IN_PROGRESS",
       "depends_on": [
         "M0",
         "M1"
@@ -283,9 +283,9 @@
       "id": "S-25",
       "area": "production",
       "title": "Persistent occupied workstations, timed production and claim-once collection",
-      "status": "BACKLOG",
-      "next_step": "V13-B replace old one-off reward source to prevent double payouts",
-      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "status": "TESTING",
+      "next_step": "V13-B real wagon production integrated: 14 kinds with per-kind output, worker specialization speed, L1=1/L2=2 places, 2-batch storage cap, collection via in-scene card only, no duplicate legacy wagon payouts, local save migration. Node unit and Chrome browser PASS; physical Android/touch QA pending. No offline time credit yet.",
+      "evidence": "game/v012_restored/production.js;tests/caravan_v013_production.test.cjs;tests/caravan_v012_visual_smoke.cjs",
       "android_verified": false
     },
     {
@@ -391,6 +391,13 @@
       "date": "2026-10-27",
       "phase": "new gameplay UX vertical slice",
       "change": "Authentic painterly v0.12 wagon selected by art tap opens small nonmodal contextual card with crew selectors and optional full details; direct crew -> wagon tap-to-assign; existing queue, 3 crew, trips, journal, multi-touch and asset packs reused, no new resource economy; browser/Android workflow pass.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.13-B workshop economy",
+      "date": "2026-10-27",
+      "phase": "M2",
+      "change": "Persistent staffed production in original 14 cutaway wagons, specialization and room tiers, two-batch capped warehouse, claim-once resources, old reward path disabled for wagon work, existing locomotive repair retained. Backward-compatible caravan_v12 save. Automated tests PASS; physical Android QA pending.",
       "device_tested": false
     }
   ],
