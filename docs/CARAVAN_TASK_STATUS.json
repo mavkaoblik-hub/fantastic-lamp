@@ -1,6 +1,6 @@
 {
   "schema": "CARAVAN_IMPLEMENTATION_TRACKER_V1",
-  "updated": "2026-10-24",
+  "updated": "2026-10-27",
   "source": "docs/CARAVAN_MASTER_TZ_v1_2026-10-23.md",
   "approved_style": "docs/CARAVAN_VISUAL_STYLE_LOCK.md",
   "audit_commit": "132a7a7eff1c36579916e45e92771d93c779434d",
@@ -121,8 +121,8 @@
       "id": "S-07",
       "area": "hud",
       "title": "Main resource HUD and icons",
-      "status": "IN_PROGRESS",
-      "next_step": "Verified that active v0.12.5 HUD uses no approved crop asset: first produce alpha-clean existing resource and UI icons, then integrate and test small-screen.",
+      "status": "TESTING",
+      "next_step": "12 approved UI icons and 4 HUD resource icons now extracted to checked 128x128 RGBA, checked into game/assets/ui_alpha_v1, rendered by game/v012_restored/ui_icons.js and shipped in offline Android. Verify appearance on physical phone; 16 new concepts not yet imported.",
       "evidence": "web/index.html",
       "android_verified": false
     },
@@ -202,8 +202,8 @@
       "id": "S-16",
       "area": "art",
       "title": "100 rectangular art crops from atlases",
-      "status": "CODE_READY",
-      "next_step": "All 100 canonical rectangular crops exist without duplicate IDs/SHA, but 0/100 are alpha isolated; extraction is NOT equivalent to finished game sprites.",
+      "status": "TESTING",
+      "next_step": "100 immutable rectangular source crops remain intact. 16 alpha-clean production candidates derived and verified from 12 UI + 4 resources; original crops retained, further crop isolation as needed.",
       "evidence": "game/assets/catalog/crops_v1/manifest.json",
       "android_verified": false
     },
@@ -211,8 +211,8 @@
       "id": "S-17",
       "area": "art",
       "title": "Canonical icon role catalog",
-      "status": "IN_PROGRESS",
-      "next_step": "Canonical registry aligned with verified UI gap audit; 16 missing unique icons and 8 separate interface frames identified; no duplicate currency/task icons to be generated.",
+      "status": "TESTING",
+      "next_step": "Canonical 12 UI + 4 resource runtime mapping now working; 16 additional semantic art icons rendered as external review pack (NOT yet in GitHub), eight frame candidate assets committed and bundled. No duplicates of currency/task icons.",
       "evidence": "game/assets/catalog/registry.json",
       "android_verified": false
     },
@@ -248,7 +248,7 @@
       "area": "qa",
       "title": ">=16dp safe areas and 20-30% larger hitboxes",
       "status": "IN_PROGRESS",
-      "next_step": "Responsive badge overlap fixed after screenshot review; no physical Android safe-area acceptance yet.",
+      "next_step": "Compact landscape HUD changed to show resource icons and counts without clipping modules button at 844x390 in Chromium, physically verify target hitboxes and touch gesture.",
       "evidence": "web/style.css",
       "android_verified": false
     },
@@ -332,6 +332,13 @@
       "date": "2026-10-24",
       "phase": "M3",
       "change": "Three midroute events with three player decisions each, interruption at halfway, resume only after decision, cost gating, exactly-once consequences and persisted pending encounter. No change to original 103 graphic sprites; automated browser regression passing, physical QA pending.",
+      "device_tested": false
+    },
+    {
+      "version": "v0.12.6 approved UI integration",
+      "date": "2026-10-27",
+      "phase": "M1/M2 art integration",
+      "change": "16 transparent icons (12 existing UI + 4 existing resource/status) generated from approved atlases, versioned with checksums, bundled and rendered in authentic offline scene; 8 distinct transparent nine-slice metallic frame design candidates committed and used; original 103 v0.12 sprites untouched; Chromium Android-sized smoke, resource UI, frame CSS, and debug APK success; 16 new missing-role rendered concepts available separately but not yet integrated.",
       "device_tested": false
     }
   ],

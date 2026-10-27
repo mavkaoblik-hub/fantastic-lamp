@@ -49,163 +49,171 @@
       "id": "ui.journal",
       "uk": "Бортовий журнал",
       "group": "toolbar",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.pause",
       "uk": "Пауза рейсу",
       "group": "toolbar",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.resume",
       "uk": "Продовження рейсу",
       "group": "toolbar",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.zoom_in",
       "uk": "Наближення сцени",
       "group": "camera",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.zoom_out",
       "uk": "Віддалення сцени",
       "group": "camera",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.focus_wagon",
       "uk": "Фокус на вагоні",
       "group": "camera",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.attach_wagon",
       "uk": "Причепити вагон",
       "group": "wagon",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.detach_wagon",
       "uk": "Відчепити вагон",
       "group": "wagon",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.speed_up",
       "uk": "Збільшити швидкість",
       "group": "travel",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.speed_down",
       "uk": "Зменшити швидкість",
       "group": "travel",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.crew_assign",
       "uk": "Призначити працівника",
       "group": "crew",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.quest_claimed",
       "uk": "Нагорода отримана",
       "group": "quests",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.quest_locked",
       "uk": "Недоступне завдання",
       "group": "quests",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.incident",
       "uk": "Подія в дорозі",
       "group": "events",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.route_locked",
       "uk": "Недоступний маршрут",
       "group": "travel",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     },
     {
       "id": "ui.save_status",
       "uk": "Локальне збереження",
       "group": "system",
-      "availability": "missing_art",
-      "requires_unique_illustration": true
+      "availability": "new_rendered_concept_not_yet_in_git",
+      "requires_unique_illustration": false
     }
   ],
   "missing_ui_frame_roles": [
     {
       "id": "frame.hud_resource_slot",
       "uk": "Гніздо показника ресурсу",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     },
     {
       "id": "frame.sidebar_frame",
       "uk": "Рамка бокової панелі",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     },
     {
       "id": "frame.journal_card",
       "uk": "Фон картки завдання",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     },
     {
       "id": "frame.route_card",
       "uk": "Фон картки маршруту",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     },
     {
       "id": "frame.incident_frame",
       "uk": "Рамка події/рішення",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     },
     {
       "id": "frame.wagon_context_frame",
       "uk": "Рамка поточного вагона",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     },
     {
       "id": "frame.progress_track",
       "uk": "Доріжка прогресу роботи/рейсу",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     },
     {
       "id": "frame.status_warning_overlay",
       "uk": "Накладка небезпеки",
-      "availability": "missing_art",
-      "type": "nine_slice_or_ui_texture"
+      "availability": "new_transparent_frame_candidate_in_git",
+      "type": "nine_slice_or_ui_texture",
+      "requires_unique_illustration": false
     }
   ],
   "production_pipeline": [
@@ -216,5 +224,49 @@
     "Design only missing semantic icons and 9-slice frames in approved v0.12 painterly dieselpunk style.",
     "Version and commit clean PNGs, checksums and role mappings; avoid copying same image under different names."
   ],
-  "note": "This file records verified availability and production roles only; it does not claim new graphics were produced."
+  "note": "This file records verified availability and production roles only; it does not claim new graphics were produced.",
+  "production_already_in_game": {
+    "path": "game/assets/ui_alpha_v1/",
+    "original_source_derived_rgba": 16,
+    "original_ui_icons": 12,
+    "resource_hud_icons": 4,
+    "original_v012_art_unchanged": 103,
+    "source_sha_checked": true,
+    "browser_verified": true,
+    "android_offline_bundled": true,
+    "workflow_run": "https://github.com/mavkaoblik-hub/fantastic-lamp/actions/runs/40468648821"
+  },
+  "ui_frame_candidates": {
+    "path": "game/assets/ui_frames_v1/",
+    "count": 8,
+    "sha_checked": true,
+    "android_bundled": true,
+    "visual_status": "design_candidate_not_user_approved",
+    "workflow": "https://github.com/mavkaoblik-hub/fantastic-lamp/actions/runs/40467880109"
+  },
+  "new_generated_icon_concepts": {
+    "count": 16,
+    "status": "separate_conversation_ZIP_not_yet_imported_into_git_or_apk",
+    "canonical_ids": [
+      "ui.journal",
+      "ui.pause",
+      "ui.resume",
+      "ui.zoom_in",
+      "ui.zoom_out",
+      "ui.focus_wagon",
+      "ui.attach_wagon",
+      "ui.detach_wagon",
+      "ui.speed_up",
+      "ui.speed_down",
+      "ui.crew_assign",
+      "ui.quest_claimed",
+      "ui.quest_locked",
+      "ui.incident",
+      "ui.route_locked",
+      "ui.save_status"
+    ],
+    "source": "Generated uniquely for v0.12 dark dieselpunk. Requires user art review before production integration.",
+    "no_duplicate_existing_ids": true
+  },
+  "updated": "2026-10-27"
 }
