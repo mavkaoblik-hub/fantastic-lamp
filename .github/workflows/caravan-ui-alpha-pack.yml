@@ -8,7 +8,7 @@ on:
       - 'game/assets/catalog/crops_v1/**'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   extract-approved-icons:
     runs-on: ubuntu-latest
@@ -38,6 +38,17 @@ jobs:
           assert (output/'CONTACT_SHEET.png').is_file()
           print('All 16 original-style alpha PNG candidates passed integrity checks')
           PY
+      - name: Commit 16 verified source-derived transparent PNGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p game/assets/ui_alpha_v1
+          cp -a build/caravan_alpha_v1/. game/assets/ui_alpha_v1/
+          git add game/assets/ui_alpha_v1/
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Add 16 checked and extracted approved UI RGBA sprites"
+            git push origin HEAD:main
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: CARAVAN-Approved-UI-Alpha-Candidates-16
