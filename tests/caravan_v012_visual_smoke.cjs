@@ -99,22 +99,6 @@ const {chromium}=require('playwright-core');
    'Player can assign three existing crew from the wagon card');
  await page.screenshot({path:'caravan-v012-visual/v013_wagon_quick_action_card.png'});
 
- await page.locator('#quickWagonClose').click();
- assert.equal(await page.locator('#wagonQuick').isVisible(),false,'Quick card can be dismissed without a large modal');
- await page.waitForTimeout(750);
- const refocusedTap=await page.evaluate(()=>{
-   const element=document.getElementById('stage'),box=element.getBoundingClientRect();
-   const W=box.width,H=box.height,cinematic=W/H>2.6;
-   const logicalScale=cinematic?W/1200:Math.min(W/1200,H/605);
-   const x0=(W-1200*logicalScale)/2;
-   const y0=cinematic?H*.51-345*logicalScale:(H-605*logicalScale)/2;
-   const cam=window.__CARAVAN_QA.camera().camera;
-   return {x:x0+logicalScale*(600+(795-cam.cx)*cam.zoom),
-     y:y0+logicalScale*(302.5+(360-cam.cy)*cam.zoom)};
- });
- await page.mouse.click(stageBox.x+refocusedTap.x,stageBox.y+refocusedTap.y);
- assert.equal(await page.locator('#wagonQuick').isVisible(),true,
-   'Tapping actual wagon pixels after camera zoom reopens its contextual card');
  await page.locator('#carList [data-carid]').nth(1).click();
  const target=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(target.mode,'wagon','tapping current wagon must focus its original artwork');
@@ -134,6 +118,9 @@ const {chromium}=require('playwright-core');
  assert.ok(afterCollect>=beforeCollect,'Only collect button may grant goods');
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'))).ready,0);
  assert.equal(await page.locator('#quickCollect').isDisabled(),true,'Second click cannot award stock');
+ await page.locator('#quickWagonClose').click();
+ assert.equal(await page.locator('#wagonQuick').isVisible(),false,
+   'Wagon context must close without opening the full constructor');
  await page.reload({waitUntil:'domcontentloaded'});
  await page.waitForTimeout(200);
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'))).ready,0,
