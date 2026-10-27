@@ -55,7 +55,7 @@
  function tick(boarding,crew,cars,seconds){
   if(!boarding||!Array.isArray(crew)||!Array.isArray(cars))return {done:false,aboard:0};
   const dt=Math.max(0,Math.min(Number.isFinite(seconds)?seconds:0,1));
-  boarding.elapsed=Math.min(60,Math.max(0,Number(boarding.elapsed)||0)+dt);
+  boarding.elapsed=Math.min(10,Math.max(0,Number(boarding.elapsed)||0)+dt);
   let aboard=0;
   for(let i=0;i<crew.length;i++){
    const p=crew[i];
