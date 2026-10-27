@@ -91,12 +91,16 @@ const {chromium}=require('playwright-core');
  await page.waitForTimeout(300);
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.selectedCarId)),'c2',
    'Direct click on the art of wagon two must select wagon two at the rendered camera scale');
+ assert.equal(await page.locator('#wagonQuick').isVisible(),true,
+   'Art tap should open a small contextual wagon card instead of requiring constructor panel');
+ assert.equal(await page.locator('#quickWagonCrew [data-quick-worker]').count(),3,
+   'Player can assign three existing crew from the wagon card');
  await page.locator('#carList [data-carid]').nth(1).click();
  const target=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(target.mode,'wagon','tapping current wagon must focus its original artwork');
  assert.equal(target.selectedCarId,'c2');
  assert.ok(target.target.zoom>3.2,'Selected wagon must occupy almost the whole scene height');
- await page.locator('#sendCrewToCar').click();
+ await page.locator('#quickWagonCrew [data-quick-worker="0"]').click();
  const job=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].job?.target);
  assert.equal(job,'rear','wagon shortcut must assign crew to selected wagon');
  await page.locator('#cameraIn').click();
@@ -212,6 +216,11 @@ const {chromium}=require('playwright-core');
  await page.waitForTimeout(500);
  const menuBox=await page.locator('#togglePanel').boundingBox();
  assert.ok(menuBox && menuBox.x+menuBox.width<=844,'Sidebar opener must not be cropped by resource HUD on phone');
+ await page.locator('#carList [data-carid]').first().click();
+ // The contextual card is opt-in and may be dismissed: it must never swallow a pinch.
+ await page.locator('#quickWagonClose').click();
+ assert.equal(await page.locator('#wagonQuick').isVisible(),false);
+
 
  const size=await page.evaluate(()=>({rect:document.getElementById('stage').getBoundingClientRect(),camera:window.__CARAVAN_QA.camera()}));
  assert.ok(size.rect.width>500&&size.rect.height>140,'Landscape Android-sized view must retain usable train canvas');

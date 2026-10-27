@@ -4,7 +4,15 @@
 <div id="cameraHud" class="camera-hud" aria-label="Поточний масштаб камери">
   <span id="currentWagon">ВАГОН 1</span>
   <small><span id="cameraMode">ОГЛЯД ПОТЯГА</span> · <b id="cameraZoom">100%</b></small>
-</div></div><nav class="playbar"><button id="travel">⏸ Зупинити</button><button id="slower">− Швидкість</button><span id="speedLabel">1.0×</span><button id="faster">+ Швидкість</button><button id="newCrew" title="Перемкнути обраного персонажа">⇄ Герой</button><button id="tasksOpen">⚒ Екіпаж</button><button id="journalOpen" type="button">▤ ЖУРНАЛ</button><button id="routeOpen" type="button">◇ МАРШРУТ</button><button id="fit" type="button" title="Показати весь потяг">◎ Увесь потяг</button>
+</div>
+<section id="wagonQuick" class="wagon-quick" aria-label="Швидке керування вагоном" hidden>
+ <div class="wagon-quick-head">
+  <div><strong id="quickWagonName">Вагон</strong><small id="quickWagonStatus">Оберіть працівника</small></div>
+  <button type="button" id="quickWagonClose" aria-label="Закрити швидке керування">×</button>
+ </div>
+ <div class="wagon-quick-actions" id="quickWagonCrew"></div>
+ <button type="button" class="wagon-quick-detail" id="quickWagonDetails">Деталі та покращення</button>
+</section></div><nav class="playbar"><button id="travel">⏸ Зупинити</button><button id="slower">− Швидкість</button><span id="speedLabel">1.0×</span><button id="faster">+ Швидкість</button><button id="newCrew" title="Перемкнути обраного персонажа">⇄ Герой</button><button id="tasksOpen">⚒ Екіпаж</button><button id="journalOpen" type="button">▤ ЖУРНАЛ</button><button id="routeOpen" type="button">◇ МАРШРУТ</button><button id="fit" type="button" title="Показати весь потяг">◎ Увесь потяг</button>
 <button id="cameraOut" type="button" aria-label="Віддалити">−</button>
 <button data-view-mode="train" type="button" aria-pressed="true">РОБОЧИЙ</button>
 <button data-view-mode="wagon" type="button" aria-pressed="false">ВАГОН</button>
