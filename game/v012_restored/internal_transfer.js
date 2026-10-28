@@ -26,7 +26,8 @@
   return crew.reduce((n,p,i)=>{
    if(i===exclude)return n;
    const occupies=(p?.job?.target===target&&['working','resting'].includes(p.mode))||
-    (p?.transfer?.target===target);
+    (p?.transfer?.target===target)||
+    (p?.autoActivity?.kind==='rest'&&p.autoActivity.toId===info.carId);
    return n+(occupies?1:0);
   },0);
  }
