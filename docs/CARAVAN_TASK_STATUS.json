@@ -292,9 +292,9 @@
       "id": "S-26",
       "area": "crew",
       "title": "Character specializations, training, fatigue and resting",
-      "status": "IN_PROGRESS",
-      "next_step": "D6A code + CI; physical Android verification then dedicated rest and training",
-      "evidence": "docs/CARAVAN_V013D_D6A_CREW_FATIGUE_HANDOFF.md",
+      "status": "TESTING",
+      "next_step": "Test D6B rest, XP, save migration, D5 transfer on physical Android",
+      "evidence": "docs/CARAVAN_V013D_D6B_REST_AND_SKILLS_HANDOFF.md",
       "android_verified": false
     },
     {
