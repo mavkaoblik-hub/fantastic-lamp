@@ -54,7 +54,9 @@
   if(!rule||workers.length===0)return 0;
   const specialization=workers.reduce((sum,i)=>{
    const base=crew[i].role===rule.role?1.2:.85;
-   return sum+base*(1-.45*clamp(number(crew[i].fatigue),0,100)/100);
+   const xp=clamp(Math.floor(number(crew[i].experience)),0,1e6);
+   const rank=xp>=40?5:xp>=24?4:xp>=12?3:xp>=4?2:1;
+   return sum+base*(1-.45*clamp(number(crew[i].fatigue),0,100)/100)*(1+.03*(rank-1));
   },0);
   const mood=clamp(number(morale,75),0,100);
   return specialization*(car.level===2?1.2:1)*clamp(.65+mood/200,.65,1.15);
