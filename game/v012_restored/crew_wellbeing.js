@@ -45,6 +45,7 @@ function advance(crew,cars,dt){
  const step=Math.min(1,dt);let changed=false;
  for(const p of crew){
   if(!p)continue;if(normalize(p))changed=true;
+  if(p.autoActivity)continue;
   const rate=p.mode==='resting'?(inRestWagon(p,cars)?-.65:0):
    p.mode==='working'?(inRestWagon(p,cars)?-.34:.14):
    (p.mode==='aboard'||p.mode==='patrol'?-.11:0);
@@ -54,7 +55,7 @@ function advance(crew,cars,dt){
  }
  return changed;
 }
-function describe(p,cars){return {fatigue:Math.round(clamp(Number.isFinite(p?.fatigue)?p.fatigue:0,0,100)),
+function describe(p,cars){return {loneliness:Math.round(clamp(Number.isFinite(p?.loneliness)?p.loneliness:20,0,100)),fatigue:Math.round(clamp(Number.isFinite(p?.fatigue)?p.fatigue:0,0,100)),
  efficiency:Math.round(efficiency(p)*100),resting:inRestWagon(p,cars)||p?.mode==='aboard',...growth(p)};}
 return Object.freeze({normalize,normalizeAll,inRestWagon,efficiency,growth,addExperience,advance,describe});
 });
