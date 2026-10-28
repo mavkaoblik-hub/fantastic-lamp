@@ -431,7 +431,14 @@ const {chromium}=require('playwright-core');
    window.__CARAVAN_QA.assign(0,'center');
    window.__CARAVAN_QA.advance(8);
    window.__CARAVAN_SAVE();
-   const save=JSON.parse(localStorage.getItem('caravan_v12'));
+  });
+  // pagehide saves in-memory state. Inject fixtures on the next page load,
+  // BEFORE the application reads localStorage (not before pagehide).
+  await autoPage.addInitScript(()=>{
+   const raw=localStorage.getItem('caravan_v12');
+   if(!raw)return;
+   const save=JSON.parse(raw);
+   if(!Array.isArray(save.crewData)||!save.crewData[0])return;
    save.crewData[0].fatigue=70;
    save.crewData[0].loneliness=78;
    save.crewData[0].autoCooldown=0;
@@ -447,12 +454,6 @@ const {chromium}=require('playwright-core');
    transit:window.__CARAVAN_QA.transit()
   }));
   assert.ok(autonomous.route,'Autonomous break starts only on the active train route');
-  console.log('D6C_DIAG',JSON.stringify(await autoPage.evaluate(()=>({
-   state:window.__CARAVAN_QA.snapshot().state,
-   crew:window.__CARAVAN_QA.snapshot().crew,
-   choices:window.CaravanCrewAutonomy.choose(window.__CARAVAN_QA.snapshot().crew,
-    window.__CARAVAN_QA.snapshot().state.cars,0)
-  }))));
   assert.equal(autonomous.needs.break?.kind,'rest',
    'Exhausted worker must take a safe self-directed onboard break');
   assert.equal(autonomous.needs.job,null,'Production assignment suspended during a break');
