@@ -9,6 +9,8 @@ const BOARDING=globalThis.CaravanBoardingD2;
 const LIFE=globalThis.CaravanInteriorLifeD3;
 const TRANSFER=globalThis.CaravanInternalTransfer;
  const WELLBEING=globalThis.CaravanCrewWellbeing;
+ const AUTONOMY=globalThis.CaravanCrewAutonomy;
+ if(!AUTONOMY)throw Error('crew_autonomy.js must load before app.js');
  if(!WELLBEING)throw Error('crew_wellbeing.js must load before app.js');
 if(!TRANSFER)throw Error('internal_transfer.js must load before app.js');
 if(!LIFE)throw Error('interior_life.js must load before app.js');
@@ -41,11 +43,12 @@ state.locoLevel=Math.min(4,Math.max(1,Math.round(Number(state.locoLevel)||1)));
 state.nextCarId=Math.max(3,Number(state.nextCarId)||3);
 
 const crewNames=['Марко','Олена','Данило'],crewSymbols=['⚒','✚','◈'];
-function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0,fatigue:0,experience:0}))}
+function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0,fatigue:0,experience:0,loneliness:20,autoCooldown:30,autoActivity:null}))}
 const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding','transferring','resting']);
 let crew=makeCrew();
 if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job&&!['aboard','boarding','transferring'].includes(p.mode))p.mode='patrol';return p})}
 WELLBEING.normalizeAll(crew);
+ AUTONOMY.normalize(crew,state.cars,Boolean(state.route?.active));
  let chosenCrew=Number.isInteger(state.chosenCrew)?Math.max(0,Math.min(2,state.chosenCrew)):0;
 let eventLog=Array.isArray(state.events)?state.events.slice(0,8):[];
 let journal=JOURNAL.normalize(state.journal);
@@ -224,7 +227,7 @@ function renderJournal(){
 
 let saveDirty=true,saveClock=0;
 function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,
- location:p.location,boardingState:p.boardingState,transfer:p.transfer||null,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,fatigue:p.fatigue,experience:p.experience,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
+ location:p.location,boardingState:p.boardingState,transfer:p.transfer||null,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,fatigue:p.fatigue,experience:p.experience,loneliness:p.loneliness,autoCooldown:p.autoCooldown,autoActivity:p.autoActivity||null,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
 function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
@@ -410,6 +413,7 @@ function setChosen(){const car=currentCar();const key=car.kind;
 function msg(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2050)}
 function logEvent(text){eventLog.unshift(text);eventLog=eventLog.slice(0,8);markDirty()}
 function statusText(p){
+  if(p.autoActivity){return ({rest:'Відпочиває за власним рішенням',social:'Спілкується з іншими',dining:'Відвідує кухню',stroll:'Гуляє потягом'}[p.autoActivity.kind]||'На перерві')+(p.autoActivity.phase==='return'?' · повертається до роботи':'');}
  if(p.mode==='transferring'&&p.transfer){
   const target=LOCATIONS[p.transfer.target]?.label||'інший вагон';
   return 'Усередині потяга → '+target+' · '+Math.floor(p.transfer.progress*100)+'%';
@@ -421,7 +425,7 @@ function statusText(p){
  if(p.mode==='resting')return 'Відпочиває у вагоні · сили відновлюються';
   if(state.route.active && p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';
  if(p.mode==='walking')return 'Прямує до входу: '+LOCATIONS[p.job.target].label;if(p.mode==='entering')return 'Заходить усередину вагона';if(p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';if(p.mode==='exiting')return 'Виходить із вагона';if(p.mode==='completed')return 'Завершив завдання · '+Math.max(0,3-Math.floor(p.completed))+' с';return 'Патрулює платформу'}
-function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const well=WELLBEING.describe(p,state.cars);const energy='<small class="crew-fatigue '+(well.fatigue>=65?'crew-fatigue-high':'')+'">Втома '+well.fatigue+'% · продуктивність '+well.efficiency+'%</small>';const skill='<small class="crew-growth">Рівень '+well.level+' · досвід '+well.xp+(well.next===null?' · MAX':' / '+well.next)+'</small>';const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${energy}${skill}${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active||state.boarding)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
+function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const well=WELLBEING.describe(p,state.cars);const energy='<small class="crew-fatigue '+(well.fatigue>=65?'crew-fatigue-high':'')+'">Втома '+well.fatigue+'% · продуктивність '+well.efficiency+'%</small>';const company='<small class="crew-company">Самотність '+well.loneliness+'%</small>';const skill='<small class="crew-growth">Рівень '+well.level+' · досвід '+well.xp+(well.next===null?' · MAX':' / '+well.next)+'</small>';const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${energy}${company}${skill}${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active||state.boarding)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
  $('cancelJob').disabled=Boolean(state.route.active||state.boarding)||(!crew[chosenCrew].job&&!crew[chosenCrew].queue.length);
  const restSeat=state.cars.some((car,i)=>['quarters','barracks'].includes(car.kind)&&
   (occupiedBerths(['center','rear','tail'][i],chosenCrew)<PRODUCTION.capacity(car)||
@@ -443,6 +447,7 @@ function occupiedBerths(target,except=-1){
  }
  function assignCrew(target){
  if(state.boarding){msg('Призначення доступне після скасування посадки');return false;}
+  if(crew[chosenCrew].autoActivity){msg('Персонаж на короткій перерві: повернеться до свого завдання');return false;}
  if(state.route.active){
   if(target==='engine'){msg('Ремонт локомотива виконується після прибуття');return false;}
   const result=TRANSFER.start(crew,state.cars,chosenCrew,target);
@@ -488,6 +493,7 @@ function occupiedBerths(target,except=-1){
 }
 function assignRest(){
   if(state.boarding){msg('Дочекайтеся завершення посадки');return false;}
+  if(crew[chosenCrew].autoActivity){msg('Персонаж уже відпочиває або спілкується');return false;}
   const p=crew[chosenCrew];
   if(p.mode==='resting'||p.mode==='transferring'){msg('Персонаж уже відпочиває або переходить');return false;}
   const places=state.cars.map((car,i)=>({car,target:['center','rear','tail'][i]}))
@@ -517,7 +523,7 @@ $('cancelJob').onclick=()=>{if(state.route.active||state.boarding){msg('Змін
 $('crewHome').onclick=()=>{if(state.route.active||state.boarding){msg('Під час посадки та рейсу екіпаж прямує на борт');return;}const p=crew[chosenCrew];p.queue=[];if(p.job&&(p.mode==='entering'||p.mode==='working'||p.mode==='exiting')){startExit(p)}else{p.job=null;p.mode='patrol';p.inside=0}renderCrewPanel();store();msg(crewNames[chosenCrew]+': повертається на патруль')};
 function closeSidebar(){$('sidebar').classList.remove('open');$('sidebarBackdrop').hidden=true;$('togglePanel').setAttribute('aria-expanded','false')}
 function openSidebar(section){
- const compact=window.matchMedia('(max-width:1050px)').matches;
+ const compact=true; // Sidebar overlays the scene on every screen.
  if(compact){
   $('sidebar').classList.add('open');$('sidebarBackdrop').hidden=false;
   $('togglePanel').setAttribute('aria-expanded','true');
@@ -561,7 +567,7 @@ $('routeIncident').addEventListener('click',e=>{
 $('routeList').addEventListener('click',e=>{
  const b=e.target.closest('[data-route-id]');
  if(!b||b.disabled)return;
- if(routeStart(b.dataset.routeId)&&window.matchMedia('(max-width:1050px)').matches)closeSidebar();
+ if(routeStart(b.dataset.routeId))closeSidebar();
 });
 $('boardingCancel').onclick=cancelBoarding;
 $('boardingCancelRoute').onclick=cancelBoarding;
@@ -706,6 +712,15 @@ function finishJob(p,i){
 function nextOrPatrol(p){p.job=null;p.inside=0;p.completed=0;p.progress=0;p.transition=0;if(p.queue.length){const next=p.queue.shift();beginJob(p,next)}else{p.mode='patrol';p.dir=p.x>=850?-1:1}markDirty()}
 function update(dt){
  t+=dt;advanceBoarding(dt);advanceRoute(dt);
+ const selfDirected=AUTONOMY.advance(crew,state.cars,dt,{
+  active:Boolean(state.route.active),moving:Boolean(state.moving),
+  boarding:Boolean(state.boarding)});
+ if(selfDirected.changed)markDirty();
+ for(const event of selfDirected.events){
+  const action={rest:'пішов перепочити',social:'пішов поспілкуватися',
+   dining:'відвідує вагон-кухню',stroll:'прогулюється потягом'}[event.kind];
+  if(event.type==='start')logEvent(crewNames[event.index]+': '+action);
+ }
  const moved=TRANSFER.advance(crew,state.cars,dt);
  if(moved.changed){
   markDirty();
@@ -947,6 +962,7 @@ globalThis.__CARAVAN_QA.routeDecision=(id)=>routeDecision(id);
 globalThis.__CARAVAN_QA.production=()=>structuredClone(production);
  globalThis.__CARAVAN_QA.wellbeing=()=>crew.map(p=>WELLBEING.describe(p,state.cars));
  globalThis.__CARAVAN_QA.rest=(index)=>{chosenCrew=index;return assignRest()};
+ globalThis.__CARAVAN_QA.autonomy=()=>crew.map(p=>({loneliness:p.loneliness,break:p.autoActivity||null,mode:p.mode,job:p.job,location:p.location}));
 globalThis.__CARAVAN_QA.productionInspect=(id)=>PRODUCTION.inspect(production,state.cars,crew,id,state.morale);
 globalThis.__CARAVAN_QA.interiorMotionAt=(seconds)=>LIFE.build(crew,state.cars).map(a=>({
  index:a.personIndex,carId:a.carId,wagonKind:a.wagonKind,activity:a.activity,
