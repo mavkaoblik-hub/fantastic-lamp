@@ -1,6 +1,6 @@
 {
   "schema": "CARAVAN_IMPLEMENTATION_TRACKER_V1",
-  "updated": "2026-10-27",
+  "updated": "2026-10-28",
   "source": "docs/CARAVAN_MASTER_TZ_v1_2026-10-23.md",
   "approved_style": "docs/CARAVAN_VISUAL_STYLE_LOCK.md",
   "audit_commit": "132a7a7eff1c36579916e45e92771d93c779434d",
@@ -323,6 +323,15 @@
       "next_step": "D4 work-area art calibration now implemented: distinct positioning beside equipment for all 14 canonical wagon types, time-varying repair/care/watch/rest/standby idle sprite poses and tiny bounded glows/FX, 2-place layouts. No new duplicate UI art, economy mutation, or route regressions. PASS Node, Chrome browser, signed debug APK CI run 40522041627; physical Android and sophisticated bespoke sprite animation still pending.",
       "evidence": "game/v012_restored/interior_life.js;game/v012_restored/app.js;tests/caravan_v013_interior_life.test.cjs;tests/caravan_v012_visual_smoke.cjs;docs/CARAVAN_V013D_D4_WORKSTATION_HANDOFF.md",
       "android_verified": false
+    },
+    {
+      "id": "S-30",
+      "title": "D5 internal crew transfer between wagons while route active",
+      "area": "gameplay",
+      "status": "TESTING",
+      "android_verified": false,
+      "next_step": "D5 integrated: internal transfers during route, reserved L1/L2 seats, source production paused until arrival, same original crew sprites moving between interior rooms only, save-safe transit normalization. Node + browser tests; physical Android still pending.",
+      "evidence": "game/v012_restored/internal_transfer.js;game/v012_restored/app.js;tests/caravan_v013_internal_transfer.test.cjs;docs/CARAVAN_V013D_D5_INTERNAL_TRANSFER_HANDOFF.md"
     }
   ],
   "release_notes": [
@@ -450,6 +459,13 @@
       "phase": "D4",
       "device_tested": false,
       "change": "Calibrated 14 wagon-specific worker stations based on existing painterly wagon PNGs; real D4 subtle worker sprite lean/sway/breathing actions for repair, care, watch, rest, standby; task-specific captions, bounded timed glow/equipment cues, no duplicate art/currency, no payout logic modifications; 4 additional Node tests + browser dynamic motion QA, debug APK signed workflow PASS."
+    },
+    {
+      "version": "v0.13-D5 in-train crew transfers",
+      "date": "2026-10-28",
+      "phase": "D5",
+      "device_tested": false,
+      "change": "Enable crew transfers between moving wagons with capacity reservation and save persistence; no walking outside or duplicate production; visual cabin fade, Node/browser checks and Android CI."
     }
   ],
   "visual_baseline": {
