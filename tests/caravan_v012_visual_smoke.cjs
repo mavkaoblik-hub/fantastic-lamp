@@ -20,6 +20,11 @@ const {chromium}=require('playwright-core');
    function picCount(){return pics.filter(x=>x.complete&&x.naturalWidth>0).length}
  });
  assert.equal(score.manifest,14,'14 wagon kinds in original v0.12');
+  assert.equal(await page.locator('#sendCrewRest').count(),1,
+   'D6B rest action must be available in the crew panel');
+  const initialGrowth=await page.evaluate(()=>window.__CARAVAN_QA.wellbeing());
+  assert.equal(initialGrowth.length,3);
+  assert.ok(initialGrowth.every(p=>p.level>=1&&p.level<=5&&p.fatigue>=0&&p.fatigue<=100));
  assert.ok(score.canvas>500,'Native original canvas must render');
  assert.ok(score.styles,'Original CSS must load');
  const approved=await page.evaluate(()=>window.CaravanApprovedUI.sources());
