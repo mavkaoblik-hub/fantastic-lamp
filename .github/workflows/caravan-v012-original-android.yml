@@ -21,6 +21,7 @@ on:
       - 'tests/caravan_v013_internal_transfer.test.cjs'
       - 'tests/caravan_v013_crew_wellbeing.test.cjs'
       - 'tests/caravan_v013_crew_growth.test.cjs'
+      - 'tests/caravan_v013_crew_autonomy.test.cjs'
       - '.github/workflows/caravan-v012-original-android.yml'
   workflow_dispatch:
 permissions:
@@ -46,10 +47,11 @@ jobs:
           node --check game/v012_restored/interior_life.js
           node --check game/v012_restored/internal_transfer.js
           node --check game/v012_restored/crew_wellbeing.js
+          node --check game/v012_restored/crew_autonomy.js
           node --check game/v012_restored/art_bridge_v013c.js
           node --check game/v012_restored/ui_icons.js
           node --check game/v012_restored/app.js
-          node --test tests/caravan_v012_camera.test.cjs tests/caravan_v012_journal.test.cjs tests/caravan_v012_routes.test.cjs tests/caravan_v013_production.test.cjs tests/caravan_v013_crew_transit.test.cjs tests/caravan_v013_boarding.test.cjs tests/caravan_v013_interior_life.test.cjs tests/caravan_v013_internal_transfer.test.cjs tests/caravan_v013_crew_wellbeing.test.cjs tests/caravan_v013_crew_growth.test.cjs
+          node --test tests/caravan_v012_camera.test.cjs tests/caravan_v012_journal.test.cjs tests/caravan_v012_routes.test.cjs tests/caravan_v013_production.test.cjs tests/caravan_v013_crew_transit.test.cjs tests/caravan_v013_boarding.test.cjs tests/caravan_v013_interior_life.test.cjs tests/caravan_v013_internal_transfer.test.cjs tests/caravan_v013_crew_wellbeing.test.cjs tests/caravan_v013_crew_growth.test.cjs tests/caravan_v013_crew_autonomy.test.cjs
       - name: Node and browser setup
         uses: actions/setup-node@v4
         with:
@@ -105,6 +107,7 @@ jobs:
           test -s "$GAME/interior_life.js"
           test -s "$GAME/internal_transfer.js"
           test -s "$GAME/crew_wellbeing.js"
+          test -s "$GAME/crew_autonomy.js"
           test -s "$GAME/art_bridge_v013c.js"
           test -s "$GAME/art_config_v013c.js"
           test -s "$GAME/assets/locations/signal_relay_post.png"
