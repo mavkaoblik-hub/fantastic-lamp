@@ -402,6 +402,54 @@ const {chromium}=require('playwright-core');
   assert.equal(savedRest.job.duty,'rest');
   assert.equal(savedRest.inside,1);
   await restPage.close();
+  // D6C: verify real scene width and on-route self-directed needs.
+  const autoPage=await browser.newPage({viewport:{width:1280,height:576}});
+  autoPage.on('pageerror',e=>errors.push('D6C-page: '+e.message));
+  await autoPage.goto('http://127.0.0.1:8787/',{waitUntil:'domcontentloaded'});
+  await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.autonomy==='function');
+  const compactScene=await autoPage.evaluate(()=>({
+   width:document.querySelector('.scene').getBoundingClientRect().width,
+   available:window.innerWidth,
+   sidebarHidden:getComputedStyle(document.querySelector('#sidebar')).display==='none'
+  }));
+  assert.ok(compactScene.width>=compactScene.available-16,
+   'Default scene should use all available desktop width, with no persistent 314px sidebar');
+  assert.equal(compactScene.sidebarHidden,true);
+  await autoPage.locator('#togglePanel').click();
+  assert.equal(await autoPage.locator('#sidebar').isVisible(),true,
+   'Modules remain accessible using the overlay drawer');
+  await autoPage.locator('#closeSidebar').click();
+  await autoPage.evaluate(()=>{
+   window.__CARAVAN_QA.assign(0,'center');
+   window.__CARAVAN_QA.advance(8);
+   window.__CARAVAN_SAVE();
+   const save=JSON.parse(localStorage.getItem('caravan_v12'));
+   save.crewData[0].fatigue=70;
+   save.crewData[0].loneliness=78;
+   save.crewData[0].autoCooldown=0;
+   localStorage.setItem('caravan_v12',JSON.stringify(save));
+  });
+  await autoPage.reload({waitUntil:'domcontentloaded'});
+  await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.routeStart==='function');
+  assert.equal(await autoPage.evaluate(()=>window.__CARAVAN_QA.routeStart('popil_mist')),true);
+  await autoPage.evaluate(()=>window.__CARAVAN_QA.advance(8));
+  const autonomous=await autoPage.evaluate(()=>({
+   route:window.__CARAVAN_QA.snapshot().state.route.active,
+   needs:window.__CARAVAN_QA.autonomy()[0],
+   transit:window.__CARAVAN_QA.transit()
+  }));
+  assert.ok(autonomous.route,'Autonomous break starts only on the active train route');
+  assert.equal(autonomous.needs.break?.kind,'rest',
+   'Exhausted worker must take a safe self-directed onboard break');
+  assert.equal(autonomous.needs.job,null,'Production assignment suspended during a break');
+  assert.equal(autonomous.transit.outside,0,'No exterior crew after spontaneous travel');
+  await autoPage.locator('#stage').screenshot({path:'caravan-v012-visual/v013d6c_autonomous_crew.png'});
+  await autoPage.evaluate(()=>window.__CARAVAN_SAVE());
+  await autoPage.reload({waitUntil:'domcontentloaded'});
+  await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.autonomy==='function');
+  assert.ok((await autoPage.evaluate(()=>window.__CARAVAN_QA.autonomy()[0].break)),
+   'Autonomous break should recover from persisted save without duplicating jobs');
+  await autoPage.close();
   assert.deepEqual(errors,[],'No JS or static resource loading failures');
  console.log(JSON.stringify({result:'PASS',...score,imageRefs:imgs.length},null,2));
  await browser.close();
