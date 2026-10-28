@@ -905,6 +905,10 @@ globalThis.__CARAVAN_QA.wagonBadgeState=()=>state.cars.map(car=>{
  const i=PRODUCTION.inspect(production,state.cars,crew,car.id,state.morale);
  return {id:car.id,role:i.ready>0?'ready':i.workers.length?'working':'none'};
 });
+globalThis.__CARAVAN_QA.quickSelect=(carId)=>{
+ if(!state.cars.some(c=>c.id===carId))return false;
+ state.selectedCarId=carId;setChosen();showQuickWagon();return true;
+};
 globalThis.__CARAVAN_QA.internalTransfers=()=>({
  states:crew.map((p,i)=>({i,mode:p.mode,target:p.job?.target||null,transfer:p.transfer||null,
   inside:p.inside,location:p.location})),
