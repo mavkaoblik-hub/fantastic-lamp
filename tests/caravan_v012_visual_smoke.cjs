@@ -375,7 +375,34 @@ const {chromium}=require('playwright-core');
  const size=await page.evaluate(()=>({rect:document.getElementById('stage').getBoundingClientRect(),camera:window.__CARAVAN_QA.camera()}));
  assert.ok(size.rect.width>500&&size.rect.height>140,'Landscape Android-sized view must retain usable train canvas');
  await page.screenshot({path:'caravan-v012-visual/android_844x390.png'});
- assert.deepEqual(errors,[],'No JS or static resource loading failures');
+ // D6B isolated real-browser QA without altering prior routes/transfers.
+  const restPage=await browser.newPage({viewport:{width:844,height:390}});
+  restPage.on('pageerror',e=>errors.push('Rest-page error: '+e.message));
+  await restPage.goto('http://127.0.0.1:8787/',{waitUntil:'domcontentloaded'});
+  await restPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.rest==='function');
+  assert.equal(await restPage.evaluate(()=>window.__CARAVAN_QA.rest(0)),true,
+   'Station mechanic must reserve a sleeping berth');
+  await restPage.evaluate(()=>window.__CARAVAN_QA.advance(8));
+  const resting=await restPage.evaluate(()=>({
+   person:window.__CARAVAN_QA.snapshot().crew[0],
+   production:window.__CARAVAN_QA.production().rows.c2,
+   indicator:window.__CARAVAN_QA.wellbeing()[0]
+  }));
+  assert.equal(resting.person.mode,'resting','Rest begins after existing door animation');
+  assert.equal(resting.person.job.duty,'rest');
+  assert.equal(resting.person.inside,1);
+  assert.equal(resting.production.progress,0,'Resting cannot generate resource batches');
+  assert.equal(resting.indicator.level,1);
+  await restPage.screenshot({path:'caravan-v012-visual/v013d6b_crew_rest.png'});
+  await restPage.evaluate(()=>window.__CARAVAN_SAVE());
+  await restPage.reload({waitUntil:'domcontentloaded'});
+  await restPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.rest==='function');
+  const savedRest=await restPage.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0]);
+  assert.equal(savedRest.mode,'resting','Rest survives WebView reload');
+  assert.equal(savedRest.job.duty,'rest');
+  assert.equal(savedRest.inside,1);
+  await restPage.close();
+  assert.deepEqual(errors,[],'No JS or static resource loading failures');
  console.log(JSON.stringify({result:'PASS',...score,imageRefs:imgs.length},null,2));
  await browser.close();
 })().catch(err=>{console.error(err);process.exit(1);});
