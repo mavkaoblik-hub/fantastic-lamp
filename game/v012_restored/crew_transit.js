@@ -28,6 +28,14 @@
   for(let i=0;i<crew.length;i++){
    const p=crew[i];if(!p||typeof p!=='object')continue;
    if(active){
+    // D6C autonomous breaks remain inside even when the route pauses.
+    if(p.autoActivity){
+     if(p.job){p.job=null;changed=true;}
+     if(p.mode!=='aboard'){p.mode='aboard';changed=true;}
+     if(p.inside!==1){p.inside=1;changed=true;}
+     if(p.boardingState!=='aboard'){p.boardingState='aboard';changed=true;}
+     aboard++;continue;
+    }
     // D5 interior transfer is a safe aboard-only transition. Never turn it
     // into "aboard" or reactivate any job before the transfer finishes.
     if(p.mode==='transferring'&&p.transfer){
