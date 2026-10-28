@@ -447,6 +447,12 @@ const {chromium}=require('playwright-core');
    transit:window.__CARAVAN_QA.transit()
   }));
   assert.ok(autonomous.route,'Autonomous break starts only on the active train route');
+  console.log('D6C_DIAG',JSON.stringify(await autoPage.evaluate(()=>({
+   state:window.__CARAVAN_QA.snapshot().state,
+   crew:window.__CARAVAN_QA.snapshot().crew,
+   choices:window.CaravanCrewAutonomy.choose(window.__CARAVAN_QA.snapshot().crew,
+    window.__CARAVAN_QA.snapshot().state.cars,0)
+  }))));
   assert.equal(autonomous.needs.break?.kind,'rest',
    'Exhausted worker must take a safe self-directed onboard break');
   assert.equal(autonomous.needs.job,null,'Production assignment suspended during a break');
