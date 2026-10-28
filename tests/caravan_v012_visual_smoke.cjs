@@ -5,7 +5,12 @@ const {chromium}=require('playwright-core');
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.CARAVAN_CHROME_BIN,
      args:['--no-sandbox','--disable-dev-shm-usage']});
- const page=await browser.newPage({viewport:{width:1280,height:576},deviceScaleFactor:1});
+ const page=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true,deviceScaleFactor:1});
+ async function cameraControl(selector){
+  if(await page.locator('#controlsPanel').isHidden())await page.locator('#controlsOpen').click();
+  await page.locator(selector).click();
+  await page.locator('#controlsClose').click();
+ }
  const errors=[];
  page.on('pageerror',e=>errors.push('Page error: '+e.message));
  page.on('response',r=>{if(r.status()>=400)errors.push('HTTP '+r.status()+' '+r.url());});
@@ -69,7 +74,7 @@ const {chromium}=require('playwright-core');
  });
  assert.deepEqual(validated,[],'No broken original wagon sprites');
  fs.mkdirSync('caravan-v012-visual',{recursive:true});
- await page.screenshot({path:'caravan-v012-visual/original_reference_1280x576.png'});
+ await page.screenshot({path:'caravan-v012-visual/original_reference_844x390.png'});
  await page.locator('#tasksOpen').click();
  assert.equal(await page.locator('#sidebar').isVisible(),true);
  await page.locator('#closeSidebar').click();
@@ -77,16 +82,14 @@ const {chromium}=require('playwright-core');
  const wide=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(wide.mode,'wide','fit button must zoom out to show entire original train');
  assert.ok(wide.target.zoom<1,'wide mode must be a zoom out');
- await page.locator('[data-view-mode="train"]').click();
+ await cameraControl('[data-view-mode="train"]');
  const train=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(train.mode,'train');
  await page.waitForTimeout(900);
  // A tap on the actual illustrated second wagon must resolve to its original world-space ID.
  const tap=await page.evaluate(()=>{
    const element=document.getElementById('stage'),box=element.getBoundingClientRect();
-   const W=box.width,H=box.height,cinematic=W/H>2.6;
-   const scale=cinematic?W/1200:Math.min(W/1200,H/605);
-   const offX=(W-1200*scale)/2,offY=cinematic?H*.51-345*scale:(H-605*scale)/2;
+   const {scale,offX,offY}=window.__CARAVAN_QA.projection();
    const cam=window.__CARAVAN_QA.camera().camera;
    return {x:offX+scale*(600+(795-cam.cx)*cam.zoom),
            y:offY+scale*(302.5+(360-cam.cy)*cam.zoom)};
@@ -101,7 +104,7 @@ const {chromium}=require('playwright-core');
  assert.equal(await page.locator('#wagonQuick').isVisible(),true,
    'Art tap should open a small contextual wagon card instead of requiring constructor panel');
  await page.waitForFunction(()=>document.getElementById('quickRoomPreview').naturalWidth>0);
- assert.equal(await page.locator('#quickRoomPreview').isVisible(),true,'Art is visible in compact workroom card');
+ assert.equal(await page.locator('#quickRoomPreview').isVisible(),false,'Android shows the actual wagon beside the card without a duplicate thumbnail');
  assert.equal(await page.locator('#quickWagonCrew [data-quick-worker]').count(),3,
    'Player can assign three existing crew from the wagon card');
  await page.screenshot({path:'caravan-v012-visual/v013_wagon_quick_action_card.png'});
@@ -112,7 +115,9 @@ const {chromium}=require('playwright-core');
  const target=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(target.mode,'wagon','tapping current wagon must focus its original artwork');
  assert.equal(target.selectedCarId,'c2');
- assert.ok(target.target.zoom>3.2,'Selected wagon must occupy almost the whole scene height');
+ const view=await page.evaluate(()=>__CARAVAN_QA.projection().view);
+ assert.ok(target.target.zoom*163<=view.height*.83,'Focused wagon fits the Android scene height');
+ await page.evaluate(()=>__CARAVAN_QA.quickSelect('c2'));
  await page.locator('#quickWagonCrew [data-quick-worker="0"]').click();
  const job=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].job?.target);
  assert.equal(job,'rear','wagon shortcut must assign crew to selected wagon');
@@ -159,10 +164,10 @@ const {chromium}=require('playwright-core');
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.morale)),afterCollect,
    'Newly produced stock may be ready, but cannot auto-credit resources');
 
- await page.locator('#cameraIn').click();
- await page.locator('#cameraOut').click();
+ await cameraControl('#cameraIn');
+ await cameraControl('#cameraOut');
  // Inject true two-finger touch input (not mouse wheel emulation).
- await page.locator('[data-view-mode="train"]').click();
+ await cameraControl('[data-view-mode="train"]');
  await page.waitForTimeout(850);
  const cdp=await page.context().newCDPSession(page);
  await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:2});
@@ -188,15 +193,19 @@ const {chromium}=require('playwright-core');
  const pinchOut=await page.evaluate(()=>window.__CARAVAN_QA.camera().camera.zoom);
  assert.ok(pinchOut<pinchIn-.5,'Two fingers moving together must zoom out: '+pinchOut);
  await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:false});
- await page.locator('[data-view-mode="wagon"]').click();
+ await cameraControl('[data-view-mode="wagon"]');
  await page.waitForTimeout(700);
- await page.screenshot({path:'caravan-v012-visual/wagon_near_full_scene_1280x576.png'});
+ await page.screenshot({path:'caravan-v012-visual/wagon_near_full_scene_844x390.png'});
  // Verify a genuine wagon-level achievement, one claim, and durable save.
  await page.locator('#journalOpen').click();
  assert.equal(await page.locator('#journalList .journal-entry').count(),4);
  await page.locator('#journalList [data-claim="wagon_upgrade"]').isDisabled();
  const metalBefore=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.metal);
+ await page.locator('#closeSidebar').click();
+ await page.locator('#togglePanel').click();
  await page.locator('#upgrade').click();
+ await page.locator('#closeSidebar').click();
+ await page.locator('#journalOpen').click();
  const claimButton=page.locator('#journalList [data-claim="wagon_upgrade"]');
  assert.equal(await claimButton.isEnabled(),true,'One L2 upgrade should enable quest reward');
  await claimButton.click();
@@ -411,7 +420,7 @@ const {chromium}=require('playwright-core');
   assert.equal(savedRest.inside,1);
   await restPage.close();
   // D6C: verify real scene width and on-route self-directed needs.
-  const autoPage=await browser.newPage({viewport:{width:1280,height:576}});
+  const autoPage=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
   autoPage.on('pageerror',e=>errors.push('D6C-page: '+e.message));
   await autoPage.goto('http://127.0.0.1:8787/',{waitUntil:'domcontentloaded'});
   await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.autonomy==='function');
