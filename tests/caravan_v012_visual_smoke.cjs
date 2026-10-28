@@ -71,6 +71,8 @@ const {chromium}=require('playwright-core');
  fs.mkdirSync('caravan-v012-visual',{recursive:true});
  await page.screenshot({path:'caravan-v012-visual/original_reference_1280x576.png'});
  await page.locator('#tasksOpen').click();
+ assert.equal(await page.locator('#sidebar').isVisible(),true);
+ await page.locator('#closeSidebar').click();
  await page.locator('#fit').click();
  const wide=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(wide.mode,'wide','fit button must zoom out to show entire original train');
@@ -104,7 +106,9 @@ const {chromium}=require('playwright-core');
    'Player can assign three existing crew from the wagon card');
  await page.screenshot({path:'caravan-v012-visual/v013_wagon_quick_action_card.png'});
 
+ await page.locator('#togglePanel').click();
  await page.locator('#carList [data-carid]').nth(1).click();
+ await page.locator('#closeSidebar').click();
  const target=await page.evaluate(()=>window.__CARAVAN_QA.camera());
  assert.equal(target.mode,'wagon','tapping current wagon must focus its original artwork');
  assert.equal(target.selectedCarId,'c2');
@@ -203,7 +207,9 @@ const {chromium}=require('playwright-core');
  await page.waitForTimeout(900);
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.journal().find(q=>q.id==='wagon_upgrade').status)),'claimed',
   'Claim state must survive full browser restart');
+ await page.locator('#togglePanel').click();
  await page.locator('#locoUpgrade').click();
+ await page.locator('#closeSidebar').click();
  await page.waitForTimeout(400);
  // Plan a physical route using the real original v0.12 scene, then arrive exactly once.
  await page.locator('#routeOpen').click();
@@ -226,6 +232,7 @@ const {chromium}=require('playwright-core');
  assert.equal(cancelled.route.active,null,'Cancel restores the station without starting a trip');
  assert.equal(cancelled.fuel,depart.fuel,'Cancel must refund by never charging fuel');
  assert.equal(cancelled.supplies,depart.supplies);
+ await page.locator('#routeOpen').click();
  await page.locator('[data-route-id="popil_mist"]').click();
  assert.ok((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.boarding)));
  await page.evaluate(()=>window.__CARAVAN_QA.advance(1));
@@ -361,6 +368,7 @@ const {chromium}=require('playwright-core');
  await page.evaluate(()=>window.__CARAVAN_QA.advance(30));
  assert.equal(JSON.stringify((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state)).route),snapshotArrival,
   'Arrival event cannot be collected again by advancing time');
+ await page.locator('#closeSidebar').evaluate(el=>el.click());
  await page.locator('#routeOpen').click();
  assert.equal(await page.locator('#stationName').innerText(),'Іржавий міст');
  assert.equal(await page.locator('#routeList .route-choice').count(),2);
