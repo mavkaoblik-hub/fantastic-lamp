@@ -42,9 +42,18 @@
   return ix>=0&&cars[ix]?.id?ix:-1;
  }
  function validLocation(person,cars){
-  if(!person||!Array.isArray(cars)||!['working','aboard','boarding'].includes(person.mode)||
+  if(!person||!Array.isArray(cars)||!['working','aboard','boarding','transferring'].includes(person.mode)||
      !(person.inside>=.999))return null;
   if(person.mode==='boarding'&&person.boardingState!=='aboard')return null;
+  // While changing rooms the sprite remains inside a valid cutaway.
+  // The halfway change represents passing through an off-screen corridor.
+  if(person.mode==='transferring'&&person.transfer){
+   const tr=person.transfer;
+   const id=tr.progress<.5?tr.fromId:tr.toId;
+   if(id==='engine')return {kind:'locomotive',index:-1,carId:null};
+   const index=cars.findIndex(c=>c.id===id);
+   return index>=0?{kind:'wagon',index,carId:id}:{kind:'locomotive',index:-1,carId:null};
+  }
   const ix=slot(person.job?.target,cars);
   if(person.mode==='working'&&ix>=0)return {kind:'wagon',index:ix,carId:cars[ix].id};
   if(person.mode==='working'&&person.job?.target==='engine')
@@ -60,9 +69,11 @@
   const profile=STATIONS[kind];
   let activity=person.mode==='working'?(profile?.activity||'repair'):'standby';
   if(person.mode==='aboard'&&loc.index>=0)activity='rest';
+  if(person.mode==='transferring')activity='transfer';
   return {
    personIndex:i,carId:loc.carId,location:loc.kind,index:loc.index,
    wagonKind:kind,activity,caption:activity==='standby'?ACTIONS.standby:
+    person.mode==='transferring'?'Внутрішній перехід · '+Math.floor((person.transfer?.progress||0)*100)+'%':
     person.mode==='working'&&profile?profile.label:ACTIONS[activity],
    role:person.role,
    progress:person.mode==='working'?clamp(finite(person.progress),0,1):0

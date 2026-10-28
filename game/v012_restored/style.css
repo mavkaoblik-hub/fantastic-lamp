@@ -252,3 +252,8 @@ main{align-items:start}.scene{align-self:start}
 @media(max-width:1050px) and (orientation:landscape){
  .quick-room-crew-list{font-size:9px;min-height:10px;margin:1px 1px 2px}
 }
+
+/* D5 internal personnel assignments: in-route transfer buttons use existing
+   visual language, without adding modal dialogs or replacing canonical icons. */
+.wagon-quick-actions button[data-state="transferring"]{
+ border-color:#c49b62;color:#ffddaa;background:#4c3628}

@@ -7,6 +7,8 @@ const PRODUCTION=globalThis.CaravanV13Production;
 const TRANSIT=globalThis.CaravanCrewTransit;
 const BOARDING=globalThis.CaravanBoardingD2;
 const LIFE=globalThis.CaravanInteriorLifeD3;
+const TRANSFER=globalThis.CaravanInternalTransfer;
+if(!TRANSFER)throw Error('internal_transfer.js must load before app.js');
 if(!LIFE)throw Error('interior_life.js must load before app.js');
 if(!BOARDING)throw Error('boarding.js must load before app.js');
 if(!TRANSIT)throw Error('crew_transit.js must load before app.js');
@@ -38,9 +40,9 @@ state.nextCarId=Math.max(3,Number(state.nextCarId)||3);
 
 const crewNames=['Марко','Олена','Данило'],crewSymbols=['⚒','✚','◈'];
 function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0}))}
-const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding']);
+const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding','transferring']);
 let crew=makeCrew();
-if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job&&!['aboard','boarding'].includes(p.mode))p.mode='patrol';return p})}
+if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job&&!['aboard','boarding','transferring'].includes(p.mode))p.mode='patrol';return p})}
 let chosenCrew=Number.isInteger(state.chosenCrew)?Math.max(0,Math.min(2,state.chosenCrew)):0;
 let eventLog=Array.isArray(state.events)?state.events.slice(0,8):[];
 let journal=JOURNAL.normalize(state.journal);
@@ -60,7 +62,10 @@ else if(state.boarding){
 if(!state.route.active||ROUTES.pending(state.route))state.moving=false;
 // D1 safety migration for legacy active trips. D2 boarding is separate
 // and must not disembark early-arriving passengers.
-if(!state.boarding)TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
+if(!state.boarding){
+ TRANSFER.normalize(crew,state.cars,Boolean(state.route.active));
+ TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
+}
 const ROUTE_EVENT_LABELS={cache:'Схованка біля колії · +13 металу',rations:'Покинутий склад · +9 припасів',
  breakdown:'Зношені рейки · −9 стану, +5 металу',quiet:'Тихий перехід · до +4 моралі'};
 function renderRouteProgress(){
@@ -216,7 +221,7 @@ function renderJournal(){
 
 let saveDirty=true,saveClock=0;
 function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,
- location:p.location,boardingState:p.boardingState,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
+ location:p.location,boardingState:p.boardingState,transfer:p.transfer||null,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
 function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
@@ -268,6 +273,7 @@ function renderQuickWagon(){
  const car=currentCar(),slot=selectedSlot(),target=wagonTarget();
  $('quickWagonName').textContent='ВАГОН '+(slot+1)+' · '+m.wagon[car.kind].title+' · L'+levelFor(car);
  const assigned=crew.filter(p=>p.job?.target===target);
+ const transfers=crew.filter(p=>p.transfer?.target===target);
  const model=PRODUCTION.inspect(production,state.cars,crew,car.id,state.morale);
  const picture=$('quickRoomPreview'),badge=$('quickRoomState');
  if(picture){
@@ -285,7 +291,8 @@ function renderQuickWagon(){
  const liveActors=LIFE.build(crew,state.cars).filter(a=>a.carId===car.id);
  $('quickWagonStatus').textContent=(assigned.length?
   'Персонал: '+assigned.map(p=>crewNames[crew.indexOf(p)]).join(', '):
-  'Вакантний вагон')+' · місця '+PRODUCTION.assigned(state.cars,crew,slot).length+'/'+PRODUCTION.capacity(car);
+  'Вакантний вагон')+' · місця '+(PRODUCTION.assigned(state.cars,crew,slot).length+transfers.length)+'/'+PRODUCTION.capacity(car)+
+  (transfers.length?' · внутрішній перехід '+transfers.map(p=>crewNames[crew.indexOf(p)]).join(', '):'');
  $('quickRoomCrewList').textContent=liveActors.length?
   liveActors.map(a=>crewNames[a.personIndex]+' · '+a.caption).join(' / '):
   'У приміщенні поки нікого немає';
@@ -300,15 +307,18 @@ function renderQuickWagon(){
   collect.textContent=model.ready?'ЗІБРАТИ · '+model.ready+' × '+model.amount:'Немає готових партій';
  }
  $('quickWagonCrew').innerHTML=crew.map((p,i)=>{
-  const same=p.job?.target===target;
+  const onRoute=Boolean(state.route.active),same=p.job?.target===target;
+  const coming=p.transfer?.target===target;
   const duplicate=p.queue?.some(j=>j.target===target);
-  const occupancy=PRODUCTION.assigned(state.cars,crew,slot).length;
-  const full=occupancy>=PRODUCTION.capacity(car);
-  const disabled=same||duplicate||full;
-  const stateLabel=same?'ПРАЦЮЄ':duplicate?'У ЧЕРЗІ':p.job?'У ЧЕРГУ':'НАПРАВИТИ';
-  return '<button type="button" data-quick-worker="'+i+'" data-state="'+(same?'working':'idle')+
-   '" '+(disabled?'disabled':'')+' aria-label="'+crewNames[i]+' — '+stateLabel+'">'+
-   crewNames[i]+'<br><small>'+stateLabel+'</small></button>';
+  const full=TRANSFER.occupancy(crew,state.cars,target,i)>=PRODUCTION.capacity(car);
+  const enabled=onRoute?TRANSFER.canStart(crew,state.cars,i,target).ok:
+    !(same||duplicate||full||state.boarding);
+  const text=coming?'У ПЕРЕХОДІ':same?'ПРАЦЮЄ':
+   onRoute?'ПЕРЕВЕСТИ':duplicate?'У ЧЕРЗІ':p.job?'У ЧЕРГУ':'НАПРАВИТИ';
+  return '<button type="button" data-quick-worker="'+i+'" data-state="'+
+   (same?'working':coming?'transferring':'idle')+'" '+
+   (enabled?'':'disabled')+' aria-label="'+crewNames[i]+' — '+text+'">'+
+   crewNames[i]+'<br><small>'+text+'</small></button>';
  }).join('');
 }
 function showQuickWagon(){
@@ -395,6 +405,10 @@ function setChosen(){const car=currentCar();const key=car.kind;
 function msg(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2050)}
 function logEvent(text){eventLog.unshift(text);eventLog=eventLog.slice(0,8);markDirty()}
 function statusText(p){
+ if(p.mode==='transferring'&&p.transfer){
+  const target=LOCATIONS[p.transfer.target]?.label||'інший вагон';
+  return 'Усередині потяга → '+target+' · '+Math.floor(p.transfer.progress*100)+'%';
+ }
  if(state.boarding&&p.boardingState==='approaching')return 'Посадка · іде до входу';
  if(state.boarding&&p.boardingState==='entering')return 'Посадка · заходить усередину';
  if(state.boarding&&p.boardingState==='aboard')return 'Готовий до рейсу';
@@ -408,7 +422,20 @@ $('crewList').onclick=e=>{const btn=e.target.closest('[data-crew]');if(!btn)retu
 function startExit(p){p.exitStartX=p.x;p.exitInside=p.inside;p.mode='exiting';p.transition=0;p.progress=0}
 function beginJob(p,job){p.job={target:job.target};p.mode='walking';p.progress=0;p.transition=0;p.inside=0;p.completed=0;p.dir=LOCATIONS[job.target].door>p.x?1:-1;markDirty()}
 function assignCrew(target){
- if(state.route.active||state.boarding){msg('Призначення доступне після скасування посадки або прибуття');return false;}
+ if(state.boarding){msg('Призначення доступне після скасування посадки');return false;}
+ if(state.route.active){
+  if(target==='engine'){msg('Ремонт локомотива виконується після прибуття');return false;}
+  const result=TRANSFER.start(crew,state.cars,chosenCrew,target);
+  if(!result.ok){
+   msg(({full:'Робочі місця зайняті','same-room':'Працівник уже в цьому вагоні',
+     'already-transferring':'Перехід уже виконується',
+     'not-onboard':'Працівник не на борту'}[result.reason]||'Переведення недоступне'));
+   return false;
+  }
+  logEvent(crewNames[chosenCrew]+': внутрішній перехід у '+LOCATIONS[target].label);
+  msg(crewNames[chosenCrew]+': перехід усередині · '+Math.ceil(result.duration)+' с');
+  renderCrewPanel();renderQuickWagon();store();return true;
+ }
  if(target==='tail'&&state.cars.length<3){msg('Третій вагон ще не причеплено');return false;}
  if(target==='rear'&&state.cars.length<2){msg('Другого вагона немає');return false;}
  const p=crew[chosenCrew],ix=['center','rear','tail'].indexOf(target);
@@ -633,6 +660,15 @@ function finishJob(p,i){
 function nextOrPatrol(p){p.job=null;p.inside=0;p.completed=0;p.progress=0;p.transition=0;if(p.queue.length){const next=p.queue.shift();beginJob(p,next)}else{p.mode='patrol';p.dir=p.x>=850?-1:1}markDirty()}
 function update(dt){
  t+=dt;advanceBoarding(dt);advanceRoute(dt);
+ const moved=TRANSFER.advance(crew,state.cars,dt);
+ if(moved.changed){
+  markDirty();
+  if(moved.finished.length){
+   for(const index of moved.finished)
+    logEvent(crewNames[index]+': внутрішній перехід завершено');
+   renderCrewPanel();store();
+  }
+ }
  const onboard=state.boarding?{changed:false}:
   TRANSIT.synchronize(crew,state.cars,Boolean(state.route.active));
  if(onboard.changed)markDirty();
@@ -656,6 +692,10 @@ function update(dt){
  else if(p.mode==='completed'){p.completed+=dt;if(p.completed>=2.8)nextOrPatrol(p);markDirty()}
  else if(p.mode==='aboard'){
   // Passenger is inside the locomotive. No exterior patrol or rewards.
+  p.inside=1;
+ }
+ else if(p.mode==='transferring'){
+  // Moved by internal_transfer.js; no exterior walking, no production.
   p.inside=1;
  }
  else if(p.mode==='boarding'){
@@ -702,6 +742,11 @@ function drawInteriorLife(){
   const sprite=frames[Math.floor((t+(person.phase||0))*motion.frameRate)%frames.length];
   const bounds=actor.bounds;
   c.save();
+  // Crossing between cars is shown as an in-room fade: never on the tracks.
+  if(actor.activity==='transfer'){
+   const progress=Math.max(0,Math.min(1,crew[actor.personIndex].transfer?.progress||0));
+   c.globalAlpha=.38+.48*Math.abs(progress-.5);
+  }
   c.beginPath();c.rect(bounds.x,bounds.y,bounds.w,bounds.h);c.clip();
   // Existing amber lamps and scene highlights remain visible. A gentle
   // localized glow signals interaction without introducing new UI icons.
@@ -859,6 +904,13 @@ globalThis.__CARAVAN_QA.interiorLife=()=>LIFE.build(crew,state.cars).map(a=>({
 globalThis.__CARAVAN_QA.wagonBadgeState=()=>state.cars.map(car=>{
  const i=PRODUCTION.inspect(production,state.cars,crew,car.id,state.morale);
  return {id:car.id,role:i.ready>0?'ready':i.workers.length?'working':'none'};
+});
+globalThis.__CARAVAN_QA.internalTransfers=()=>({
+ states:crew.map((p,i)=>({i,mode:p.mode,target:p.job?.target||null,transfer:p.transfer||null,
+  inside:p.inside,location:p.location})),
+ occupancy:state.cars.map((car,i)=>({id:car.id,target:['center','rear','tail'][i],
+  occupied:TRANSFER.occupancy(crew,state.cars,['center','rear','tail'][i]),
+  capacity:PRODUCTION.capacity(car)}))
 });
 globalThis.__CARAVAN_QA.transit=()=>({
  phase:TRANSIT.phase(Boolean(state.route.active),state.moving,Boolean(ROUTES.pending(state.route))),

@@ -27,6 +27,17 @@
   for(let i=0;i<crew.length;i++){
    const p=crew[i];if(!p||typeof p!=='object')continue;
    if(active){
+    // D5 interior transfer is a safe aboard-only transition. Never turn it
+    // into "aboard" or reactivate any job before the transfer finishes.
+    if(p.mode==='transferring'&&p.transfer){
+     const id=p.transfer.progress<.5?p.transfer.fromId:p.transfer.toId;
+     const where=id==='engine'?{kind:'locomotive',carId:null}:{kind:'wagon',carId:id};
+     if(p.inside!==1){p.inside=1;changed=true;}
+     if(p.boardingState!=='aboard'){p.boardingState='aboard';changed=true;}
+     if(p.location?.kind!==where.kind||p.location?.carId!==where.carId){p.location=where;changed=true;}
+     if(p.job){p.job=null;changed=true;}
+     aboard++;continue;
+    }
     const assigned=validTarget(p.job,cars);
     if(!assigned && p.job){p.job=null;changed=true;}
     // In D1 convert transit/exit animations to safe interiors atomically.
