@@ -21,7 +21,9 @@
   const target=person?.job?.target;
   if(!Object.prototype.hasOwnProperty.call(DOORS,target))return null;
   if(target==='engine')return target;
-  return cars[SLOTS.indexOf(target)]?.id?target:null;
+  const car=cars[SLOTS.indexOf(target)];
+  if(!car?.id||(person.job?.duty==='rest'&&!['quarters','barracks'].includes(car.kind)))return null;
+  return target;
  }
  function placement(target,cars,i){
   const carIndex=SLOTS.indexOf(target);
@@ -41,7 +43,7 @@
   const target=validJob(person,cars)||'engine';
   const assigned=Boolean(validJob(person,cars));
   person.boardingTarget=target;
-  if(person.mode==='working'&&person.inside>=.999&&assigned){
+  if(['working','resting'].includes(person.mode)&&person.inside>=.999&&assigned){
    const p=placement(target,cars,i);
    person.x=p.x;person.inside=1;person.boardingState='aboard';
    person.location=p.location;
@@ -86,7 +88,7 @@
    p.x=door.door+(end.x-door.door)*t;
    p.inside=t;p.mode='boarding';
    if(p.transition>=1){
-    p.mode=validJob(p,cars)?'working':'aboard';
+    p.mode=validJob(p,cars)?(p.job?.duty==='rest'?'resting':'working'):'aboard';
     p.x=end.x;p.inside=1;p.boardingState='aboard';
     p.location=end.location;
     aboard++;
@@ -97,7 +99,7 @@
    for(let i=0;i<crew.length;i++){
     const p=crew[i];if(p.boardingState==='aboard')continue;
     const target=validJob(p,cars)||'engine',end=placement(target,cars,i);
-    p.mode=validJob(p,cars)?'working':'aboard';
+    p.mode=validJob(p,cars)?(p.job?.duty==='rest'?'resting':'working'):'aboard';
     p.x=end.x;p.inside=1;p.boardingState='aboard';p.location=end.location;
     p.transition=1;aboard++;
    }
@@ -121,7 +123,7 @@
      !allowRoute(raw.routeId))return null;
   for(let i=0;i<crew.length;i++){
    if(!crew[i]||typeof crew[i].x!=='number'||!Number.isFinite(crew[i].x)||
-      !['boarding','working','aboard'].includes(crew[i].mode))return null;
+      !['boarding','working','resting','aboard'].includes(crew[i].mode))return null;
   }
   return {version:2,routeId:raw.routeId,
     elapsed:Math.max(0,Math.min(10,Number(raw.elapsed)||0)),
