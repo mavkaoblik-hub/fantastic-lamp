@@ -292,9 +292,9 @@
       "id": "S-26",
       "area": "crew",
       "title": "Character specializations, training, fatigue and resting",
-      "status": "BACKLOG",
-      "next_step": "V13-C persist specialization and avoid S.P.E.C.I.A.L. copying",
-      "evidence": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
+      "status": "IN_PROGRESS",
+      "next_step": "D6A code + CI; physical Android verification then dedicated rest and training",
+      "evidence": "docs/CARAVAN_V013D_D6A_CREW_FATIGUE_HANDOFF.md",
       "android_verified": false
     },
     {

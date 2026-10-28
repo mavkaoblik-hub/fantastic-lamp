@@ -8,6 +8,8 @@ const TRANSIT=globalThis.CaravanCrewTransit;
 const BOARDING=globalThis.CaravanBoardingD2;
 const LIFE=globalThis.CaravanInteriorLifeD3;
 const TRANSFER=globalThis.CaravanInternalTransfer;
+ const WELLBEING=globalThis.CaravanCrewWellbeing;
+ if(!WELLBEING)throw Error('crew_wellbeing.js must load before app.js');
 if(!TRANSFER)throw Error('internal_transfer.js must load before app.js');
 if(!LIFE)throw Error('interior_life.js must load before app.js');
 if(!BOARDING)throw Error('boarding.js must load before app.js');
@@ -39,11 +41,12 @@ state.locoLevel=Math.min(4,Math.max(1,Math.round(Number(state.locoLevel)||1)));
 state.nextCarId=Math.max(3,Number(state.nextCarId)||3);
 
 const crewNames=['Марко','Олена','Данило'],crewSymbols=['⚒','✚','◈'];
-function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0}))}
+function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0,fatigue:0}))}
 const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding','transferring']);
 let crew=makeCrew();
 if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job&&!['aboard','boarding','transferring'].includes(p.mode))p.mode='patrol';return p})}
-let chosenCrew=Number.isInteger(state.chosenCrew)?Math.max(0,Math.min(2,state.chosenCrew)):0;
+WELLBEING.normalizeAll(crew);
+ let chosenCrew=Number.isInteger(state.chosenCrew)?Math.max(0,Math.min(2,state.chosenCrew)):0;
 let eventLog=Array.isArray(state.events)?state.events.slice(0,8):[];
 let journal=JOURNAL.normalize(state.journal);
 let production=PRODUCTION.normalize(state.production,state.cars);
@@ -221,7 +224,7 @@ function renderJournal(){
 
 let saveDirty=true,saveClock=0;
 function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,
- location:p.location,boardingState:p.boardingState,transfer:p.transfer||null,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
+ location:p.location,boardingState:p.boardingState,transfer:p.transfer||null,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,fatigue:p.fatigue,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
 function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
@@ -417,7 +420,7 @@ function statusText(p){
  if(state.route.active && p.mode==='aboard')return 'На борту · очікує у службовій зоні';
  if(state.route.active && p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';
  if(p.mode==='walking')return 'Прямує до входу: '+LOCATIONS[p.job.target].label;if(p.mode==='entering')return 'Заходить усередину вагона';if(p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';if(p.mode==='exiting')return 'Виходить із вагона';if(p.mode==='completed')return 'Завершив завдання · '+Math.max(0,3-Math.floor(p.completed))+' с';return 'Патрулює платформу'}
-function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active||state.boarding)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
+function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const well=WELLBEING.describe(p,state.cars);const energy='<small class="crew-fatigue '+(well.fatigue>=65?'crew-fatigue-high':'')+'">Втома '+well.fatigue+'% · продуктивність '+well.efficiency+'%</small>';const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${energy}${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active||state.boarding)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
  $('cancelJob').disabled=Boolean(state.route.active||state.boarding)||(!crew[chosenCrew].job&&!crew[chosenCrew].queue.length);
 }
 $('crewList').onclick=e=>{const btn=e.target.closest('[data-crew]');if(!btn)return;chosenCrew=+btn.dataset.crew;markDirty();renderCrewPanel();msg('Обрано: '+crewNames[chosenCrew])};
@@ -718,6 +721,7 @@ function update(dt){
   }
   markDirty();store();
  }
+ if(WELLBEING.advance(crew,state.cars,dt))markDirty();
  if(state.effects){const target=state.moving?13*state.speed:2.3;if(Math.random()<target*dt){bubbles.push({x:193+Math.random()*11,y:289,r:7+Math.random()*3,life:0,vx:20+speed*65+Math.random()*13,vy:26+Math.random()*11,opacity:.23+Math.random()*.15})}for(const p of bubbles){p.life+=dt;p.x+=dt*p.vx;p.y-=dt*p.vy;p.r+=dt*13}bubbles=bubbles.filter(p=>p.life<3.4)}else bubbles=[];
  rosterRefresh+=dt;if(rosterRefresh>.35){renderCrewPanel();renderQuickWagon();rosterRefresh=0}saveClock+=dt;if(saveClock>1.2){if(saveDirty)store();saveClock=0}}
 function renderCharacter(p,i){const isWalking=p.mode==='walking'||p.mode==='patrol'||p.mode==='entering'||p.mode==='exiting'||(p.mode==='boarding'&&p.boardingState==='approaching');const frames=m.crew[p.role]?.[isWalking?'walk':'idle'];if(!frames?.length)return;const idx=Math.floor((t+p.phase)*(isWalking?9:3))%frames.length,im=frames[idx];const cx=p.x,inside=p.inside||0;const factor=1-.26*inside,h=91*factor,w=43*factor,by=492-inside*50,bounce=isWalking?Math.abs(Math.sin((t+p.phase)*9))*2:Math.sin(t*3+i)*.3;
@@ -893,6 +897,7 @@ globalThis.__CARAVAN_QA.boarding=()=>({
 });
 globalThis.__CARAVAN_QA.routeDecision=(id)=>routeDecision(id);
 globalThis.__CARAVAN_QA.production=()=>structuredClone(production);
+ globalThis.__CARAVAN_QA.wellbeing=()=>crew.map(p=>WELLBEING.describe(p,state.cars));
 globalThis.__CARAVAN_QA.productionInspect=(id)=>PRODUCTION.inspect(production,state.cars,crew,id,state.morale);
 globalThis.__CARAVAN_QA.interiorMotionAt=(seconds)=>LIFE.build(crew,state.cars).map(a=>({
  index:a.personIndex,carId:a.carId,wagonKind:a.wagonKind,activity:a.activity,

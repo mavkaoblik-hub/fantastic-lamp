@@ -257,3 +257,7 @@ main{align-items:start}.scene{align-self:start}
    visual language, without adding modal dialogs or replacing canonical icons. */
 .wagon-quick-actions button[data-state="transferring"]{
  border-color:#c49b62;color:#ffddaa;background:#4c3628}
+
+/* D6A text-only fatigue status; original art remains untouched. */
+.crewitem .crew-fatigue{font-size:10px;color:#c2bea9}
+.crewitem .crew-fatigue-high{color:#edb17b;font-weight:700}

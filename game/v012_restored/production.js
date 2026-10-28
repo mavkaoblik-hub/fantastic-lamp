@@ -52,7 +52,10 @@
  function speed(car,workers,crew,morale){
   const rule=RULES[car.kind];
   if(!rule||workers.length===0)return 0;
-  const specialization=workers.reduce((sum,i)=>sum+(crew[i].role===rule.role?1.2:.85),0);
+  const specialization=workers.reduce((sum,i)=>{
+   const base=crew[i].role===rule.role?1.2:.85;
+   return sum+base*(1-.45*clamp(number(crew[i].fatigue),0,100)/100);
+  },0);
   const mood=clamp(number(morale,75),0,100);
   return specialization*(car.level===2?1.2:1)*clamp(.65+mood/200,.65,1.15);
  }
