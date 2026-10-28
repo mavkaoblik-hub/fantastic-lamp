@@ -266,6 +266,12 @@ const {chromium}=require('playwright-core');
  assert.equal(await page.locator('#quickWagonCrew [data-quick-worker="1"]').isDisabled(),true,
    'Second worker cannot overbook same level 1 wagon');
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.transit())).outside,0);
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.moving)),true,
+   'Internal reassignment begins while train is actually moving');
+ // Freeze route time for deterministic transfer/reload testing; the transfer
+ // itself remains valid during manual pause because the route stays active.
+ await page.locator('#travel').click();
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.moving)),false);
  const beforeTransferRewards=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].done);
  await page.evaluate(()=>window.__CARAVAN_QA.advance(1));
  assert.ok((await page.evaluate(()=>window.__CARAVAN_QA.internalTransfers().states[0].transfer.progress))>0);
@@ -284,6 +290,9 @@ const {chromium}=require('playwright-core');
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].done)),
   beforeTransferRewards,'Changing rooms must not grant extra rewards');
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.transit())).outside,0);
+ await page.locator('#travel').click();
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.moving)),true,
+  'The same active trip resumes without any additional route debit');
  await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d5_internal_wagon_transfer.png'});
  await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d1_train_all_aboard.png'});
  assert.equal(await page.locator('#travel').innerText(),'⏸ Пауза');
