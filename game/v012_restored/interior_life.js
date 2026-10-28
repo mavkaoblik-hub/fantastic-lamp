@@ -70,9 +70,17 @@
   let activity=person.mode==='resting'?'rest':person.mode==='working'?(profile?.activity||'repair'):'standby';
   if(person.mode==='aboard'&&loc.index>=0)activity='rest';
   if(person.mode==='transferring')activity='transfer';
+  if(person.autoActivity){
+   const a=person.autoActivity;
+   activity=a.phase==='visit'?({rest:'rest',social:'social',dining:'care',stroll:'stroll'}[a.kind]||'standby'):'transfer';
+  }
   return {
    personIndex:i,carId:loc.carId,location:loc.kind,index:loc.index,
    wagonKind:kind,activity,caption:activity==='standby'?ACTIONS.standby:
+    person.autoActivity?(person.autoActivity.phase==='visit'?
+     ({rest:'Самостійно відпочиває',social:'Спілкується з пасажирами',
+       dining:'Відвідує кухню',stroll:'Прогулюється вагоном'}[person.autoActivity.kind]||'На борту'):
+     'Іде всередині потяга · '+Math.floor((person.autoActivity.progress||0)*100)+'%'):
     person.mode==='transferring'?'Внутрішній перехід · '+Math.floor((person.transfer?.progress||0)*100)+'%':
     person.mode==='resting'?'Відпочиває у вагоні':person.mode==='working'&&profile?profile.label:ACTIONS[activity],
    role:person.role,
@@ -140,6 +148,12 @@
    out.angle=Math.sin(base*.93)*.028;
    out.shiftX=Math.sin(base*1.1)*.8;out.light=.08+.07*Math.sin(base*.7)**2;
    out.flare=.3+.35*Math.sin(base*.67)**2;out.frameRate=1.65;
+  }else if(kind==='social'){
+   out.angle=Math.sin(base*2.5)*.045;out.shiftX=Math.sin(base*1.8)*1.1;
+   out.light=.13;out.frameRate=2.1;
+  }else if(kind==='stroll'){
+   out.shiftX=Math.sin(base*1.9)*2.4;out.shiftY=Math.sin(base*2.8)*.6;
+   out.frameRate=3.1;
   }else if(kind==='rest'){
    out.angle=Math.sin(base*1.4)*.008;
    out.shiftY=Math.sin(base*1.6)*.45;out.stretchY=1+Math.sin(base*1.45)*.012;
