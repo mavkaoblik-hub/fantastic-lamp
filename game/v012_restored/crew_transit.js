@@ -19,7 +19,8 @@
   if(!job||!TARGETS[job.target])return false;
   if(job.target==='engine')return true;
   const car=cars[slots.indexOf(job.target)];
-  return Boolean(car && typeof car.id==='string');
+  return Boolean(car && typeof car.id==='string' &&
+   (job.duty!=='rest'||['quarters','barracks'].includes(car.kind)));
  }
  function synchronize(crew,cars,active){
   if(!Array.isArray(crew)||!Array.isArray(cars))return {changed:false,aboard:0};
@@ -42,7 +43,7 @@
     if(!assigned && p.job){p.job=null;changed=true;}
     // In D1 convert transit/exit animations to safe interiors atomically.
     // Never issue rewards, restart journeys or duplicate job assignments.
-    const mode=assigned?'working':'aboard';
+    const mode=assigned?(p.job?.duty==='rest'?'resting':'working'):'aboard';
     const slot=assigned?p.job.target:'engine';
     const desiredX=assigned?TARGETS[slot].x:241+(i*31);
     const location=slot==='engine'?'locomotive':'wagon';
@@ -67,7 +68,7 @@
       p.location={kind:'platform',carId:null};
       p.boardingState='none';changed=true;
     }
-    if(p.location?.kind==='locomotive'||p.location?.kind==='wagon'||(p.inside===1&&p.mode==='working'))aboard++;
+    if(p.location?.kind==='locomotive'||p.location?.kind==='wagon'||(p.inside===1&&['working','resting'].includes(p.mode)))aboard++;
    }
   }
   return {changed,aboard};
