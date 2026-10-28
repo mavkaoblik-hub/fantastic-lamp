@@ -310,7 +310,9 @@ function renderQuickWagon(){
   const onRoute=Boolean(state.route.active),same=p.job?.target===target;
   const coming=p.transfer?.target===target;
   const duplicate=p.queue?.some(j=>j.target===target);
-  const full=TRANSFER.occupancy(crew,state.cars,target,i)>=PRODUCTION.capacity(car);
+  const used=onRoute?TRANSFER.occupancy(crew,state.cars,target,i):
+    PRODUCTION.assigned(state.cars,crew,slot).filter(worker=>worker!==i).length;
+  const full=used>=PRODUCTION.capacity(car);
   const enabled=onRoute?TRANSFER.canStart(crew,state.cars,i,target).ok:
     !(same||duplicate||full||state.boarding);
   const text=coming?'У ПЕРЕХОДІ':same?'ПРАЦЮЄ':
