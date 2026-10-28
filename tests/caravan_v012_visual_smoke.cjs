@@ -435,6 +435,7 @@ const {chromium}=require('playwright-core');
   // pagehide saves in-memory state. Inject fixtures on the next page load,
   // BEFORE the application reads localStorage (not before pagehide).
   await autoPage.addInitScript(()=>{
+   if(sessionStorage.getItem('__d6c_fixture_used')==='1')return;
    const raw=localStorage.getItem('caravan_v12');
    if(!raw)return;
    const save=JSON.parse(raw);
@@ -443,6 +444,7 @@ const {chromium}=require('playwright-core');
    save.crewData[0].loneliness=78;
    save.crewData[0].autoCooldown=0;
    localStorage.setItem('caravan_v12',JSON.stringify(save));
+   sessionStorage.setItem('__d6c_fixture_used','1');
   });
   await autoPage.reload({waitUntil:'domcontentloaded'});
   await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.routeStart==='function');
