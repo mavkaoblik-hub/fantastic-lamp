@@ -250,6 +250,41 @@ const {chromium}=require('playwright-core');
    'Interior sprites must be clipped and placed inside room openings');
  assert.equal(cabin.outside,0,'No character may patrol outside while train moves');
  assert.ok(cabin.crew.every(x=>x.inside===1));
+ // D5: transfer the mechanic from occupied residence c2 to empty workshop c1,
+ // without exiting on the tracks or awarding resources in both wagons.
+ assert.equal(await page.evaluate(()=>window.__CARAVAN_QA.quickSelect('c1')),true);
+ const firstTransferButton=page.locator('#quickWagonCrew [data-quick-worker="0"]');
+ assert.equal(await firstTransferButton.isEnabled(),true,
+   'Moving train must offer safe internal reassignment to empty workrooms');
+ await firstTransferButton.click();
+ let movingTransfer=await page.evaluate(()=>window.__CARAVAN_QA.internalTransfers());
+ assert.equal(movingTransfer.states[0].mode,'transferring');
+ assert.equal(movingTransfer.states[0].target,null,'Source workstation stops work immediately');
+ assert.equal(movingTransfer.states[0].transfer.target,'center');
+ assert.equal(movingTransfer.occupancy[0].occupied,1,'Destination seat reserved');
+ assert.equal(movingTransfer.occupancy[1].occupied,0,'Source seat freed');
+ assert.equal(await page.locator('#quickWagonCrew [data-quick-worker="1"]').isDisabled(),true,
+   'Second worker cannot overbook same level 1 wagon');
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.transit())).outside,0);
+ const beforeTransferRewards=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].done);
+ await page.evaluate(()=>window.__CARAVAN_QA.advance(1));
+ assert.ok((await page.evaluate(()=>window.__CARAVAN_QA.internalTransfers().states[0].transfer.progress))>0);
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForTimeout(250);
+ movingTransfer=await page.evaluate(()=>window.__CARAVAN_QA.internalTransfers());
+ assert.equal(movingTransfer.states[0].mode,'transferring','Moving employee must survive reload');
+ assert.equal(movingTransfer.states[0].inside,1);
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.transit())).outside,0);
+ await page.evaluate(()=>window.__CARAVAN_QA.advance(5));
+ const finishedTransfer=await page.evaluate(()=>window.__CARAVAN_QA.internalTransfers());
+ assert.equal(finishedTransfer.states[0].mode,'working');
+ assert.equal(finishedTransfer.states[0].target,'center');
+ assert.equal(finishedTransfer.states[0].transfer,null);
+ assert.equal(finishedTransfer.states[0].location.carId,'c1');
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0].done)),
+  beforeTransferRewards,'Changing rooms must not grant extra rewards');
+ assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.transit())).outside,0);
+ await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d5_internal_wagon_transfer.png'});
  await page.locator('#stage').screenshot({path:'caravan-v012-visual/v013d1_train_all_aboard.png'});
  assert.equal(await page.locator('#travel').innerText(),'⏸ Пауза');
  await page.locator('#travel').click();
