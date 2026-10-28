@@ -261,3 +261,8 @@ main{align-items:start}.scene{align-self:start}
 /* D6A text-only fatigue status; original art remains untouched. */
 .crewitem .crew-fatigue{font-size:10px;color:#c2bea9}
 .crewitem .crew-fatigue-high{color:#edb17b;font-weight:700}
+
+/* D6B: per-person rank and rest controls; keep original art. */
+.crewitem .crew-growth{color:#dfbc88;font-size:10px}
+#sendCrewRest{width:100%;margin-top:8px;font-size:11px}
+#sendCrewRest:disabled{opacity:.45;cursor:not-allowed}
