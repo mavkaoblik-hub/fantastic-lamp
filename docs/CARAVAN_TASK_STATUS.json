@@ -293,8 +293,8 @@
       "area": "crew",
       "title": "Character specializations, training, fatigue and resting",
       "status": "TESTING",
-      "next_step": "Test D6B rest, XP, save migration, D5 transfer on physical Android",
-      "evidence": "docs/CARAVAN_V013D_D6B_REST_AND_SKILLS_HANDOFF.md",
+      "next_step": "Run D6C Android QA for fatigue, loneliness, autonomous social breaks and compact full-width train UI",
+      "evidence": "docs/CARAVAN_V013D_D6C_AUTONOMOUS_LIFE_AND_COMPACT_UI.md",
       "android_verified": false
     },
     {
@@ -488,5 +488,5 @@
     "document": "docs/CARAVAN_GAMEPLAY_DIRECTION_V013.md",
     "preserve_art": "103 v0.12 sprites; no visual redesign"
   },
-  "next_gameplay_spec": "docs/CARAVAN_V013D_CREW_ABOARD_TZ.md"
+  "next_gameplay_spec": "docs/CARAVAN_V013D_D6C_AUTONOMOUS_LIFE_AND_COMPACT_UI.md"
 }
