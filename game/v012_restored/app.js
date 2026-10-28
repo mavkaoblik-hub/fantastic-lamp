@@ -41,8 +41,8 @@ state.locoLevel=Math.min(4,Math.max(1,Math.round(Number(state.locoLevel)||1)));
 state.nextCarId=Math.max(3,Number(state.nextCarId)||3);
 
 const crewNames=['Марко','Олена','Данило'],crewSymbols=['⚒','✚','◈'];
-function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0,fatigue:0}))}
-const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding','transferring']);
+function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0,fatigue:0,experience:0}))}
+const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding','transferring','resting']);
 let crew=makeCrew();
 if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job&&!['aboard','boarding','transferring'].includes(p.mode))p.mode='patrol';return p})}
 WELLBEING.normalizeAll(crew);
@@ -224,7 +224,7 @@ function renderJournal(){
 
 let saveDirty=true,saveClock=0;
 function store(){try{state.crewData=crew.map(p=>({role:p.role,x:p.x,dir:p.dir,phase:p.phase,mode:p.mode,inside:p.inside,
- location:p.location,boardingState:p.boardingState,transfer:p.transfer||null,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,fatigue:p.fatigue,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
+ location:p.location,boardingState:p.boardingState,transfer:p.transfer||null,transition:p.transition,job:p.job,queue:p.queue,progress:p.progress,completed:p.completed,done:p.done,fatigue:p.fatigue,experience:p.experience,exitStartX:p.exitStartX,exitInside:p.exitInside}));state.chosenCrew=chosenCrew;state.events=eventLog;state.journal=journal;state.production=production;localStorage.setItem(KEY,JSON.stringify(state));saveDirty=false}catch{}}
 function markDirty(){saveDirty=true}
 window.addEventListener('pagehide',store);document.addEventListener('visibilitychange',()=>{if(document.hidden)store()});
 const data={};const all=[];function collect(o){if(!o||typeof o!=='object')return;if(o.src)all.push(o.src);Object.values(o).forEach(collect)}collect(m);[...new Set(all)].forEach(src=>{const im=new Image();im.src=src;data[src]=im});
@@ -318,7 +318,7 @@ function renderQuickWagon(){
   const full=used>=PRODUCTION.capacity(car);
   const enabled=onRoute?TRANSFER.canStart(crew,state.cars,i,target).ok:
     !(same||duplicate||full||state.boarding);
-  const text=coming?'У ПЕРЕХОДІ':same?'ПРАЦЮЄ':
+  const text=coming?'У ПЕРЕХОДІ':same?(p.mode==='resting'?'ВІДПОЧИВАЄ':'ПРАЦЮЄ'):
    onRoute?'ПЕРЕВЕСТИ':duplicate?'У ЧЕРЗІ':p.job?'У ЧЕРГУ':'НАПРАВИТИ';
   return '<button type="button" data-quick-worker="'+i+'" data-state="'+
    (same?'working':coming?'transferring':'idle')+'" '+
@@ -334,7 +334,7 @@ function closeQuickWagon(){$('wagonQuick').hidden=true;}
 function touchSceneAt(e){
  const pos=canvasLogicalPoint(e),world=CAMERA.screenToWorld(camera,pos.x,pos.y),
  x=world.x,y=world.y;
- const ci=crew.findIndex(p=>!state.route.active&&!state.boarding&&p.mode!=='working'&&x>=p.x-3&&x<=p.x+43&&y>=395&&y<=496);
+ const ci=crew.findIndex(p=>!state.route.active&&!state.boarding&&!['working','resting'].includes(p.mode)&&x>=p.x-3&&x<=p.x+43&&y>=395&&y<=496);
  if(ci>=0){
  chosenCrew=ci;
  armedCrew=ci;
@@ -418,14 +418,20 @@ function statusText(p){
  if(state.boarding&&p.boardingState==='entering')return 'Посадка · заходить усередину';
  if(state.boarding&&p.boardingState==='aboard')return 'Готовий до рейсу';
  if(state.route.active && p.mode==='aboard')return 'На борту · очікує у службовій зоні';
- if(state.route.active && p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';
+ if(p.mode==='resting')return 'Відпочиває у вагоні · сили відновлюються';
+  if(state.route.active && p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';
  if(p.mode==='walking')return 'Прямує до входу: '+LOCATIONS[p.job.target].label;if(p.mode==='entering')return 'Заходить усередину вагона';if(p.mode==='working')return 'Працює всередині · '+Math.floor(p.progress*100)+'%';if(p.mode==='exiting')return 'Виходить із вагона';if(p.mode==='completed')return 'Завершив завдання · '+Math.max(0,3-Math.floor(p.completed))+' с';return 'Патрулює платформу'}
-function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const well=WELLBEING.describe(p,state.cars);const energy='<small class="crew-fatigue '+(well.fatigue>=65?'crew-fatigue-high':'')+'">Втома '+well.fatigue+'% · продуктивність '+well.efficiency+'%</small>';const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${energy}${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active||state.boarding)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
+function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='working'?Math.floor(p.progress*100):0;const well=WELLBEING.describe(p,state.cars);const energy='<small class="crew-fatigue '+(well.fatigue>=65?'crew-fatigue-high':'')+'">Втома '+well.fatigue+'% · продуктивність '+well.efficiency+'%</small>';const skill='<small class="crew-growth">Рівень '+well.level+' · досвід '+well.xp+(well.next===null?' · MAX':' / '+well.next)+'</small>';const queue=p.queue.length?`<small class="queued">У черзі: ${p.queue.map(j=>LOCATIONS[j.target].label).join(' → ')}</small>`:'';return `<button type="button" class="crewitem ${i===chosenCrew?'active':''}" data-crew="${i}"><span><strong>${crewNames[i]} · ${m.crew[p.role].title}</strong><small>${statusText(p)}</small>${energy}${skill}${p.mode==='working'?`<span class="progressTrack"><span class="progressFill" style="width:${pct}%"></span></span>`:''}${queue}</span><span class="symbol">${crewSymbols[i]}</span></button>`}).join('');if($('crewList').innerHTML!==html)$('crewList').innerHTML=html;$('crewSummary').textContent=currentGameLabel()+(eventLog[0]?' • '+eventLog[0]:'');$('cancelJob').disabled=!crew[chosenCrew].job&&!crew[chosenCrew].queue.length;$('crewHome').disabled=Boolean(state.route.active||state.boarding)||(crew[chosenCrew].mode==='patrol'&&!crew[chosenCrew].queue.length);
  $('cancelJob').disabled=Boolean(state.route.active||state.boarding)||(!crew[chosenCrew].job&&!crew[chosenCrew].queue.length);
+ const restSeat=state.cars.some((car,i)=>['quarters','barracks'].includes(car.kind)&&
+  (TRANSFER.occupancy(crew,state.cars,['center','rear','tail'][i],chosenCrew)<PRODUCTION.capacity(car)||
+   crew[chosenCrew]?.job?.target===['center','rear','tail'][i]));
+ $('sendCrewRest').disabled=Boolean(state.boarding)||!restSeat||
+  crew[chosenCrew]?.mode==='resting'||crew[chosenCrew]?.mode==='transferring';
 }
 $('crewList').onclick=e=>{const btn=e.target.closest('[data-crew]');if(!btn)return;chosenCrew=+btn.dataset.crew;markDirty();renderCrewPanel();msg('Обрано: '+crewNames[chosenCrew])};
 function startExit(p){p.exitStartX=p.x;p.exitInside=p.inside;p.mode='exiting';p.transition=0;p.progress=0}
-function beginJob(p,job){p.job={target:job.target};p.mode='walking';p.progress=0;p.transition=0;p.inside=0;p.completed=0;p.dir=LOCATIONS[job.target].door>p.x?1:-1;markDirty()}
+function beginJob(p,job){p.job=job.duty==='rest'?{target:job.target,duty:'rest'}:{target:job.target};p.mode='walking';p.progress=0;p.transition=0;p.inside=0;p.completed=0;p.dir=LOCATIONS[job.target].door>p.x?1:-1;markDirty()}
 function assignCrew(target){
  if(state.boarding){msg('Призначення доступне після скасування посадки');return false;}
  if(state.route.active){
@@ -454,7 +460,7 @@ function assignCrew(target){
   // Reassign through the original door animation. Remove all stale queues:
   // the worker is never counted for production in two wagons simultaneously.
   p.queue=[];
-  if(p.job&&(p.mode==='entering'||p.mode==='working'||p.mode==='exiting')){
+  if(p.job&&(p.mode==='entering'||p.mode==='working'||p.mode==='resting'||p.mode==='exiting')){
    if(p.mode!=='exiting')startExit(p);
    p.queue.push({target});
    msg(crewNames[chosenCrew]+': завершить вихід і перейде у '+LOCATIONS[target].label);
