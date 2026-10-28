@@ -20,22 +20,24 @@
  const positionId=(transfer)=>transfer.progress<.5?transfer.fromId:transfer.toId;
  function location(id){return id==='engine'?{kind:'locomotive',carId:null}:{kind:'wagon',carId:id};}
  const cap=car=>car?.level===2?2:1;
+ const REST=new Set(['quarters','barracks']);
  function occupancy(crew,cars,target,exclude=-1){
   const info=dest(target,cars);if(!info)return null;
   return crew.reduce((n,p,i)=>{
    if(i===exclude)return n;
-   const occupies=(p?.job?.target===target&&p.mode==='working')||
+   const occupies=(p?.job?.target===target&&['working','resting'].includes(p.mode))||
     (p?.transfer?.target===target);
    return n+(occupies?1:0);
   },0);
  }
- function canStart(crew,cars,personIndex,target){
+ function canStart(crew,cars,personIndex,target,options={}){
   if(!Array.isArray(crew)||!Array.isArray(cars)||!Number.isInteger(personIndex)||personIndex<0||personIndex>=crew.length)
    return {ok:false,reason:'invalid-person'};
   const info=dest(target,cars),person=crew[personIndex];
   if(!info)return {ok:false,reason:'invalid-wagon'};
+  if(options.duty==='rest'&&!REST.has(cars[info.index]?.kind))return {ok:false,reason:'not-rest-wagon'};
   if(person?.transfer||person?.mode==='transferring')return {ok:false,reason:'already-transferring'};
-  if(!['working','aboard'].includes(person?.mode)||person.inside<.999)
+  if(!['working','resting','aboard'].includes(person?.mode)||person.inside<.999)
    return {ok:false,reason:'not-onboard'};
   const fromId=idForJob(person.job,cars);
   if(fromId===info.carId)return {ok:false,reason:'same-room'};
@@ -43,14 +45,14 @@
    return {ok:false,reason:'full'};
   return {ok:true,toId:info.carId,fromId,index:info.index,target};
  }
- function start(crew,cars,personIndex,target){
-  const check=canStart(crew,cars,personIndex,target);
+ function start(crew,cars,personIndex,target,options={}){
+  const check=canStart(crew,cars,personIndex,target,options);
   if(!check.ok)return check;
   const person=crew[personIndex];
   const fromIndex=indexForId(check.fromId,cars);
   const duration=Math.min(7,Math.max(2.2,2.5+Math.abs(check.index-fromIndex)*.9));
   person.transfer={version:1,fromId:check.fromId,toId:check.toId,
-   target:check.target,progress:0,duration};
+   target:check.target,duty:options.duty==='rest'?'rest':'work',progress:0,duration};
   // Removing source job now prevents all income until the destination is reached.
   person.job=null;person.queue=[];
   person.mode='transferring';person.inside=1;person.boardingState='aboard';
@@ -64,7 +66,8 @@
    if(!t)continue;
    const target=dest(t.target,cars);
    if(!active||t.version!==1||!target||target.carId!==t.toId||
-      !validCarId(t.fromId,cars)||person.mode!=='transferring'){
+      !validCarId(t.fromId,cars)||person.mode!=='transferring'||
+      (t.duty==='rest'&&!REST.has(cars[target.index]?.kind))){
     person.transfer=null;
     person.job=null;person.queue=[];
     person.mode='aboard';person.inside=1;person.boardingState='aboard';
@@ -96,8 +99,8 @@
     const destination=dest(t.target,cars);
     const occupied=destination?occupancy(crew,cars,t.target,i):null;
     if(destination&&destination.carId===t.toId&&occupied<cap(cars[destination.index])){
-     person.job={target:t.target};
-     person.mode='working';person.location=location(t.toId);
+     person.job=t.duty==='rest'?{target:t.target,duty:'rest'}:{target:t.target};
+     person.mode=t.duty==='rest'?'resting':'working';person.location=location(t.toId);
     }else{
      // Corrupted save / destination removed: safe standby, no rewards.
      person.job=null;person.mode='aboard';person.location=location('engine');
