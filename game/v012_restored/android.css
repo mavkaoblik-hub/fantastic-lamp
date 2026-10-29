@@ -1,0 +1,83 @@
+/* Android landscape: safe edges, thumb-sized actions, scene-first layout. */
+.android-ui{--room-width:clamp(256px,35vw,310px);box-sizing:border-box;
+ height:100vh;height:100dvh;display:flex;flex-direction:column;
+ padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+ overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.android-ui header{flex:0 0 50px;height:50px!important;min-width:0;padding:0 8px!important;gap:8px}
+.android-ui .brand{flex:0 0 auto}.android-ui .brand b{font-size:13px}
+.android-ui .topstats{flex:1;justify-content:center;gap:4px;font-size:11px;min-width:0}
+.android-ui .topstats>span{display:flex!important;align-items:center;gap:2px;padding:4px 6px;white-space:nowrap}
+.android-ui .topstats b{font-size:14px;font-variant-numeric:tabular-nums}
+.android-ui .topstats .stat-name{display:inline;border:0;background:none;padding:0;font-size:10px}
+.android-ui main{height:auto;min-height:0;flex:1;padding:0!important;width:100%}
+.android-ui .scene{position:relative;border:0;border-radius:0;overflow:hidden}
+.android-ui .sceneheading{position:absolute;top:5px;left:8px;right:8px;height:auto;min-height:0!important;
+ padding:0;z-index:5;pointer-events:none;flex-basis:auto;justify-content:flex-start}
+.android-ui .sceneheading .chips{gap:5px;max-width:100%}
+.android-ui .sceneheading .chips span{max-width:60vw;font-size:10px;background:#0b1721d9;padding:3px 6px}
+.android-ui #crewAboard{display:none}
+.android-ui .canvaswrap{flex:1;min-height:0;transition:none}
+.android-ui .canvaswrap.quick-open{padding-right:var(--room-width)}
+.android-ui #stage{width:100%;height:100%!important;min-height:0!important;max-height:none!important;touch-action:none}
+.android-ui .camera-hud{top:auto;bottom:6px;right:8px;max-width:65%;border:0;box-shadow:none;background:#0b1721ba;padding:4px 7px;font-size:10px}
+.android-ui .camera-hud small{display:none}
+.android-ui .quick-open .camera-hud{display:none}
+.android-ui button,.android-ui select{min-height:48px!important;min-width:48px;font-size:12px;touch-action:manipulation}
+.android-ui .playbar{flex:0 0 56px;height:56px;min-height:56px;display:grid;
+ grid-template-columns:1.3fr repeat(5,minmax(0,1fr));gap:4px;padding:4px 6px;
+ overflow:hidden;align-items:stretch;background:#0b1721;border-top:1px solid #6d573f}
+.android-ui .playbar button{min-width:0;padding:3px 5px;white-space:normal;font-size:12px;line-height:1.15}
+.android-ui .playbar .caravan-ui-icon{width:20px;height:20px;margin-right:3px}
+.android-ui .wagon-quick:not([hidden]){left:auto;right:0;top:0;bottom:0;width:var(--room-width);
+ max-height:100%;padding:6px 8px;border-radius:0;box-shadow:none;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.android-ui .wagon-quick-head{gap:4px;min-height:48px}
+.android-ui .wagon-quick-head strong{font-size:12px}.android-ui .wagon-quick-head small{font-size:11px}
+.android-ui #quickWagonClose{flex:0 0 48px;font-size:24px;padding:0}
+.android-ui .wagon-quick-room{display:none}
+.android-ui .quick-room-crew-list{font-size:11px;margin:4px 0;line-height:1.3}
+.android-ui .wagon-quick-actions{gap:4px}
+.android-ui .wagon-quick-actions button{font-size:11px;padding:3px 2px}
+.android-ui .wagon-quick-actions small{font-size:9px}
+.android-ui .wagon-quick-production{padding-top:5px;margin-top:6px}
+.android-ui .wagon-quick-output{flex-wrap:wrap;gap:2px}
+.android-ui .wagon-quick-output span,.android-ui .wagon-quick-output small{font-size:11px}
+.android-ui #quickCollect,.android-ui .wagon-quick-detail{font-size:12px!important;min-height:48px!important}
+.android-ui .sidebar{width:min(420px,76vw);top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);
+ right:env(safe-area-inset-right,0px);padding:8px 10px 16px;max-height:none!important;touch-action:pan-y}
+.android-ui .sidebar-backdrop{background:#0007}
+.android-ui .close-sidebar{top:-8px;margin-bottom:8px;font-size:13px}
+.android-ui .sidebar-section{display:none}
+.android-ui .sidebar[data-section="modules"] .sidebar-section[data-section="modules"],
+.android-ui .sidebar[data-section="crew"] .sidebar-section[data-section="crew"],
+.android-ui .sidebar[data-section="journal"] .sidebar-section[data-section="journal"],
+.android-ui .sidebar[data-section="routes"] .sidebar-section[data-section="routes"]{display:block}
+.android-ui .crewpanel,.android-ui .journal-panel,.android-ui .route-panel{margin:0;padding:10px 8px}
+.android-ui .controls-panel[hidden],.android-ui .assignment-hint[hidden]{display:none}
+.android-ui .controls-panel{position:absolute;z-index:20;right:6px;bottom:60px;width:min(330px,85vw);
+ max-height:calc(100% - 66px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+ padding:8px 10px;background:#14232bf5;border:1px solid #b48a58;border-radius:8px;box-shadow:0 6px 20px #000a}
+.android-ui .controls-head,.android-ui .controls-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px}
+.android-ui .controls-head strong{font-size:14px;color:#f3d09b}
+.android-ui .controls-head button{font-size:24px}
+.android-ui .controls-panel p{font-size:12px;line-height:1.5;color:#d6c4aa;margin:4px 0 10px}
+.android-ui .controls-row span{font-size:12px;text-align:center}
+.android-ui .controls-row [data-view-mode]{flex:1}
+.android-ui .controls-panel #newCrew{width:100%;margin-top:4px}
+.android-ui [aria-pressed="true"],.android-ui #controlsOpen[aria-expanded="true"]{border-color:#e8b97c;background:#62452d}
+.android-ui .assignment-hint{position:absolute;z-index:8;left:8px;top:30px;max-width:calc(100% - 16px);
+ display:flex;align-items:center;gap:8px;padding:4px 4px 4px 10px;background:#192d35ee;border:1px solid #cba165;border-radius:6px;font-size:12px}
+.android-ui .assignment-hint button{font-size:22px}
+.android-ui .toast{top:auto;bottom:10px;max-width:90%;width:max-content;white-space:normal;font-size:12px;z-index:9}
+.android-ui .boarding-overlay{left:8px;top:34px;font-size:12px}
+.android-ui .boarding-cancel{left:8px;top:65px;font-size:12px}
+@media(max-width:760px){
+ .android-ui .brand{display:none}
+ .android-ui .topstats .stat-name{display:none}
+ .android-ui .playbar button{font-size:11px}
+ .android-ui .playbar .caravan-ui-icon{display:block;margin:0 auto 1px;width:18px;height:18px}
+}
+@media(max-height:370px){
+ .android-ui .quick-room-crew-list{display:none}
+ .android-ui .wagon-quick:not([hidden]){padding-top:3px;padding-bottom:3px}
+ .android-ui .wagon-quick-head small{font-size:10px}
+}

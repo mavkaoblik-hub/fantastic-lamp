@@ -2,6 +2,18 @@
 const assert=require('node:assert/strict');
 const {test}=require('node:test');
 const C=require('../game/v012_restored/camera.js');
+test('Android wagon focus fits both dimensions of the real visible viewport',()=>{
+ for(const view of [{width:1200,height:330},{width:1200,height:520},{width:1200,height:760}]){
+  for(let i=0;i<3;i++){
+   const camera=C.focusWagon(i,view);
+   assert.ok(C.WAGON.height*camera.zoom<=view.height*.83);
+   assert.ok(C.WAGON.width*camera.zoom<=view.width*.89);
+   const center=C.worldToScreen(camera,[535,796,1057][i],C.WAGON.centerY);
+   assert.ok(center.x-C.WAGON.width*camera.zoom/2>=0);
+   assert.ok(center.x+C.WAGON.width*camera.zoom/2<=1200);
+  }
+ }
+});
 test('camera modes and wagon focus preserve their original positions',()=>{
  const train=C.mode('train'),wide=C.mode('wide');
  assert.equal(train.zoom,1);

@@ -3,11 +3,14 @@ package ua.mavka.caravan;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.os.Build;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.DisplayCutout;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -17,6 +20,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+import android.widget.FrameLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -86,7 +90,36 @@ public final class MainActivity extends Activity {
                     return !HOME.equals(request.getUrl().toString());
                 }
             });
-            setContentView(game);
+            // Android 15 can draw edge-to-edge even in landscape. Reserve the
+            // actual cutout/navigation insets outside the WebView viewport.
+            FrameLayout viewport = new FrameLayout(this);
+            viewport.setBackgroundColor(Color.rgb(8, 16, 24));
+            viewport.addView(game, new FrameLayout.LayoutParams(-1, -1));
+            viewport.setOnApplyWindowInsetsListener((view, insets) -> {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                if (Build.VERSION.SDK_INT >= 28) {
+                    DisplayCutout cutout = insets.getDisplayCutout();
+                    if (cutout != null) {
+                        left = Math.max(left, cutout.getSafeInsetLeft());
+                        top = Math.max(top, cutout.getSafeInsetTop());
+                        right = Math.max(right, cutout.getSafeInsetRight());
+                        bottom = Math.max(bottom, cutout.getSafeInsetBottom());
+                    }
+                }
+                view.setPadding(left, top, right, bottom);
+                return Build.VERSION.SDK_INT >= 28
+                        ? insets.consumeSystemWindowInsets().consumeDisplayCutout()
+                        : insets.consumeSystemWindowInsets();
+            });
+            if (Build.VERSION.SDK_INT >= 28) {
+                WindowManager.LayoutParams attributes = getWindow().getAttributes();
+                attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                getWindow().setAttributes(attributes);
+            }
+            setContentView(viewport);
             immersive();
             game.loadUrl(HOME);
             Log.i("CARAVAN_BOOT", "Offline game loading");
@@ -137,7 +170,7 @@ public final class MainActivity extends Activity {
     }
     @Override protected void onPause() {
         if (game != null) {
-            game.evaluateJavascript("typeof persist==='function' && persist()", null);
+            game.evaluateJavascript("globalThis.__CARAVAN_SAVE && globalThis.__CARAVAN_SAVE()", null);
             game.onPause();
         }
         super.onPause();
@@ -148,11 +181,16 @@ public final class MainActivity extends Activity {
     }
     @Override public void onBackPressed() {
         if (game == null) { super.onBackPressed(); return; }
+        game.evaluateJavascript("Boolean(globalThis.CaravanAndroid && globalThis.CaravanAndroid.back())", handled -> {
+            if (!"true".equals(handled) && !isFinishing()) confirmExit();
+        });
+    }
+    private void confirmExit() {
         new AlertDialog.Builder(this).setTitle("Караван")
             .setMessage("Зберегти прогрес і вийти?")
             .setNegativeButton("Продовжити", null)
             .setPositiveButton("Вийти", (d,w) ->
-                game.evaluateJavascript("typeof persist==='function' && persist()", v -> finish())).show();
+                game.evaluateJavascript("globalThis.__CARAVAN_SAVE && globalThis.__CARAVAN_SAVE()", v -> finish())).show();
     }
     @Override protected void onDestroy() {
         if (game != null) {
