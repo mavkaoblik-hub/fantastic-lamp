@@ -112,3 +112,9 @@ python3 -m unittest server.test_caravan -v
 [Uvicorn limits](https://uvicorn.dev/settings/#resource-limits),
 [Python secrets](https://docs.python.org/3/library/secrets.html),
 [SQLite max_page_count](https://www.sqlite.org/pragma.html#pragma_max_page_count).
+# Підключення гри D7A
+
+Додано необов’язкову реєстрацію/вхід і клієнт ресурсних зведень для вебгри та Android.
+HTTPS endpoint, `CARAVAN_ALLOWED_ORIGINS`, `CARAVAN_ALLOWED_HOSTS`, правила безпеки,
+тести й обмеження описані в [інструкції інтеграції](../docs/CARAVAN_SERVER_SYNC_2026-11-03.md).
+За замовчуванням зовнішні origins залишаються заблоковані; wildcard не підтримується.

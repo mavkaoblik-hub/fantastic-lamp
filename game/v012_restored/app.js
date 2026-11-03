@@ -1003,6 +1003,7 @@ function paint(){const logicalScale=scale;c.setTransform(canvas.width/(canvas.cl
  c.restore()}
 function tick(ms){if(!last)last=ms;const dt=Math.min(.04,(ms-last)/1000);last=ms;update(dt);smoothCamera(dt);paint();videoFrames++;frameTime+=dt;if(frameTime>1){fps=Math.round(videoFrames/frameTime);videoFrames=0;frameTime=0;$('fpsLabel').textContent=fps+' fps'}requestAnimationFrame(tick)}
 // Deterministic QA helpers for the shipped test scene; not a gameplay cheat UI.
+globalThis.__CARAVAN_RESOURCE_SUMMARY=()=>({metal:state.metal,fuel:state.fuel,supplies:state.supplies});
 globalThis.__CARAVAN_SAVE=store;globalThis.__CARAVAN_QA={snapshot:()=>({state:structuredClone(state),crew:structuredClone(crew),events:[...eventLog]}),advance:(seconds)=>{for(let n=0;n<seconds*30;n++)update(1/30);paint()},assign:(crewIndex,target)=>{chosenCrew=crewIndex;assignCrew(target)},assets:()=>({total:Object.keys(data).length,loaded:Object.values(data).filter(i=>i.complete&&i.naturalWidth).length})};
 globalThis.__CARAVAN_QA.camera=()=>({camera:{...camera},target:{...cameraTarget},mode:cameraMode,selectedCarId:state.selectedCarId});
 globalThis.__CARAVAN_QA.projection=()=>({scale,offX,offY,view:{...cameraView},rects:rects.map(r=>({...r}))});

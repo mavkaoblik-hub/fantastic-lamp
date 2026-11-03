@@ -37,11 +37,14 @@ for part in MANIFEST:
             target.parent.mkdir(parents=True,exist_ok=True)
             target.write_bytes(data)
 # The restored code is the same committed files as old v0.12, not rewritten code.
-for file in ["index.html","app.js","style.css","android.css","camera.js","journal.js","routes.js","production.js","crew_transit.js","boarding.js","interior_life.js","internal_transfer.js","crew_wellbeing.js","crew_autonomy.js","ui_icons.js","art_bridge_v013c.js"]:
+for file in ["index.html","app.js","style.css","android.css","camera.js","journal.js","routes.js","production.js","crew_transit.js","boarding.js","interior_life.js","internal_transfer.js","crew_wellbeing.js","crew_autonomy.js","ui_icons.js","art_bridge_v013c.js","server_sync.js","server_sync_ui.js","sync_config.json"]:
     source=ROOT/"game"/"v012_restored"/file
     assert source.is_file(),f"Missing original source: {file}"
     (OUT/file).write_bytes(source.read_bytes())
-images=sorted(p for p in (OUT/"assets").rglob("*") if p.is_file() and p.suffix.lower() in (".png",".jpg",".jpeg"))
+from configure_caravan_sync import configure
+configure(OUT)
+images=sorted(p for p in (OUT/"assets").rglob("*") if p.is_file() and p.suffix.lower() in (".png",".jpg",".jpeg")
+              and not {"ui_alpha", "ui_frames", "locations", "review_v013c"}.intersection(p.relative_to(OUT/"assets").parts))
 assert len(images)==103,f"Expected 103 ORIGINAL train/crew/background images, found {len(images)}"
 index=(OUT/"index.html").read_text(encoding="utf-8")
 refs=set(re.findall(r"assets/[A-Za-z0-9_/.+-]+\.(?:png|jpg|jpeg)",index,re.I))

@@ -23,6 +23,7 @@ async function tapWorld(page,x,y){const p=await worldPoint(page,x,y);await page.
    page.on('pageerror',e=>errors.push(e.message));
    page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url())});
    await page.goto('http://127.0.0.1:8787/',{waitUntil:'load'});
+ await page.locator('#syncOffline').click();
    await page.waitForFunction(()=>__CARAVAN_QA.assets().loaded===103);
    const layout=await page.evaluate(()=>{
     const rect=el=>el.getBoundingClientRect().toJSON();
@@ -123,6 +124,7 @@ async function tapWorld(page,x,y){const p=await worldPoint(page,x,y);await page.
      const lifePage=await fresh.newPage();
      lifePage.on('pageerror',e=>errors.push('D7 scene: '+e.message));
      await lifePage.goto('http://127.0.0.1:8787/',{waitUntil:'load'});
+ await lifePage.locator('#syncOffline').click();
      await lifePage.waitForFunction(()=>__CARAVAN_QA.assets().loaded===103);
      const routeFrames=await lifePage.evaluate(()=>{
       const qa=__CARAVAN_QA;
@@ -147,6 +149,7 @@ async function tapWorld(page,x,y){const p=await worldPoint(page,x,y);await page.
      await lifePage.locator('#stage').screenshot({path:path.join(out,'844-d7a-live-crew.png')});
      await lifePage.evaluate(()=>__CARAVAN_SAVE());
      await lifePage.reload({waitUntil:'load'});
+ await lifePage.locator('#syncOffline').click();
      const saved=await lifePage.evaluate(()=>({crew:__CARAVAN_QA.snapshot().crew,
       outside:__CARAVAN_QA.transit().outside}));
      assert.equal(saved.outside,0,'Reload preserves onboard safety');

@@ -2,19 +2,17 @@ name: Caravan compact server
 on:
   push:
     branches: [main]
-    paths: ['server/**', '.github/workflows/caravan-server.yml']
+    paths: ['server/**', 'game/v012_restored/**', 'tests/caravan_server*', 'tools/configure_caravan_sync.py', 'tools/caravan_restore_v012.py', '.github/workflows/caravan-server.yml']
   pull_request:
-    paths: ['server/**', '.github/workflows/caravan-server.yml']
+    paths: ['server/**', 'game/v012_restored/**', 'tests/caravan_server*', 'tools/configure_caravan_sync.py', 'tools/caravan_restore_v012.py', '.github/workflows/caravan-server.yml']
 permissions:
   contents: read
 jobs:
   server:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: server
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
@@ -22,3 +20,17 @@ jobs:
       - run: python -m unittest server.test_caravan -v
       - run: bash -n server/install.sh
       - run: node --check server/leaderboard.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/caravan_server_sync.test.cjs
+      - run: python tools/caravan_restore_v012.py build/caravan_v012
+      - run: |
+          npm install --no-save --no-audit --no-fund playwright-core@1.56.1
+          echo "CARAVAN_CHROME_BIN=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
+      - run: node tests/caravan_server_browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: caravan-sync-browser-evidence
+          path: build/sync-browser-*/entry-*.png
