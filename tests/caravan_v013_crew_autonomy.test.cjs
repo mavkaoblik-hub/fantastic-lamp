@@ -94,7 +94,10 @@ test('save/load resumes mid-visit and pause never exposes outside crew',()=>{
  const c=cars(),p=worker(),crew=[p];p.loneliness=80;
  tick(crew,c,3);
  const resumed=JSON.parse(JSON.stringify(crew));
- assert.equal(A.normalize(resumed,c,true),true);
+ const validSave=JSON.stringify(resumed);
+ assert.equal(A.normalize(resumed,c,true),false,
+  'Valid saved activity must not be rewritten or counted as changed');
+ assert.equal(JSON.stringify(resumed),validSave);
  for(let i=0;i<10;i++){
   tick(resumed,c,1,{active:true,moving:false});
   assert.equal(resumed[0].inside,1);
@@ -133,4 +136,14 @@ test('rest berth is shared with manual D5 transfers and fully capacity-bounded',
  c[1].level=2;
  assert.equal(T.start(crew,c,1,'rear',{duty:'rest'}).ok,true);
  assert.equal(T.occupancy(crew,c,'rear'),2);
+});
+
+test('D7A normalization of an onboard break does not rewrite stable save fields',()=>{
+ const c=cars(),p=worker(),crew=[p];p.loneliness=80;
+ tick(crew,c,1);
+ assert.ok(p.autoActivity);
+ const original=JSON.stringify(crew);
+ assert.equal(A.normalize(crew,c,true),false);
+ assert.equal(A.normalize(crew,c,true),false);
+ assert.equal(JSON.stringify(crew),original);
 });
