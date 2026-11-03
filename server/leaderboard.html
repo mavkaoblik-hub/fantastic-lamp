@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="uk">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Караван — таблиця лідерів</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0c141b;color:#e5e6df}body{max-width:960px;margin:auto;padding:32px 20px}h1{color:#e8bc79;margin-bottom:8px}p{color:#a5b4bf;line-height:1.6}header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}button,select{font:inherit;color:#f5e6c9;background:#20313c;border:1px solid #53616a;border-radius:8px;padding:10px 14px}button{cursor:pointer}table{width:100%;border-collapse:collapse;background:#131f28}th,td{text-align:left;padding:14px 10px;border-bottom:1px solid #2a3a46}th{color:#d9b37d}small{color:#8fa2b0}.table{overflow:auto;border:1px solid #2a3a46;border-radius:10px}table{min-width:600px}#message{min-height:24px}button:disabled{opacity:.5}
+</style>
+<script defer src="/leaderboard.js"></script>
+<header><div><small>КАРАВАН · ОСТАННЯ ДОРОГА</small><h1>Таблиця лідерів</h1></div><button id="refresh" type="button">Оновити таблицю</button></header>
+<p>Поточні запаси гравців. Тестовий рейтинг за даними клієнтів, без перевірки чесності ігрових результатів.</p>
+<label>Сортувати за <select id="sort"><option value="total">Сумою ресурсів</option><option value="metal">Металом</option><option value="fuel">Паливом</option><option value="supplies">Припасами</option></select></label>
+<p id="message" role="status" aria-live="polite">Отримання таблиці…</p>
+<div class="table"><table><thead><tr><th>Місце</th><th>Гравець</th><th>Метал</th><th>Паливо</th><th>Припаси</th><th>Разом</th></tr></thead><tbody id="players"></tbody></table></div>
+<p><small>До 50 гравців у таблиці · кеш до 30 секунд · автоматичного опитування немає</small></p>
+</html>
