@@ -1028,7 +1028,7 @@ globalThis.__CARAVAN_QA.interiorMotionAt=(seconds)=>LIFE.build(crew,state.cars).
 }));
 globalThis.__CARAVAN_QA.interiorLife=()=>LIFE.build(crew,state.cars).map(a=>({
  index:a.personIndex,carId:a.carId,location:a.location,
- activity:a.activity,seat:a.seat,bounds:a.bounds,
+ activity:a.activity,seat:a.seat,journey:a.journey||null,bounds:a.bounds,
  x:a.x,y:a.y,width:a.width,height:a.height
 }));
 globalThis.__CARAVAN_QA.wagonBadgeState=()=>state.cars.map(car=>{
