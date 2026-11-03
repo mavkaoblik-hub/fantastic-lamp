@@ -1,9 +1,19 @@
 name: CARAVAN v0.12 - Restore original approved train
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'game/v012_restored/**'
+      - 'android/**'
+      - 'tools/caravan_restore_v012.py'
+      - 'tests/caravan_*.cjs'
+      - '.github/workflows/caravan-v012-original-android.yml'
   push:
     branches: [main]
     paths:
       - 'game/v012_restored/**'
+      - 'android/**'
+      - 'tests/caravan_android_touch_smoke.cjs'
       - 'game/v012_asset_packs/**'
       - 'game/assets/ui_alpha_v1/**'
       - 'game/assets/ui_frames_v1/**'
@@ -72,6 +82,8 @@ jobs:
           exit 1
       - name: Original wagon rendering and visual acceptance smoke
         run: node tests/caravan_v012_visual_smoke.cjs
+      - name: Android landscape layout and multi-touch acceptance
+        run: node tests/caravan_android_touch_smoke.cjs
       - name: Java 17
         uses: actions/setup-java@v4
         with:
@@ -99,6 +111,7 @@ jobs:
           cp -a "$RUNNER_TEMP/caravan-v012-game/." "$GAME/"
           cp web/manifest.webmanifest "$GAME/manifest.webmanifest"
           test -s "$GAME/camera.js"
+          test -s "$GAME/android.css"
           test -s "$GAME/journal.js"
           test -s "$GAME/routes.js"
           test -s "$GAME/production.js"
@@ -153,6 +166,7 @@ jobs:
           name: CARAVAN-original-v012-video-style-validation
           path: |
             caravan-v012-visual/
+            caravan-android-visual/
             /tmp/caravan-v012-server.log
           retention-days: 30
           if-no-files-found: warn

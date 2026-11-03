@@ -1,0 +1,9 @@
+/caravan-v012-visual/
+/caravan-android-visual/
+/build/
+/node_modules/
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/app/src/main/assets/game/
+/android/local.properties
