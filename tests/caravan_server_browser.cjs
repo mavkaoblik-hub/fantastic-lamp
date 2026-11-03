@@ -31,34 +31,39 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
    if(!file.startsWith(path.resolve('build/caravan_v012')+path.sep)||!fs.existsSync(file))return route.fulfill({status:404,body:'Missing test asset'});
    return route.fulfill({path:file,contentType:mime[path.extname(file)]||'application/octet-stream'});
   });
-  let failed=false;
+  let failed=false,loseRegistrationReply=true,createdProfile;const registrations=[];
   await context.route(remote+'/**',async route=>{
    if(failed)return route.abort('failed');
    const r=await route.fetch({url:api+new URL(route.request().url()).pathname});
+   if(route.request().method()==='POST'){
+    registrations.push(JSON.parse(route.request().postData()));
+    createdProfile=await r.json();
+    if(loseRegistrationReply){loseRegistrationReply=false;return route.abort('failed')}
+   }
    await route.fulfill({response:r});
   });
   const page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(game+'/');
-  await page.waitForFunction(()=>document.getElementById('syncAuth').open);
-  assert.equal(await page.locator('#syncRegister').isEnabled(),true);
-  await page.screenshot({path:path.join(temporary,'entry-first-launch.png')});
+  await page.waitForFunction(()=>document.getElementById('syncLinkStatus').textContent.includes('Немає зв’язку'));
+  assert.equal(await page.locator('#syncAuth').evaluate(e=>e.open),false,'No registration prompt blocks first play');
   const before=await page.evaluate(()=>{__CARAVAN_SAVE();return __CARAVAN_RESOURCE_SUMMARY()});
-  await page.locator('#syncNickname').fill('BrowserCaptain');
-  await page.locator('#syncRegister').click();
-  await page.waitForFunction(()=>document.getElementById('syncStatus').textContent==='Зведення надіслано');
-  assert.equal(await page.locator('#syncAuth').evaluate(e=>e.open),true,'New registrant can save the recovery code before continuing');
-  assert.match(await page.locator('#syncCode').inputValue(),/^cv1_[A-Za-z0-9_-]{43}$/);
-  await page.screenshot({path:path.join(temporary,'entry-registration.png')});
-  await page.locator('#syncContinue').click();
+  assert.equal(typeof createdProfile.player_id,'string','First request reached real API despite lost reply');
+  await page.reload();
+  await page.waitForFunction(()=>document.getElementById('syncLinkStatus').textContent==='Зведення надіслано');
+  assert.equal(await page.locator('#syncAuth').evaluate(e=>e.open),false);
+  assert.equal(registrations.length,2);
+  assert.deepEqual(registrations[0],registrations[1],'Reload retries the same durable enrollment');
+  await page.screenshot({path:path.join(temporary,'entry-automatic-account.png')});
   assert.deepEqual(await page.evaluate(()=>__CARAVAN_RESOURCE_SUMMARY()),before);
   const board=await (await fetch(api+'/v1/leaderboard')).json();
-  assert.equal(board.players[0].nickname,'BrowserCaptain');
+  assert.equal(board.player_count,1);
+  assert.match(board.players[0].nickname,/^Караван-[a-f0-9]{12}$/);
   assert.deepEqual(board.players[0].resources,before);
   assert.equal(board.verification,'client_reported');
   await page.reload();
   await page.waitForFunction(()=>document.getElementById('syncLinkStatus').textContent==='Зведення надіслано');
-  assert.equal(await page.locator('#syncAuth').evaluate(e=>e.open),false,'Stored identity authenticates at startup');
+  assert.equal(registrations.length,2,'Subsequent startup authenticates without creating another account');
   // Offline startup keeps resources, crew and existing game save usable.
   failed=true;await page.reload();
   await page.waitForFunction(()=>document.getElementById('syncLinkStatus').textContent.includes('Немає зв’язку'));
@@ -66,24 +71,15 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('caravan_v12')).metal),before.metal);
   await page.evaluate(()=>__CARAVAN_QA.advance(1));
   failed=false;
-  // Remove identity only and log in again; no duplicate registration or save reset.
-  const code=await page.evaluate(()=>JSON.parse(localStorage.getItem('caravan_sync_v1:https://api.caravan.test')).code);
-  await page.evaluate(()=>localStorage.removeItem('caravan_sync_v1:https://api.caravan.test'));
-  await page.reload();await page.waitForFunction(()=>document.getElementById('syncAuth').open);
-  await page.locator('#syncShowLogin').click();
-  await page.locator('#syncCode').fill(code);await page.locator('#syncConnect').click();
-  await page.waitForFunction(()=>!document.getElementById('syncAuth').open);
-  await page.waitForFunction(()=>document.getElementById('syncLinkStatus').textContent==='Зведення надіслано');
-  assert.equal((await (await fetch(api+'/v1/leaderboard')).json()).player_count,1);
-  // Rejected startup credentials must reopen login, while preserving the local game.
+  // Rejected credentials leave gameplay accessible and never create another account.
   await page.evaluate(()=>localStorage.setItem('caravan_sync_v1:https://api.caravan.test',JSON.stringify({code:'cv1_'+'z'.repeat(43),enabled:true})));
   await page.reload();
   await page.waitForFunction(()=>document.getElementById('syncStatus').textContent.includes('Код не прийнято'));
-  assert.equal(await page.locator('#syncAuth').evaluate(e=>e.open),true);
-  assert.equal(await page.locator('#syncLogin').isVisible(),true);
+  assert.equal(await page.locator('#syncAuth').evaluate(e=>e.open),false);
+  assert.equal(registrations.length,2);
   assert.deepEqual(await page.evaluate(()=>__CARAVAN_RESOURCE_SUMMARY()),before);
   assert.deepEqual(errors,[]);
-  console.log('PASS: first registration, startup bearer authentication, real API snapshot/leaderboard, reload, offline save preservation and code login. Evidence: '+temporary);
+  console.log('PASS: automatic first registration, lost enrollment reply without duplicate account, remembered login, real API snapshots, offline saves and nonblocking 401. Evidence: '+temporary);
  }finally{
   if(browser)await browser.close();
   server.kill();await new Promise(resolve=>{if(server.exitCode!==null)resolve();else server.once('exit',resolve)});

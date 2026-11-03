@@ -39,6 +39,33 @@ class CaravanTests(unittest.TestCase):
         self.assertEqual(response.status_code, 201, response.text)
         return response.json()
 
+    def test_device_registration_replay_recovers_same_account_and_secret_after_lost_response(self):
+        key = "cr1_" + "x" * 43
+        data = {"nickname": "AutoCaptain", "registration_key": key}
+        first = self.client.post("/v1/players", json=data).json()
+        second = self.client.post("/v1/players", json=data).json()
+        self.assertEqual(first, second)
+        self.assertEqual(self.store.leaderboard()["player_count"], 1)
+        self.assertEqual(self.store.profile(first["access_code"])["player_id"], first["player_id"])
+        raw = self.store.path.read_bytes()
+        self.assertNotIn(key.encode(), raw)
+        self.assertNotIn(first["access_code"].encode(), raw)
+        with self.store.connection() as db:
+            self.assertEqual(db.execute("SELECT count FROM registration_quota").fetchone()[0], 1)
+
+    def test_concurrent_device_registration_creates_one_account(self):
+        key = "cr1_" + "y" * 43
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(lambda _: self.store.register("ConcurrentAuto", key), range(4)))
+        self.assertEqual(len({p["player_id"] for p in results}), 1)
+        self.assertEqual(len({p["access_code"] for p in results}), 1)
+        self.assertEqual(self.store.leaderboard()["player_count"], 1)
+
+    def test_invalid_device_registration_secret_is_rejected(self):
+        for key in (None, "short", "cv1_" + "x" * 43):
+            self.assertEqual(self.client.post("/v1/players", json={
+                "nickname": "InvalidAuto", "registration_key": key}).status_code, 400)
+
     def test_configured_webview_origin_preflight_registration_and_snapshot(self):
         origin = "https://appassets.androidplatform.net"
         with TestClient(create_app(self.store, allowed_origins=[origin]), base_url="http://localhost") as client:

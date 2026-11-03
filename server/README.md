@@ -86,7 +86,7 @@ CORS не відкритий, proxy headers вимкнені. Для підкл�
 
 | Запит | Дані | Результат |
 |---|---|---|
-| POST /v1/players | {"nickname":"Капітан"} | Профіль і access_code (лише один раз) |
+| POST /v1/players | {"nickname":"Капітан"}; необов’язковий registration_key: cr1_ + 43 base64url символи | Профіль і access_code; той самий ключ повторно повертає той самий акаунт/код |
 | GET /v1/me | Authorization: Bearer особистий-код | Приватний профіль і revision |
 | PUT /v1/resources | Той самий заголовок; {"revision":0,"resources":{"metal":210,"fuel":80,"supplies":48}} | Новий профіль/revision і changed |
 | GET /v1/leaderboard?sort=total&limit=50 | Без коду; sort=total/metal/fuel/supplies, limit=1..100 | Публічні нікнейми й ресурси |

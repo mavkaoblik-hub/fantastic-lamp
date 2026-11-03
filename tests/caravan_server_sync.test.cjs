@@ -21,11 +21,11 @@ test('only explicit HTTPS origin and permitted integer resource summary',()=>{
  assert.deepEqual(resources({metal:1.9,fuel:0,supplies:1,morale:99}),{metal:1,fuel:0,supplies:1});
  assert.throws(()=>resources({metal:NaN,fuel:0,supplies:1}));
 });
-test('explicit registration, bearer identity and fresh summaries never overwrite saves',async()=>{
+test('automatic registration, bearer identity and fresh summaries never overwrite saves',async()=>{
  const h=harness(async(url,o)=>ok(url.endsWith('/players')?{access_code:code}:{revision:7}));
- await h.client.sync();assert.equal(h.calls.length,0);
- assert.equal(await h.client.connect('Капітан'),code);
- await h.client.sync();
+ await h.client.sync();assert.equal(h.calls.length,3);
+ assert.equal(JSON.parse(h.map.get('caravan_sync_v1:https://api.example')).code,code);
+ assert.match(JSON.parse(h.calls[0].body).registration_key,/^cr1_[A-Za-z0-9_-]{43}$/);
  const put=h.calls.at(-1);
  assert.equal(put.headers.Authorization,'Bearer '+code);
  assert.equal(put.credentials,'omit');assert.equal(put.redirect,'error');
@@ -81,4 +81,27 @@ test('revision conflict waits before reading a fresh profile and retrying',async
  await h.client.connect('Captain');await h.client.sync();assert.equal(h.states.at(-1),'conflict');
  const count=h.calls.length;await h.client.sync();assert.equal(h.calls.length,count);
  h.advance(60000);await h.client.sync();assert.equal(h.states.at(-1),'synced');
+});
+test('lost registration response reuses durable enrollment key instead of creating another account',async()=>{
+ let lost=true;
+ const h=harness(async(url,o)=>{
+  if(url.endsWith('/players')){
+   const pending=JSON.parse(h.map.get('caravan_sync_v1:https://api.example'));
+   assert.equal(JSON.parse(o.body).registration_key,pending.registrationKey);
+   if(lost){lost=false;throw Error('lost registration response')}
+   return ok({access_code:code});
+  }
+  return ok({revision:0});
+ });
+ await h.client.sync();const first=JSON.parse(h.calls[0].body);
+ assert.equal(h.states.at(-1),'offline');h.advance(60000);await h.client.sync();
+ assert.deepEqual(JSON.parse(h.calls[1].body),first);
+ assert.equal(h.states.at(-1),'synced');
+});
+test('explicit offline choice persists even before the first account exists',async()=>{
+ const h=harness(async()=>{throw Error('must not call')});h.client.disconnect();await h.client.sync();
+ assert.equal(h.calls.length,0);
+ const c=create({url:'https://api.example',storage:{getItem:k=>h.map.get(k),setItem:(k,v)=>h.map.set(k,v)},
+  getResources:()=>({}),fetch:async()=>assert.fail('opt-out must survive reload')});
+ await c.sync();
 });

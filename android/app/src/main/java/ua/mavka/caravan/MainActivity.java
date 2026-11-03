@@ -64,6 +64,11 @@ public final class MainActivity extends Activity {
                 }
             });
             game.setWebViewClient(new WebViewClient() {
+                @Override public void onPageFinished(WebView view, String url) {
+                    if (HOME.equals(url)) view.evaluateJavascript(
+                            "Boolean(globalThis.__CARAVAN_RESOURCE_SUMMARY && document.getElementById('syncAuth'))",
+                            ready -> { if ("true".equals(ready)) Log.i("CARAVAN_BOOT", "Game scene ready"); });
+                }
                 @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                     Uri uri = request.getUrl();
                     String path = uri.getPath();

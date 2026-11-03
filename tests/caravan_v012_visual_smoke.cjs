@@ -15,7 +15,6 @@ const {chromium}=require('playwright-core');
  page.on('pageerror',e=>errors.push('Page error: '+e.message));
  page.on('response',r=>{if(r.status()>=400)errors.push('HTTP '+r.status()+' '+r.url());});
  await page.goto('http://127.0.0.1:8787/',{waitUntil:'domcontentloaded'});
- await page.locator('#syncOffline').click();
  await page.waitForTimeout(1800);
  const score=await page.evaluate(()=>{
    const pics=[...document.images];
@@ -158,7 +157,6 @@ const {chromium}=require('playwright-core');
  assert.equal(await page.locator('#wagonQuick').isVisible(),false,
    'Wagon context must close without opening the full constructor');
  await page.reload({waitUntil:'domcontentloaded'});
- await page.locator('#syncOffline').click();
  await page.waitForTimeout(200);
  const claimedAfterReload=await page.evaluate(()=>window.__CARAVAN_QA.productionInspect('c2'));
  assert.equal(claimedAfterReload.collected,collectedBeforeReload,
@@ -215,7 +213,6 @@ const {chromium}=require('playwright-core');
  assert.equal(afterClaim.metal,metalBefore-35+18,'Reward must add exactly one resource grant');
  assert.equal(await claimButton.isDisabled(),true,'Reward can no longer be claimed');
  await page.reload({waitUntil:'domcontentloaded'});
- await page.locator('#syncOffline').click();
  await page.waitForTimeout(900);
  assert.equal((await page.evaluate(()=>window.__CARAVAN_QA.journal().find(q=>q.id==='wagon_upgrade').status)),'claimed',
   'Claim state must survive full browser restart');
@@ -249,7 +246,6 @@ const {chromium}=require('playwright-core');
  assert.ok((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.boarding)));
  await page.evaluate(()=>window.__CARAVAN_QA.advance(1));
  await page.reload({waitUntil:'domcontentloaded'});
- await page.locator('#syncOffline').click();
  await page.waitForTimeout(250);
  const midBoard=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state);
  assert.ok(midBoard.boarding,'Boarding must survive page reload');
@@ -301,7 +297,6 @@ const {chromium}=require('playwright-core');
  await page.evaluate(()=>window.__CARAVAN_QA.advance(1));
  assert.ok((await page.evaluate(()=>window.__CARAVAN_QA.internalTransfers().states[0].transfer.progress))>0);
  await page.reload({waitUntil:'domcontentloaded'});
- await page.locator('#syncOffline').click();
  await page.waitForTimeout(250);
  movingTransfer=await page.evaluate(()=>window.__CARAVAN_QA.internalTransfers());
  assert.equal(movingTransfer.states[0].mode,'transferring','Moving employee must survive reload');
@@ -339,7 +334,6 @@ const {chromium}=require('playwright-core');
   localStorage.setItem(key,JSON.stringify(saved));
  });
  await page.reload({waitUntil:'domcontentloaded'});
- await page.locator('#syncOffline').click();
  await page.waitForTimeout(400);
  const savedJourney=await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state);
  assert.equal(savedJourney.route.active.routeId,'popil_mist','Mid-trip route persists');
@@ -356,7 +350,6 @@ const {chromium}=require('playwright-core');
  assert.equal(eventCrew.aboard,3);
  const savedIncidentResources={fuel:interrupted.fuel,supplies:interrupted.supplies};
  await page.reload({waitUntil:'domcontentloaded'});
- await page.locator('#syncOffline').click();
  await page.waitForTimeout(350);
  assert.ok((await page.evaluate(()=>window.__CARAVAN_QA.snapshot().state.route.active.pendingEventId)),
   'Incident must survive restart');
@@ -403,7 +396,6 @@ const {chromium}=require('playwright-core');
   const restPage=await browser.newPage({viewport:{width:844,height:390}});
   restPage.on('pageerror',e=>errors.push('Rest-page error: '+e.message));
   await restPage.goto('http://127.0.0.1:8787/',{waitUntil:'domcontentloaded'});
- await restPage.locator('#syncOffline').click();
   await restPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.rest==='function');
   assert.equal(await restPage.evaluate(()=>window.__CARAVAN_QA.rest(0)),true,
    'Station mechanic must reserve a sleeping berth');
@@ -421,7 +413,6 @@ const {chromium}=require('playwright-core');
   await restPage.screenshot({path:'caravan-v012-visual/v013d6b_crew_rest.png'});
   await restPage.evaluate(()=>window.__CARAVAN_SAVE());
   await restPage.reload({waitUntil:'domcontentloaded'});
- await restPage.locator('#syncOffline').click();
   await restPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.rest==='function');
   const savedRest=await restPage.evaluate(()=>window.__CARAVAN_QA.snapshot().crew[0]);
   assert.equal(savedRest.mode,'resting','Rest survives WebView reload');
@@ -432,7 +423,6 @@ const {chromium}=require('playwright-core');
   const autoPage=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
   autoPage.on('pageerror',e=>errors.push('D6C-page: '+e.message));
   await autoPage.goto('http://127.0.0.1:8787/',{waitUntil:'domcontentloaded'});
- await autoPage.locator('#syncOffline').click();
   await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.autonomy==='function');
   const compactScene=await autoPage.evaluate(()=>({
    width:document.querySelector('.scene').getBoundingClientRect().width,
@@ -466,7 +456,6 @@ const {chromium}=require('playwright-core');
    sessionStorage.setItem('__d6c_fixture_used','1');
   });
   await autoPage.reload({waitUntil:'domcontentloaded'});
- await autoPage.locator('#syncOffline').click();
   await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.routeStart==='function');
   assert.equal(await autoPage.evaluate(()=>window.__CARAVAN_QA.routeStart('popil_mist')),true);
   await autoPage.evaluate(()=>window.__CARAVAN_QA.advance(8));
@@ -483,7 +472,6 @@ const {chromium}=require('playwright-core');
   await autoPage.locator('#stage').screenshot({path:'caravan-v012-visual/v013d6c_autonomous_crew.png'});
   await autoPage.evaluate(()=>window.__CARAVAN_SAVE());
   await autoPage.reload({waitUntil:'domcontentloaded'});
- await autoPage.locator('#syncOffline').click();
   await autoPage.waitForFunction(()=>typeof window.__CARAVAN_QA?.autonomy==='function');
   assert.ok((await autoPage.evaluate(()=>window.__CARAVAN_QA.autonomy()[0].break)),
    'Autonomous break should recover from persisted save without duplicating jobs');

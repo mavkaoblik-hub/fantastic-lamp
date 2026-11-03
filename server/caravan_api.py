@@ -147,9 +147,11 @@ def create_app(store=None, limiter=None, *, allowed_origins=None, allowed_hosts=
     async def register(request: Request):
         limiter.check(("registration", request.client.host if request.client else "local"), 5, 3600)
         value = await body(request)
-        if set(value) != {"nickname"}:
+        if set(value) not in ({"nickname"}, {"nickname", "registration_key"}):
             raise Rejected("invalid_registration")
-        return await run_in_threadpool(store.register, value["nickname"])
+        if "registration_key" in value and value["registration_key"] is None:
+            raise Rejected("invalid_registration_key")
+        return await run_in_threadpool(store.register, value["nickname"], value.get("registration_key"))
 
     @app.get("/v1/me")
     async def profile(request: Request):

@@ -76,24 +76,24 @@ jobs:
         with:
           gradle-version: '8.9'
       - name: Compile genuine Android APK
-        run: gradle -p android --no-daemon --stacktrace :app:assembleDebug
+        run: gradle -p android --no-daemon --stacktrace :app:assemblePreview
       - name: Check APK identity, ZIP and signing
         shell: bash
         run: |
           set -euo pipefail
-          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          APK=android/app/build/outputs/apk/preview/app-preview.apk
           test -s "$APK"
           unzip -tqq "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee android/apk-badging.txt
-          grep -F "package: name='ua.mavka.caravan.autotest'" android/apk-badging.txt
+          grep -F "package: name='ua.mavka.caravan.autotest.syncpreview'" android/apk-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee android/apk-signature.txt
           sha256sum "$APK" | tee android/APK_SHA256.txt
       - name: Publish downloadable APK
         uses: actions/upload-artifact@v4
         with:
-          name: CARAVAN-auto-Android-debug-APK
+          name: CARAVAN-auto-install-alongside-APK
           path: |
-            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/preview/app-preview.apk
             android/apk-badging.txt
             android/apk-signature.txt
             android/APK_SHA256.txt
