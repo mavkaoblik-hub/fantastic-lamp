@@ -43,7 +43,7 @@ state.locoLevel=Math.min(4,Math.max(1,Math.round(Number(state.locoLevel)||1)));
 state.nextCarId=Math.max(3,Number(state.nextCarId)||3);
 
 const crewNames=['Марко','Олена','Данило'],crewSymbols=['⚒','✚','◈'];
-function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map(p=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0,fatigue:0,experience:0,loneliness:20,autoCooldown:30,autoActivity:null}))}
+function makeCrew(){return [{role:'mechanic',x:480,dir:1,phase:0},{role:'medic',x:830,dir:-1,phase:1.2},{role:'guard',x:1025,dir:-1,phase:2.2}].map((p,i)=>({...p,mode:'patrol',inside:0,transition:0,job:null,queue:[],progress:0,completed:0,done:0,fatigue:i===2?52:0,experience:0,loneliness:i===1?62:20,autoCooldown:i===1?7:i===2?10:30,autoActivity:null}))}
 const allowedModes=new Set(['patrol','walking','entering','working','exiting','completed','aboard','boarding','transferring','resting']);
 let crew=makeCrew();
 if(Array.isArray(state.crewData)&&state.crewData.length===3){crew=crew.map((def,i)=>{const saved=state.crewData[i];if(!saved||!Number.isFinite(saved.x))return def;const p={...def,...saved};p.mode=allowedModes.has(p.mode)?p.mode:'patrol';p.x=Math.min(1080,Math.max(245,p.x));p.progress=Math.max(0,Math.min(1,Number(p.progress)||0));p.inside=Math.max(0,Math.min(1,Number(p.inside)||0));p.transition=Math.max(0,Math.min(1,Number(p.transition)||0));p.queue=Array.isArray(p.queue)?p.queue.filter(j=>LOCATIONS[j.target]&&(j.target!=='tail'||state.cars.length>=3)).slice(0,3):[];p.exitStartX=Number.isFinite(p.exitStartX)?p.exitStartX:p.x;p.exitInside=Number.isFinite(p.exitInside)?p.exitInside:p.inside;if(p.job&&(!LOCATIONS[p.job.target]||(p.job.target==='tail'&&state.cars.length<3)))p.job=null;if(p.mode!=='patrol'&&!p.job&&!['aboard','boarding','transferring'].includes(p.mode))p.mode='patrol';return p})}
@@ -328,9 +328,11 @@ function renderQuickWagon(){
   const used=onRoute?TRANSFER.occupancy(crew,state.cars,target,i):
     PRODUCTION.assigned(state.cars,crew,slot).filter(worker=>worker!==i).length;
   const full=used>=PRODUCTION.capacity(car);
-  const enabled=onRoute?TRANSFER.canStart(crew,state.cars,i,target).ok:
+  const available=onRoute?TRANSFER.canStart(crew,state.cars,i,target):null;
+  const enabled=onRoute?!p.autoActivity&&available.ok:
     !(same||duplicate||full||state.boarding);
   const text=coming?'У ПЕРЕХОДІ':same?(p.mode==='resting'?'ВІДПОЧИВАЄ':'ПРАЦЮЄ'):
+   p.autoActivity?'НА ПЕРЕРВІ':state.boarding?'ТРИВАЄ ПОСАДКА':full?'МІСЦЬ НЕМАЄ':
    onRoute?'ПЕРЕВЕСТИ':duplicate?'У ЧЕРЗІ':p.job?'У ЧЕРГУ':'НАПРАВИТИ';
   return '<button type="button" data-quick-worker="'+i+'" data-state="'+
    (same?'working':coming?'transferring':'idle')+'" '+
@@ -450,7 +452,14 @@ function renderCrewPanel(){const html=crew.map((p,i)=>{const pct=p.mode==='worki
   (occupiedBerths(['center','rear','tail'][i],chosenCrew)<PRODUCTION.capacity(car)||
    crew[chosenCrew]?.job?.target===['center','rear','tail'][i]));
  $('sendCrewRest').disabled=Boolean(state.boarding)||!restSeat||
-  crew[chosenCrew]?.mode==='resting'||crew[chosenCrew]?.mode==='transferring';
+  crew[chosenCrew]?.mode==='resting'||crew[chosenCrew]?.mode==='transferring'||
+  Boolean(crew[chosenCrew]?.autoActivity);
+ $('restHelp').textContent=state.boarding?'Дочекайтеся завершення посадки':
+  crew[chosenCrew]?.autoActivity?'Персонаж зараз відпочиває або спілкується':
+  crew[chosenCrew]?.mode==='resting'?'Персонаж уже відновлює сили':
+  crew[chosenCrew]?.mode==='transferring'?'Персонаж переходить між вагонами':
+  !restSeat?'Потрібен житловий вагон або казарма з вільним місцем':
+  'Вільне спальне місце доступне';
 }
 $('crewList').onclick=e=>{const btn=e.target.closest('[data-crew]');if(!btn)return;chosenCrew=+btn.dataset.crew;markDirty();renderCrewPanel();msg('Обрано: '+crewNames[chosenCrew])};
 function startExit(p){p.exitStartX=p.x;p.exitInside=p.inside;p.mode='exiting';p.transition=0;p.progress=0}
@@ -859,17 +868,13 @@ function drawInteriorLife(){
  const actors=LIFE.build(crew,state.cars);
  for(const actor of actors){
   const person=crew[actor.personIndex];
-  const frames=m.crew[person.role]?.idle;
+  const frames=m.crew[person.role]?.[actor.journey?'walk':'idle'];
   if(!frames?.length)continue;
   const motion=LIFE.pose(actor,t);
   const sprite=frames[Math.floor((t+(person.phase||0))*motion.frameRate)%frames.length];
   const bounds=actor.bounds;
   c.save();
-  // Crossing between cars is shown as an in-room fade: never on the tracks.
-  if(actor.activity==='transfer'){
-   const progress=Math.max(0,Math.min(1,crew[actor.personIndex].transfer?.progress||0));
-   c.globalAlpha=.38+.48*Math.abs(progress-.5);
-  }
+  // D7: walking is visible throughout the train; no halfway fade or teleport.
   c.beginPath();c.rect(bounds.x,bounds.y,bounds.w,bounds.h);c.clip();
   // Existing amber lamps and scene highlights remain visible. A gentle
   // localized glow signals interaction without introducing new UI icons.
