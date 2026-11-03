@@ -8,6 +8,12 @@ PREVIEW_APK=build/install/preview/app-preview.apk
 OUT=build/install/evidence
 mkdir -p "$OUT"
 SIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+if [ ! -x "$SIGNER" ]; then
+  "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'build-tools;35.0.0'
+fi
+# This job tests installation and local startup, not a production server account.
+adb shell svc wifi disable
+adb shell svc data disable
 
 # Reproduce the reported mismatch with a disposable fixture key, never published.
 keytool -genkeypair -keystore "$OUT/fixture.p12" -storetype PKCS12 \

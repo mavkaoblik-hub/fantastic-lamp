@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate and restore all original source assets
         env:
-          CARAVAN_SERVER_URL: ${{ vars.CARAVAN_SERVER_URL }}
+          CARAVAN_SERVER_URL: ''
         run: |
           python3 tools/caravan_restore_v012.py "$RUNNER_TEMP/caravan-v012-game"
           node --check game/v012_restored/camera.js
@@ -113,8 +113,12 @@ jobs:
           gradle-version: '8.9'
       - name: Package exact v0.12 art, not the geometric prototype
         shell: bash
+        env:
+          CARAVAN_SERVER_URL: ${{ vars.CARAVAN_SERVER_URL }}
         run: |
           set -euo pipefail
+          # Browser acceptance must never create real accounts on the configured server.
+          python3 tools/configure_caravan_sync.py "$RUNNER_TEMP/caravan-v012-game"
           GAME=android/app/src/main/assets/game
           rm -rf "$GAME"
           mkdir -p "$GAME"
