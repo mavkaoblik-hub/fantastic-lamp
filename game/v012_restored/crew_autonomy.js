@@ -39,15 +39,22 @@
      p.autoActivity=null;p.job=null;p.mode='aboard';
      p.inside=1;p.location=loc('engine');changed=true;continue;
    }
-   a.progress=clamp(num(a.progress),0,1);
-   a.remaining=clamp(num(a.remaining),0,60);
-   a.duration=clamp(num(a.duration,3),1,10);
+   for(const [key,value] of [
+    ['progress',clamp(num(a.progress),0,1)],
+    ['remaining',clamp(num(a.remaining),0,60)],
+    ['duration',clamp(num(a.duration,3),1,10)]
+   ])if(a[key]!==value){a[key]=value;changed=true;}
    if(!active){
      finish(p,crew,cars);changed=true;
    }else{
-     p.job=null;p.mode='aboard';p.inside=1;
-     p.boardingState='aboard';
-     p.location=loc(phaseId(a));changed=true;
+     if(p.job){p.job=null;changed=true;}
+     if(p.mode!=='aboard'){p.mode='aboard';changed=true;}
+     if(p.inside!==1){p.inside=1;changed=true;}
+     if(p.boardingState!=='aboard'){p.boardingState='aboard';changed=true;}
+     const target=loc(phaseId(a));
+     if(p.location?.kind!==target.kind||p.location?.carId!==target.carId){
+      p.location=target;changed=true;
+     }
    }
   }
   return changed;
