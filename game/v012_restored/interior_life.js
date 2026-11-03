@@ -63,6 +63,17 @@
   if(savedIndex>=0)return {kind:'wagon',index:savedIndex,carId:id};
   return {kind:'locomotive',index:-1,carId:null};
  }
+ // Continuous route metadata: no new player jobs or economy mutations.
+ function journey(person){
+  const a=person?.autoActivity;
+  if(a&&['travel','return'].includes(a.phase)){
+   return {fromId:a.phase==='travel'?a.fromId:a.toId,
+    toId:a.phase==='travel'?a.toId:a.homeId,
+    progress:clamp(finite(a.progress),0,1)};
+  }
+  const t=person?.mode==='transferring'?person.transfer:null;
+  return t?{fromId:t.fromId,toId:t.toId,progress:clamp(finite(t.progress),0,1)}:null;
+ }
  function describe(person,i,cars){
   const loc=validLocation(person,cars);if(!loc)return null;
   const kind=loc.index>=0?cars[loc.index].kind:'engine';
@@ -83,7 +94,7 @@
      'Іде всередині потяга · '+Math.floor((person.autoActivity.progress||0)*100)+'%'):
     person.mode==='transferring'?'Внутрішній перехід · '+Math.floor((person.transfer?.progress||0)*100)+'%':
     person.mode==='resting'?'Відпочиває у вагоні':person.mode==='working'&&profile?profile.label:ACTIONS[activity],
-   role:person.role,
+   role:person.role,journey:journey(person),
    progress:person.mode==='working'?clamp(finite(person.progress),0,1):0
   };
  }
@@ -109,7 +120,12 @@
    h:163-INNER.wagon.padTop-INNER.wagon.padBottom
   };
  }
- function actor(entry){
+ function roomBounds(id,cars){
+  if(id==='engine')return {...INNER.engine};
+  const index=cars.findIndex(car=>car.id===id);
+  return index<0?null:slotBounds({location:'wagon',index});
+ }
+ function actor(entry,cars){
   const rect=slotBounds(entry);
   if(!rect)return null;
   const isEngine=entry.location==='locomotive';
@@ -122,11 +138,27 @@
   const ground=rect.y+rect.h*(isEngine?.98:(profile?.floor||.97));
   const x=clamp(centerX-width*.5,rect.x+3,rect.x+rect.w-width-3);
   const y=clamp(ground-height,rect.y+2,rect.y+rect.h-height-2);
+  if(entry.journey){
+   const src=roomBounds(entry.journey.fromId,cars);
+   const dst=roomBounds(entry.journey.toId,cars);
+   if(src&&dst){
+    const p=clamp(entry.journey.progress,0,1),t=p*p*(3-2*p);
+    const footStart=src.y+src.h*.96,footEnd=dst.y+dst.h*.96;
+    const x0=src.x+src.w*.5,x1=dst.x+dst.w*.5;
+    const footX=x0+(x1-x0)*t,footY=footStart+(footEnd-footStart)*t;
+    const left=Math.min(src.x,dst.x),top=Math.min(src.y,dst.y);
+    const right=Math.max(src.x+src.w,dst.x+dst.w);
+    const bottom=Math.max(src.y+src.h,dst.y+dst.h);
+    return {...entry,x:footX-width*.5,y:footY-height,width,height,
+     bounds:{x:left,y:top,w:right-left,h:bottom-top},
+     fxX:footX,fxY:footY-height*.4};
+   }
+  }
   const fxX=clamp(x+(seat%2===0?width+5:-5),rect.x+6,rect.x+rect.w-6);
   const fxY=clamp(y+height*.59,rect.y+7,rect.y+rect.h-7);
   return {...entry,x,y,width,height,bounds:rect,fxX,fxY};
  }
- function build(crew,cars){return layout(crew,cars).map(actor).filter(Boolean);}
+ function build(crew,cars){return layout(crew,cars).map(e=>actor(e,cars)).filter(Boolean);}
  // Smooth bounded pose parameters; no new sprites and no physical displacement
  // beyond the window. Useful for automated visual/temporal regression tests.
  function pose(entry,time){
@@ -148,6 +180,10 @@
    out.angle=Math.sin(base*.93)*.028;
    out.shiftX=Math.sin(base*1.1)*.8;out.light=.08+.07*Math.sin(base*.7)**2;
    out.flare=.3+.35*Math.sin(base*.67)**2;out.frameRate=1.65;
+  }else if(kind==='transfer'){
+   const stride=Math.sin(base*8.6);
+   out.shiftY=-Math.abs(stride)*1.35;out.angle=stride*.035;
+   out.light=.10;out.frameRate=8.5;
   }else if(kind==='social'){
    out.angle=Math.sin(base*2.5)*.045;out.shiftX=Math.sin(base*1.8)*1.1;
    out.light=.13;out.frameRate=2.1;
