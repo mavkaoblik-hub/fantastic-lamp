@@ -13,3 +13,7 @@ To restore locally: `python tools/caravan_restore_v012.py build/caravan_v012`, t
 `CARAVAN v0.12 - Restore original approved train` GitHub workflow verifies the original browser scene at 1280×576 and produces its **own reference APK**. This is separate from the active v0.4 source and does not silently overwrite that code or original art. v0.4 gameplay features still need selective migration into this authentic scene, after acceptance.
 
 Hard visual gate: train faces left, actual illustrated dieselpunk locomotive and wagons from archived original 103 images, cutaway interiors, crew image frames, warm lighting and industrial atmosphere. Never substitute geometric Canvas wagon renderer or unrelated pictures.
+
+Optional server registration and startup code authentication are implemented in
+`server_sync.js` / `server_sync_ui.js`. The default endpoint is empty, and offline
+play remains available. See [HTTPS configuration and tests](../../docs/CARAVAN_SERVER_SYNC_2026-11-03.md).

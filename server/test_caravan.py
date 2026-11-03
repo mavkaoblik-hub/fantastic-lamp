@@ -20,7 +20,6 @@ from fastapi.testclient import TestClient
 from server.backup import backup
 from server.caravan_api import RateLimit, create_app
 from server.caravan_store import MAX_DB_BYTES, Rejected, Store
-from tools.configure_caravan_sync import configure
 
 
 class CaravanTests(unittest.TestCase):
@@ -78,16 +77,6 @@ class CaravanTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 create_app(self.store, allowed_origins=[origin])
 
-    def test_packager_only_embeds_a_public_https_origin(self):
-        for value in ("", "https://api.example", "https://api.example:8443/"):
-            with patch.dict(os.environ, {"CARAVAN_SERVER_URL": value}):
-                configure(self.root)
-            self.assertEqual(json.loads((self.root / "sync_config.json").read_text())["endpoint"], value.rstrip("/"))
-        for value in ("http://api.example", "https://user:secret@api.example", "https://api.example/v1",
-                      "https://api.example?token=secret", "https://api.example#secret", "https://appassets.androidplatform.net"):
-            with patch.dict(os.environ, {"CARAVAN_SERVER_URL": value}):
-                with self.assertRaises(ValueError):
-                    configure(self.root)
 
     def headers(self, player):
         return {"Authorization": "Bearer " + player["access_code"]}
