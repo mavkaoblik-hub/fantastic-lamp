@@ -19,17 +19,21 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Restore approved D7A source and endpoint configuration
+        env:
+          CARAVAN_SERVER_URL: ${{ vars.CARAVAN_SERVER_URL }}
+        run: python3 tools/caravan_restore_v012.py android/app/src/main/assets/game
       - name: Check assets
         run: |
           test -s android/app/src/main/assets/game/index.html
           test -s android/app/src/main/assets/game/assets/train/locomotive.png
           test -s android/app/src/main/assets/game/app.js
       - name: Build Android debug APK
-        run: gradle -p android --no-daemon :app:assembleDebug
+        run: gradle -p android --no-daemon :app:assemblePreview
       - name: Publish installable test APK
         uses: actions/upload-artifact@v4
         with:
-          name: CARAVAN-v0.10-debug-APK
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: CARAVAN-D7A-install-alongside-APK
+          path: android/app/build/outputs/apk/preview/*.apk
           if-no-files-found: error
           retention-days: 30

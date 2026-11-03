@@ -326,3 +326,8 @@ main{max-width:none!important;display:block!important;padding:3px;
  .playbar{height:35px;min-height:35px;flex-basis:35px}
  .wagon-quick:not([hidden]){max-height:75%}
 }
+
+/* Entry authorization uses existing palette and leaves approved scene art intact. */
+#syncAuth{background:#10212b;color:#e5d8b9;border:1px solid #a0824a;border-radius:12px;max-width:460px;width:calc(100% - 40px);max-height:85dvh;overflow:auto;padding:18px}#syncAuth::backdrop{background:#06121bc9}#syncAuth label{display:block;margin:10px 0}#syncAuth input{display:block;box-sizing:border-box;width:100%;padding:8px;color:inherit;background:#07131a;border:1px solid #a0824a}#syncAuth button{margin:4px 0;width:100%}
+
+#syncAuth [hidden]{display:none!important}#syncAuth h2{font-size:18px;margin:0 0 6px}#syncAuth p{font-size:13px;margin:6px 0}#syncAuth .sync-tabs{display:flex;gap:8px}#syncAuth .sync-tabs button{width:50%}#syncAuth .sync-privacy{opacity:.8}#syncAuth button{min-height:40px;padding:8px}
