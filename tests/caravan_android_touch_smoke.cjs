@@ -33,7 +33,7 @@ async function tapWorld(page,x,y){const p=await worldPoint(page,x,y);await page.
    assert.equal(layout.scroll,viewport.width,'No horizontal page overflow');
    assert.ok(layout.navScroll<=layout.navWidth,'Every primary action fits without scrolling');
    assert.ok(layout.canvas.height>=viewport.height*.7,'At least 70% height remains for the scene');
-   for(const b of layout.buttons){assert.ok(b.width>=48&&b.height>=48,'48px touch target: '+b.id);assert.ok(b.x>=0&&b.y>=0&&b.right<=viewport.width+.1&&b.bottom<=viewport.height+.1,'Button within viewport: '+b.id);}
+   for(const b of layout.buttons){assert.ok(b.width>=48&&b.height>=48,'48px touch target: '+b.id);assert.ok(b.x>=0&&b.y>=0&&b.right<=viewport.width+.1&&b.bottom<=viewport.height+.1,'Button within viewport: '+b.id+' '+JSON.stringify({viewport,button:b,layoutWidth:layout.scroll}));}
    await page.screenshot({path:path.join(out,`${viewport.width}-overview.png`)});
    await tapWorld(page,796,350);
    assert.equal(await page.locator('#wagonQuick').isVisible(),true);
