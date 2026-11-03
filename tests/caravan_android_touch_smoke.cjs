@@ -115,6 +115,45 @@ async function tapWorld(page,x,y){const p=await worldPoint(page,x,y);await page.
    const safe=await page.locator('#togglePanel').boundingBox();
    assert.ok(safe.x+safe.width<=viewport.width-24,'Header respects safe right edge');
    assert.equal(await page.evaluate(()=>document.querySelector('.playbar').scrollWidth<=document.querySelector('.playbar').clientWidth),true);
+   // D7A real-screen QA: new crew should show work alongside autonomous
+   // social/rest trips during the first short route, never on the tracks.
+   if(viewport.width===844){
+    const fresh=await browser.newContext({viewport,isMobile:true,hasTouch:true,deviceScaleFactor:2});
+    try{
+     const lifePage=await fresh.newPage();
+     lifePage.on('pageerror',e=>errors.push('D7 scene: '+e.message));
+     await lifePage.goto('http://127.0.0.1:8787/',{waitUntil:'load'});
+     await lifePage.waitForFunction(()=>__CARAVAN_QA.assets().loaded===103);
+     const routeFrames=await lifePage.evaluate(()=>{
+      const qa=__CARAVAN_QA;
+      qa.assign(0,'center');qa.advance(8);qa.routeStart('popil_mist');
+      const frames=[];
+      for(let i=0;i<19;i++){
+       qa.advance(1);
+       const snapshot=qa.snapshot();
+       frames.push({active:Boolean(snapshot.state.route.active),
+        outside:qa.transit().outside,
+        breaks:snapshot.crew.filter(p=>p.autoActivity).length,
+        walking:qa.interiorLife().filter(a=>a.journey).length,
+        workers:snapshot.crew.filter(p=>p.mode==='working').length
+       });
+      }
+      return frames;
+     });
+     assert.ok(routeFrames.some(f=>f.active&&f.workers>0),'Work continues during train motion');
+     assert.ok(routeFrames.some(f=>f.active&&f.breaks>0),'Crew makes autonomous breaks on a short first route');
+     assert.ok(routeFrames.some(f=>f.active&&f.walking>0),'Moving figures use continuous D7 interior paths');
+     assert.ok(routeFrames.every(f=>!f.active||f.outside===0),'No crew can appear outside on the route');
+     await lifePage.locator('#stage').screenshot({path:path.join(out,'844-d7a-live-crew.png')});
+     await lifePage.evaluate(()=>__CARAVAN_SAVE());
+     await lifePage.reload({waitUntil:'load'});
+     const saved=await lifePage.evaluate(()=>({crew:__CARAVAN_QA.snapshot().crew,
+      outside:__CARAVAN_QA.transit().outside}));
+     assert.equal(saved.outside,0,'Reload preserves onboard safety');
+     assert.ok(saved.crew.some(p=>p.autoActivity),'Reload preserves autonomous breaks');
+     await lifePage.close();
+    }finally{await fresh.close();}
+   }
    report.push({viewport,canvasHeight:layout.canvas.height,actions:layout.buttons.length,status:'PASS'});
    await context.close();
   }
