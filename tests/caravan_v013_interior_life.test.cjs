@@ -103,3 +103,29 @@ test('two person workstations remain separated and inside safe cutaway on level 
  assert.ok(Math.abs(a[0].x-a[1].x)>40);
  assert.ok(a.every(p=>p.fxX>=p.bounds.x&&p.fxX<=p.bounds.x+p.bounds.w));
 });
+
+test('D7A renders an uninterrupted onboard path instead of a midway teleport',()=>{
+ const p={role:'medic',mode:'aboard',inside:1,job:null,
+  location:{kind:'wagon',carId:'c1'},autoActivity:{version:1,kind:'social',phase:'travel',
+   fromId:'c1',toId:'c2',homeId:'c1',progress:0,duration:3.5,remaining:12}};
+ const x=t=>{p.autoActivity.progress=t;return LIFE.build([p],cars())[0]};
+ const samples=[x(0),x(.2),x(.4),x(.6),x(.8),x(1)];
+ assert.ok(samples.every(a=>a.activity==='transfer'&&a.journey));
+ for(let i=1;i<samples.length;i++)assert.ok(samples[i].x>samples[i-1].x);
+ for(const a of samples){
+  assert.ok(a.x>=a.bounds.x&&a.x+a.width<=a.bounds.x+a.bounds.w);
+  assert.ok(a.y>=a.bounds.y&&a.y+a.height<=a.bounds.y+a.bounds.h);
+ }
+ assert.equal(LIFE.pose(samples[3],1).frameRate,8.5);
+ assert.equal(p.inside,1);
+});
+test('D7A manual D5 transfer walks continuously in the other direction',()=>{
+ const p={role:'mechanic',mode:'transferring',inside:1,job:null,
+  transfer:{version:1,fromId:'c2',toId:'c1',target:'center',progress:0,duration:3.5},
+  location:{kind:'wagon',carId:'c2'}};
+ const x=t=>{p.transfer.progress=t;return LIFE.build([p],cars())[0]};
+ const a=x(0),b=x(.3),c=x(.6),d=x(.9);
+ assert.ok(a.x>b.x&&b.x>c.x&&c.x>d.x);
+ assert.ok([a,b,c,d].every(v=>v.journey?.fromId==='c2'&&v.journey.toId==='c1'));
+ assert.equal(p.inside,1);
+});

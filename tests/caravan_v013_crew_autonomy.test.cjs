@@ -134,3 +134,13 @@ test('rest berth is shared with manual D5 transfers and fully capacity-bounded',
  assert.equal(T.start(crew,c,1,'rear',{duty:'rest'}).ok,true);
  assert.equal(T.occupancy(crew,c,'rear'),2);
 });
+
+test('D7A normalization of an onboard break does not rewrite stable save fields',()=>{
+ const c=cars(),p=worker(),crew=[p];p.loneliness=80;
+ tick(crew,c,1);
+ assert.ok(p.autoActivity);
+ const original=JSON.stringify(crew);
+ assert.equal(A.normalize(crew,c,true),false);
+ assert.equal(A.normalize(crew,c,true),false);
+ assert.equal(JSON.stringify(crew),original);
+});
