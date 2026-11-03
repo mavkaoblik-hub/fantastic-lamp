@@ -83,7 +83,7 @@
 }
 
 /* D7A: largest usable room view, without shrinking 48px Android hit targets. */
-.android-ui header{flex-basis:46px;height:46px!important}
+.android-ui header{flex-basis:48px;height:48px!important}
 .android-ui .playbar{flex-basis:52px;height:52px;min-height:52px;padding:2px 5px}
 .android-ui .playbar button{min-height:48px!important}
 .android-ui .rest-help{display:block;color:#dac5a4;font-size:11px;line-height:1.35;margin:4px 0 7px}
