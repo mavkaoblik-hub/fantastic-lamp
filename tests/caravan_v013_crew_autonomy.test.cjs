@@ -94,7 +94,10 @@ test('save/load resumes mid-visit and pause never exposes outside crew',()=>{
  const c=cars(),p=worker(),crew=[p];p.loneliness=80;
  tick(crew,c,3);
  const resumed=JSON.parse(JSON.stringify(crew));
- assert.equal(A.normalize(resumed,c,true),true);
+ const validSave=JSON.stringify(resumed);
+ assert.equal(A.normalize(resumed,c,true),false,
+  'Valid saved activity must not be rewritten or counted as changed');
+ assert.equal(JSON.stringify(resumed),validSave);
  for(let i=0;i<10;i++){
   tick(resumed,c,1,{active:true,moving:false});
   assert.equal(resumed[0].inside,1);
