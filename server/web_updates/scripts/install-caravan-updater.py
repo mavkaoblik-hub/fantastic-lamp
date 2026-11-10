@@ -26,6 +26,19 @@ def entrypoint_layout(source):
     return handlers[0], mains[0]
 
 
+def ensure_site_traversal():
+    # Traversal only, never listing or writing the parent website directories.
+    for directory in ('/srv', '/srv/mavka-web', '/srv/mavka-web/public'):
+        probe = ['runuser', '-u', 'caravanupdate', '-g', 'shortsstudio', '--', 'test', '-x', directory]
+        if subprocess.run(probe, check=False).returncode == 0:
+            continue
+        if not shutil.which('setfacl'):
+            raise SystemExit('Install ACL support first: sudo apt-get install -y acl')
+        subprocess.check_call(['setfacl', '--no-mask', '-m', 'u:caravanupdate:--x', directory])
+        if subprocess.run(probe, check=False).returncode != 0:
+            raise SystemExit('Existing ACL mask blocks traversal: ' + directory)
+
+
 def main():
     if os.geteuid() != 0:
         raise SystemExit('Run with sudo on Oracle')
@@ -58,6 +71,7 @@ def main():
         subprocess.check_call(['useradd', '--system', '--home-dir', '/var/lib/caravan-update',
                                '--shell', '/usr/sbin/nologin', 'caravanupdate'])
         account = pwd.getpwnam('caravanupdate')
+    ensure_site_traversal()
     for path in [dest, *dest.rglob('*')]:
         os.chown(path, account.pw_uid, account.pw_gid)
         os.chmod(path, 0o755 if path.is_dir() else 0o644)
@@ -79,7 +93,10 @@ def main():
     unit = Path('/etc/systemd/system/caravan-update.service')
     shutil.copyfile(root / 'caravan-update.service', unit)
     subprocess.check_call(['systemctl', 'daemon-reload'])
-    subprocess.check_call(['systemctl', 'enable', '--now', 'caravan-update.service'])
+    subprocess.check_call(['systemctl', 'enable', 'caravan-update.service'])
+    subprocess.check_call(['systemctl', 'reset-failed', 'caravan-update.service'])
+    subprocess.check_call(['systemctl', 'restart', 'caravan-update.service'])
+    phase = 'restart API'
     try:
         api.write_text(new_source)
         subprocess.check_call(['systemctl', 'restart', 'shorts-studio-oracle-api.service'])
@@ -95,15 +112,18 @@ def main():
         import urllib.request, json
         opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
         for route in ['/v1/overview', '/v1/updates']:
+            phase = 'probe ' + route
             request = urllib.request.Request('http://127.0.0.1:7310' + route, headers={'Authorization': 'Bearer ' + token.decode()})
             with opener.open(request, timeout=8) as response:
                 data = json.load(response)
             if route.endswith('updates') and (data.get('ready') is not True or data.get('target') != 'caravan-web'):
                 raise RuntimeError('Updater probe failed')
-    except Exception:
+    except Exception as exc:
         api.write_text(source)
         subprocess.call(['systemctl', 'restart', 'shorts-studio-oracle-api.service'])
-        raise SystemExit('Installation failed; previous API source restored. No credentials printed.') from None
+        code = getattr(exc, 'code', None)
+        reason = type(exc).__name__ + ((' HTTP ' + str(code)) if isinstance(code, int) else '')
+        raise SystemExit('Installation failed at ' + phase + ': ' + reason + '; previous API source restored. No credentials printed.') from None
     print('CARAVAN_UPDATER_CONNECTED')
     print('Open Shorts Studio /updates and refresh status.')
 
