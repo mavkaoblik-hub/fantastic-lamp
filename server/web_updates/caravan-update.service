@@ -1,0 +1,30 @@
+[Unit]
+Description=Caravan web release installer (private Unix socket)
+After=shorts-studio-oracle-api.service
+
+[Service]
+Type=simple
+User=caravanupdate
+Group=shortsstudio
+ExecStart=/usr/bin/python3 /opt/caravan-update/caravan_update_service.py
+Restart=on-failure
+RestartSec=3
+RuntimeDirectory=caravan-update
+RuntimeDirectoryMode=0750
+StateDirectory=caravan-update
+StateDirectoryMode=0700
+UMask=0027
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/srv/mavka-web/public/caravan
+RestrictSUIDSGID=yes
+MemoryMax=256M
+CPUQuota=25%
+TasksMax=32
+LimitNOFILE=128
+
+[Install]
+WantedBy=multi-user.target
