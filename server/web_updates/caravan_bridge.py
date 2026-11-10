@@ -13,15 +13,23 @@ class UnixConnection(http.client.HTTPConnection):
         self.sock.connect(SOCKET_PATH)
 
 
-def attach(namespace):
+def attach(namespace, handler_name=None):
     classes = {value for value in namespace.values() if isinstance(value, type)
                and issubclass(value, http.server.BaseHTTPRequestHandler)
                and value is not http.server.BaseHTTPRequestHandler
                and callable(getattr(value, 'authorized', None))
                and callable(getattr(value, 'send_json', None))}
-    if len(classes) != 1:
-        raise RuntimeError('Expected one authenticated Shorts HTTP handler')
-    cls = classes.pop()
+    if handler_name is not None:
+        cls = namespace.get(handler_name)
+        if cls not in classes:
+            raise RuntimeError('Selected HTTP handler must preserve authorization')
+    else:
+        # An entrypoint may import a base and expose a derived file/render handler.
+        leaves = {cls for cls in classes if not any(
+            other is not cls and issubclass(other, cls) for other in classes)}
+        if len(leaves) != 1:
+            raise RuntimeError('Expected one authenticated leaf HTTP handler')
+        cls = leaves.pop()
     for method in ('GET', 'POST'):
         original = getattr(cls, 'do_' + method)
         def wrapped(self, original=original, method=method):
