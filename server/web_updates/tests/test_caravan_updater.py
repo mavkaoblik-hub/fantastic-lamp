@@ -227,3 +227,49 @@ class FullFlowTests(unittest.TestCase):
                 for s in (local, api):
                     s.shutdown()
                     s.server_close()
+
+class InheritedEntrypointTests(unittest.TestCase):
+    def test_inherited_auth_is_accepted_by_installer_layout(self):
+        import runpy
+        installer = Path(__file__).resolve().parents[1] / 'scripts' / 'install-caravan-updater.py'
+        layout = runpy.run_path(str(installer))['entrypoint_layout']
+        handler, guard = layout('''from base import Handler as OriginalHandler
+class Handler(OriginalHandler):
+    def do_GET(self): pass
+    def do_POST(self): pass
+def main(): pass
+if __name__ == "__main__": main()
+''')
+        self.assertEqual(handler.name, 'Handler')
+        self.assertGreater(guard.lineno, handler.lineno)
+
+    def test_only_leaf_handler_is_wrapped_and_inherited_auth_runs(self):
+        class OriginalHandler(http.server.BaseHTTPRequestHandler):
+            def authorized(self):
+                self.checked = True
+                return False
+            def send_json(self, *args): pass
+            def do_GET(self): self.route = 'base'
+            def do_POST(self): self.route = 'base'
+        class Handler(OriginalHandler):
+            def do_GET(self): self.route = 'inputs'
+            def do_POST(self): self.route = 'render'
+        base_method = OriginalHandler.do_GET
+        attach({'OriginalHandler': OriginalHandler, 'Handler': Handler}, 'Handler')
+        self.assertIs(OriginalHandler.do_GET, base_method)
+        h = object.__new__(Handler)
+        h.path = '/v1/files'
+        h.do_GET()
+        self.assertEqual(h.route, 'inputs')
+        h.path = '/v1/updates'
+        h.do_GET()
+        self.assertTrue(h.checked)
+        self.assertEqual(h.route, 'inputs')
+
+    def test_missing_auth_is_still_rejected(self):
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_GET(self): pass
+            def do_POST(self): pass
+            def send_json(self, *args): pass
+        with self.assertRaises(RuntimeError):
+            attach({'Handler': Handler}, 'Handler')
