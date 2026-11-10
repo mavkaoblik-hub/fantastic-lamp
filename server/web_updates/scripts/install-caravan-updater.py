@@ -14,6 +14,18 @@ def run(*args):
     return subprocess.check_output(args, text=True).strip()
 
 
+def entrypoint_layout(source):
+    tree = ast.parse(source)
+    handlers = [n for n in tree.body if isinstance(n, ast.ClassDef)
+                and {'do_GET', 'do_POST'} <=
+                    {f.name for f in n.body if isinstance(f, ast.FunctionDef)}]
+    mains = [n for n in tree.body if isinstance(n, ast.If)
+             and ast.dump(n.test) == ast.dump(ast.parse('__name__ == "__main__"', mode='eval').body)]
+    if len(handlers) != 1 or len(mains) != 1:
+        raise SystemExit('Unsupported running API structure; no changes made')
+    return handlers[0], mains[0]
+
+
 def main():
     if os.geteuid() != 0:
         raise SystemExit('Run with sudo on Oracle')
@@ -29,14 +41,7 @@ def main():
     if not api.is_absolute() or api.is_symlink() or not api.is_relative_to('/opt/shorts-studio'):
         raise SystemExit('Unexpected API path; no changes made')
     source = api.read_text()
-    tree = ast.parse(source)
-    handlers = [n for n in tree.body if isinstance(n, ast.ClassDef)
-                and {'authorized', 'send_json', 'do_GET', 'do_POST'} <=
-                    {f.name for f in n.body if isinstance(f, ast.FunctionDef)}]
-    mains = [n for n in tree.body if isinstance(n, ast.If)
-             and ast.dump(n.test) == ast.dump(ast.parse('__name__ == "__main__"', mode='eval').body)]
-    if len(handlers) != 1 or len(mains) != 1:
-        raise SystemExit('Unsupported running API structure; no changes made')
+    handler, main_guard = entrypoint_layout(source)
     uid = pwd.getpwnam('shortsstudio').pw_uid
     dest = Path('/srv/mavka-web/public/caravan')
     if dest.is_symlink() or not (dest / 'index.html').is_file():
@@ -67,7 +72,7 @@ def main():
     new_source = source
     if marker not in source:
         lines = source.splitlines(keepends=True)
-        lines.insert(mains[0].lineno - 1, marker + '\nfrom caravan_bridge import attach as _caravan_attach\n_caravan_attach(globals())\n\n')
+        lines.insert(main_guard.lineno - 1, marker + '\nfrom caravan_bridge import attach as _caravan_attach\n_caravan_attach(globals(), ' + repr(handler.name) + ')\n\n')
         new_source = ''.join(lines)
         compile(new_source, str(api), 'exec')
         shutil.copy2(api, api.with_name(api.name + '.before-caravan'))
