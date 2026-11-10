@@ -273,3 +273,33 @@ if __name__ == "__main__": main()
             def send_json(self, *args): pass
         with self.assertRaises(RuntimeError):
             attach({'Handler': Handler}, 'Handler')
+
+class SiteTraversalTests(unittest.TestCase):
+    def load(self):
+        import runpy
+        path = Path(__file__).resolve().parents[1] / 'scripts' / 'install-caravan-updater.py'
+        return runpy.run_path(str(path))['ensure_site_traversal']
+
+    def test_adds_only_execute_acl_to_inaccessible_parent(self):
+        from types import SimpleNamespace
+        check = self.load()
+        # /srv accessible; /srv/mavka-web needs ACL; public already accessible.
+        with patch('subprocess.run', side_effect=[SimpleNamespace(returncode=i) for i in (0, 1, 0, 0)]), patch('shutil.which', return_value='/usr/bin/setfacl'), patch('subprocess.check_call') as call:
+            check()
+            call.assert_called_once_with(['setfacl', '--no-mask', '-m', 'u:caravanupdate:--x', '/srv/mavka-web'])
+
+    def test_existing_parent_permissions_are_left_unchanged(self):
+        from types import SimpleNamespace
+        check = self.load()
+        with patch('subprocess.run', return_value=SimpleNamespace(returncode=0)), patch('subprocess.check_call') as call:
+            check()
+            call.assert_not_called()
+
+    def test_mask_denial_fails_before_api_restart(self):
+        from types import SimpleNamespace
+        check = self.load()
+        with patch('subprocess.run', return_value=SimpleNamespace(returncode=1)), patch('shutil.which', return_value='/usr/bin/setfacl'), patch('subprocess.check_call') as call:
+            with self.assertRaises(SystemExit):
+                check()
+            self.assertEqual(call.call_count, 1)
+            self.assertEqual(call.call_args.args[0][0], 'setfacl')
