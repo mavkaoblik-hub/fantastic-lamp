@@ -1,0 +1,18 @@
+name: Caravan web updater
+on:
+  push:
+    paths: ['server/web_updates/**', '.github/workflows/caravan-web-updater.yml']
+  pull_request:
+    paths: ['server/web_updates/**', '.github/workflows/caravan-web-updater.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m unittest discover -s server/web_updates/tests -v
+      - run: python3 -m py_compile server/web_updates/*.py server/web_updates/scripts/*.py
