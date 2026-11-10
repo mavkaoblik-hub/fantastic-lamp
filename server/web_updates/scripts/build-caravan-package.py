@@ -32,6 +32,8 @@ try:
             name = path.relative_to(source).as_posix()
             if any(p.startswith('.') for p in path.relative_to(source).parts):
                 continue
+            if path.suffix.lower() == '.md':
+                continue
             if path.name in ('caravan-release.json', 'sw.js', 'service-worker.js'):
                 continue
             if path.suffix.lower() not in ALLOWED:
