@@ -284,9 +284,9 @@ class SiteTraversalTests(unittest.TestCase):
         from types import SimpleNamespace
         check = self.load()
         # /srv accessible; /srv/mavka-web needs ACL; public already accessible.
-        with patch('subprocess.run', side_effect=[SimpleNamespace(returncode=i) for i in (0, 1, 0, 0)]), patch('shutil.which', return_value='/usr/bin/setfacl'), patch('subprocess.check_call') as call:
+        with patch('subprocess.run', side_effect=[SimpleNamespace(returncode=i) for i in (0, 1, 0, 0)]), patch('shutil.which', return_value='/usr/bin/setfacl'), patch.dict(check.__globals__, {'run': lambda *args: 'user::rwx\ngroup::---\nother::---\n'}), patch('subprocess.check_call') as call:
             check()
-            call.assert_called_once_with(['setfacl', '--no-mask', '-m', 'u:caravanupdate:--x', '/srv/mavka-web'])
+            call.assert_called_once_with(['setfacl', '--no-mask', '-m', 'group::---,user:caravanupdate:--x,mask::--x', '/srv/mavka-web'])
 
     def test_existing_parent_permissions_are_left_unchanged(self):
         from types import SimpleNamespace
@@ -298,8 +298,19 @@ class SiteTraversalTests(unittest.TestCase):
     def test_mask_denial_fails_before_api_restart(self):
         from types import SimpleNamespace
         check = self.load()
-        with patch('subprocess.run', return_value=SimpleNamespace(returncode=1)), patch('shutil.which', return_value='/usr/bin/setfacl'), patch('subprocess.check_call') as call:
+        with patch('subprocess.run', return_value=SimpleNamespace(returncode=1)), patch('shutil.which', return_value='/usr/bin/setfacl'), patch.dict(check.__globals__, {'run': lambda *args: 'user::rwx\ngroup::---\nother::---\n'}), patch('subprocess.check_call') as call:
             with self.assertRaises(SystemExit):
                 check()
             self.assertEqual(call.call_count, 1)
             self.assertEqual(call.call_args.args[0][0], 'setfacl')
+
+class AclMaskTests(unittest.TestCase):
+    def test_granting_traversal_does_not_unmask_old_group_rights(self):
+        import runpy
+        path = Path(__file__).resolve().parents[1] / 'scripts' / 'install-caravan-updater.py'
+        build = runpy.run_path(str(path))['traversal_acl']
+        result = build('user::rwx\nuser:guest:rwx\ngroup::rwx\nmask::r--\nother::---\n')
+        self.assertIn('user:guest:r--', result)
+        self.assertIn('group::r--', result)
+        self.assertIn('user:caravanupdate:--x', result)
+        self.assertIn('mask::r-x', result)
