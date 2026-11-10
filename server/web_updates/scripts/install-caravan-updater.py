@@ -26,15 +26,38 @@ def entrypoint_layout(source):
     return handlers[0], mains[0]
 
 
+def traversal_acl(text):
+    entries = []
+    for line in text.splitlines():
+        parts = line.split('#', 1)[0].strip().split(':')
+        if len(parts) == 3 and parts[0] in ('user', 'group', 'mask', 'other'):
+            entries.append(parts)
+    old_mask = next((e[2] for e in entries if e[:2] == ['mask', '']), None)
+    if old_mask is None:
+        old_mask = next((e[2] for e in entries if e[:2] == ['group', '']), None)
+    if old_mask is None:
+        raise SystemExit('Cannot inspect website ACL')
+    changes = []
+    # Preserve old effective rights before enabling execute in the ACL mask.
+    for kind, name, perms in entries:
+        if kind == 'group' or (kind == 'user' and name):
+            effective = ''.join(c if c in old_mask else '-' for c in perms)
+            changes.append(':'.join((kind, name, effective)))
+    new_mask = old_mask[:2] + 'x'
+    changes.extend(['user:caravanupdate:--x', 'mask::' + new_mask])
+    return ','.join(changes)
+
+
 def ensure_site_traversal():
     # Traversal only, never listing or writing the parent website directories.
     for directory in ('/srv', '/srv/mavka-web', '/srv/mavka-web/public'):
         probe = ['runuser', '-u', 'caravanupdate', '-g', 'shortsstudio', '--', 'test', '-x', directory]
         if subprocess.run(probe, check=False).returncode == 0:
             continue
-        if not shutil.which('setfacl'):
+        if not shutil.which('setfacl') or not shutil.which('getfacl'):
             raise SystemExit('Install ACL support first: sudo apt-get install -y acl')
-        subprocess.check_call(['setfacl', '--no-mask', '-m', 'u:caravanupdate:--x', directory])
+        acl = traversal_acl(run('getfacl', '-cp', directory))
+        subprocess.check_call(['setfacl', '--no-mask', '-m', acl, directory])
         if subprocess.run(probe, check=False).returncode != 0:
             raise SystemExit('Existing ACL mask blocks traversal: ' + directory)
 
