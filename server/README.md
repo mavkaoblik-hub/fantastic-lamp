@@ -1,7 +1,7 @@
 # Караван: компактна серверна частина
 
 Перший онлайн-модуль зберігає лише реєстрацію та **останній знімок ресурсів**.
-Основна гра залишається офлайн. Клієнт Android/ПК ще не підключений до цього API.
+Основна гра залишається офлайн. Клієнт D7A для Android/браузера підключений через необов’язковий HTTPS endpoint; див. інструкцію нижче.
 Графіка, вагони, екіпаж, повні збереження й історія ігрових дій на сервер не передаються.
 
 ## Дані й навантаження
@@ -72,7 +72,7 @@ bash /home/ubuntu/caravan-source/server/install.sh
 ## Межа поточного розгортання
 
 Служба слухає тільки 127.0.0.1:8770. Зовнішніх портів/firewall/DNS/тунелів
-інсталятор не змінює; HTTPS-адресу не припускає. Host дозволено localhost/127.0.0.1,
+інсталятор не змінює; HTTPS-адресу не припускає. За замовчуванням Host дозволено localhost/127.0.0.1,
 CORS не відкритий, proxy headers вимкнені. Для підключення реальних клієнтів
 окремо налаштовуємо перевірену HTTPS-адресу, дозволений Host/Origin і довірений
 проксі з коректним клієнтським IP для обмежень частоти. Код входу через
@@ -86,7 +86,7 @@ CORS не відкритий, proxy headers вимкнені. Для підкл�
 
 | Запит | Дані | Результат |
 |---|---|---|
-| POST /v1/players | {"nickname":"Капітан"} | Профіль і access_code (лише один раз) |
+| POST /v1/players | {"nickname":"Капітан"}; необов’язковий registration_key: cr1_ + 43 base64url символи | Профіль і access_code; той самий ключ повторно повертає той самий акаунт/код |
 | GET /v1/me | Authorization: Bearer особистий-код | Приватний профіль і revision |
 | PUT /v1/resources | Той самий заголовок; {"revision":0,"resources":{"metal":210,"fuel":80,"supplies":48}} | Новий профіль/revision і changed |
 | GET /v1/leaderboard?sort=total&limit=50 | Без коду; sort=total/metal/fuel/supplies, limit=1..100 | Публічні нікнейми й ресурси |
@@ -112,3 +112,9 @@ python3 -m unittest server.test_caravan -v
 [Uvicorn limits](https://uvicorn.dev/settings/#resource-limits),
 [Python secrets](https://docs.python.org/3/library/secrets.html),
 [SQLite max_page_count](https://www.sqlite.org/pragma.html#pragma_max_page_count).
+# Підключення гри D7A
+
+Додано необов’язкову реєстрацію/вхід і клієнт ресурсних зведень для вебгри та Android.
+HTTPS endpoint, `CARAVAN_ALLOWED_ORIGINS`, `CARAVAN_ALLOWED_HOSTS`, правила безпеки,
+тести й обмеження описані в [інструкції інтеграції](../docs/CARAVAN_SERVER_SYNC_2026-11-03.md).
+За замовчуванням зовнішні origins залишаються заблоковані; wildcard не підтримується.

@@ -6,7 +6,9 @@ on:
       - 'game/v012_restored/**'
       - 'android/**'
       - 'tools/caravan_restore_v012.py'
+      - 'tools/configure_caravan_sync.py'
       - 'tests/caravan_*.cjs'
+      - 'tests/caravan_android_install_smoke.sh'
       - '.github/workflows/caravan-v012-original-android.yml'
   push:
     branches: [main]
@@ -14,12 +16,15 @@ on:
       - 'game/v012_restored/**'
       - 'android/**'
       - 'tests/caravan_android_touch_smoke.cjs'
+      - 'tests/caravan_android_install_smoke.sh'
       - 'game/v012_asset_packs/**'
       - 'game/assets/ui_alpha_v1/**'
       - 'game/assets/ui_frames_v1/**'
       - 'game/assets/review_v013c/**'
       - 'game/assets/painterly_v021/assets/locations/**'
       - 'tools/caravan_restore_v012.py'
+      - 'tools/configure_caravan_sync.py'
+      - 'tests/caravan_server_sync.test.cjs'
       - 'tests/caravan_v012_visual_smoke.cjs'
       - 'tests/caravan_v012_camera.test.cjs'
       - 'tests/caravan_v012_journal.test.cjs'
@@ -46,6 +51,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate and restore all original source assets
+        env:
+          CARAVAN_SERVER_URL: ''
         run: |
           python3 tools/caravan_restore_v012.py "$RUNNER_TEMP/caravan-v012-game"
           node --check game/v012_restored/camera.js
@@ -61,6 +68,9 @@ jobs:
           node --check game/v012_restored/art_bridge_v013c.js
           node --check game/v012_restored/ui_icons.js
           node --check game/v012_restored/app.js
+          node --check game/v012_restored/server_sync.js
+          node --check game/v012_restored/server_sync_ui.js
+          node --test tests/caravan_server_sync.test.cjs
           node --test tests/caravan_v012_camera.test.cjs tests/caravan_v012_journal.test.cjs tests/caravan_v012_routes.test.cjs tests/caravan_v013_production.test.cjs tests/caravan_v013_crew_transit.test.cjs tests/caravan_v013_boarding.test.cjs tests/caravan_v013_interior_life.test.cjs tests/caravan_v013_internal_transfer.test.cjs tests/caravan_v013_crew_wellbeing.test.cjs tests/caravan_v013_crew_growth.test.cjs tests/caravan_v013_crew_autonomy.test.cjs
       - name: Node and browser setup
         uses: actions/setup-node@v4
@@ -103,14 +113,21 @@ jobs:
           gradle-version: '8.9'
       - name: Package exact v0.12 art, not the geometric prototype
         shell: bash
+        env:
+          CARAVAN_SERVER_URL: ${{ vars.CARAVAN_SERVER_URL }}
         run: |
           set -euo pipefail
+          # Browser acceptance must never create real accounts on the configured server.
+          python3 tools/configure_caravan_sync.py "$RUNNER_TEMP/caravan-v012-game"
           GAME=android/app/src/main/assets/game
           rm -rf "$GAME"
           mkdir -p "$GAME"
           cp -a "$RUNNER_TEMP/caravan-v012-game/." "$GAME/"
           cp web/manifest.webmanifest "$GAME/manifest.webmanifest"
           test -s "$GAME/camera.js"
+          test -s "$GAME/server_sync.js"
+          test -s "$GAME/server_sync_ui.js"
+          test -s "$GAME/sync_config.json"
           test -s "$GAME/android.css"
           test -s "$GAME/journal.js"
           test -s "$GAME/routes.js"
@@ -149,7 +166,7 @@ jobs:
           assert len(review) in (0,72),f"Partial review pack: {len(review)}"
           PY
       - name: Compile original restored Android build
-        run: gradle -p android --no-daemon --stacktrace :app:assembleDebug
+        run: gradle -p android --no-daemon --stacktrace :app:assembleDebug :app:assemblePreview
       - name: Validate debug APK and signing
         shell: bash
         run: |
@@ -160,6 +177,12 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee android/original-v012-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee android/original-v012-signature.txt
           sha256sum "$APK" | tee android/ORIGINAL_V012_APK_SHA256.txt
+          APK=android/app/build/outputs/apk/preview/app-preview.apk
+          unzip -tqq "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee android/preview-badging.txt
+          grep -F "package: name='ua.mavka.caravan.autotest.syncpreview'" android/preview-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee android/preview-signature.txt
+          sha256sum "$APK" | tee android/PREVIEW_APK_SHA256.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -180,7 +203,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: CARAVAN-original-v012-Android-APK
+          name: CARAVAN-D7A-upgrade-requires-original-key-APK
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/original-v012-badging.txt
@@ -188,3 +211,59 @@ jobs:
             android/ORIGINAL_V012_APK_SHA256.txt
           if-no-files-found: error
           retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CARAVAN-D7A-install-alongside-APK
+          path: |
+            android/app/build/outputs/apk/preview/app-preview.apk
+            android/preview-badging.txt
+            android/preview-signature.txt
+            android/PREVIEW_APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
+  install-regression:
+    needs: original-v012-android
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/download-artifact@v4
+        with:
+          name: CARAVAN-D7A-upgrade-requires-original-key-APK
+          path: build/install/debug
+      - uses: actions/download-artifact@v4
+        with:
+          name: CARAVAN-D7A-install-alongside-APK
+          path: build/install/preview
+      - name: Locate packaged APKs
+        run: |
+          find build/install/debug -name app-debug.apk -exec cp {} build/install/debug.apk \;
+          find build/install/preview -name app-preview.apk -exec cp {} build/install/preview.apk \;
+          cp build/install/debug.apk build/install/debug/app-debug.apk
+          cp build/install/preview.apk build/install/preview/app-preview.apk
+          bash -n tests/caravan_android_install_smoke.sh
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install alongside an incompatible existing package on Android 35
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          ram-size: 2048M
+          disable-animations: true
+          script: bash tests/caravan_android_install_smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CARAVAN-Android-install-regression-evidence
+          path: |
+            build/install/evidence/*.txt
+            build/install/evidence/*.png

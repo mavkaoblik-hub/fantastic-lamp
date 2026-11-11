@@ -1,5 +1,6 @@
 """Bounded player snapshots, not full saves or a gameplay event log."""
 from contextlib import contextmanager
+import base64
 import hashlib
 from pathlib import Path
 import re
@@ -122,12 +123,24 @@ class Store:
             db.execute("PRAGMA user_version=1")
         self.path.chmod(0o600)
 
-    def register(self, value):
+    def register(self, value, registration_key=None):
         name = nickname(value)
         now = int(self.clock())
-        code = "cv1_" + secrets.token_urlsafe(32)
+        if registration_key is not None:
+            if not isinstance(registration_key, str) or not re.fullmatch(r"cr1_[A-Za-z0-9_-]{43}", registration_key):
+                raise Rejected("invalid_registration_key")
+            # Persisted 256-bit device secret: replay recovers the SAME profile/code.
+            # Neither the enrollment secret nor the code is stored in plaintext.
+            digest = hashlib.sha256(("Caravan registration v1\0" + registration_key).encode("ascii")).digest()
+            code = "cv1_" + base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+        else:
+            code = "cv1_" + secrets.token_urlsafe(32)
         player_id = secrets.token_hex(16)
         with self.connection(write=True) as db:
+            if registration_key is not None:
+                existing = db.execute("SELECT * FROM players WHERE code_hash=?", (code_hash(code),)).fetchone()
+                if existing is not None:
+                    return {**public(existing), "access_code": code}
             if db.execute("SELECT 1 FROM players WHERE nickname_key=?", (name.casefold(),)).fetchone():
                 raise Rejected("nickname_taken", 409)
             if db.execute("SELECT COUNT(*) FROM players").fetchone()[0] >= self.max_players:

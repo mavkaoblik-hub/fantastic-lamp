@@ -39,6 +39,72 @@ class CaravanTests(unittest.TestCase):
         self.assertEqual(response.status_code, 201, response.text)
         return response.json()
 
+    def test_device_registration_replay_recovers_same_account_and_secret_after_lost_response(self):
+        key = "cr1_" + "x" * 43
+        data = {"nickname": "AutoCaptain", "registration_key": key}
+        first = self.client.post("/v1/players", json=data).json()
+        second = self.client.post("/v1/players", json=data).json()
+        self.assertEqual(first, second)
+        self.assertEqual(self.store.leaderboard()["player_count"], 1)
+        self.assertEqual(self.store.profile(first["access_code"])["player_id"], first["player_id"])
+        raw = self.store.path.read_bytes()
+        self.assertNotIn(key.encode(), raw)
+        self.assertNotIn(first["access_code"].encode(), raw)
+        with self.store.connection() as db:
+            self.assertEqual(db.execute("SELECT count FROM registration_quota").fetchone()[0], 1)
+
+    def test_concurrent_device_registration_creates_one_account(self):
+        key = "cr1_" + "y" * 43
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(lambda _: self.store.register("ConcurrentAuto", key), range(4)))
+        self.assertEqual(len({p["player_id"] for p in results}), 1)
+        self.assertEqual(len({p["access_code"] for p in results}), 1)
+        self.assertEqual(self.store.leaderboard()["player_count"], 1)
+
+    def test_invalid_device_registration_secret_is_rejected(self):
+        for key in (None, "short", "cv1_" + "x" * 43):
+            self.assertEqual(self.client.post("/v1/players", json={
+                "nickname": "InvalidAuto", "registration_key": key}).status_code, 400)
+
+    def test_configured_webview_origin_preflight_registration_and_snapshot(self):
+        origin = "https://appassets.androidplatform.net"
+        with TestClient(create_app(self.store, allowed_origins=[origin]), base_url="http://localhost") as client:
+            preflight = client.options("/v1/resources", headers={"Origin": origin,
+                "Access-Control-Request-Method": "PUT",
+                "Access-Control-Request-Headers": "authorization,content-type"})
+            self.assertEqual(preflight.status_code, 200)
+            self.assertEqual(preflight.headers["access-control-allow-origin"], origin)
+            self.assertNotIn("access-control-allow-credentials", preflight.headers)
+            registration = client.post("/v1/players", json={"nickname": "AndroidCaptain"}, headers={"Origin": origin})
+            self.assertEqual(registration.status_code, 201)
+            headers = {**self.headers(registration.json()), "Origin": origin}
+            self.assertEqual(client.get("/v1/me", headers=headers).status_code, 200)
+            result = client.put("/v1/resources", headers=headers,
+                json={"revision": 0, "resources": {"metal": 210, "fuel": 80, "supplies": 48}})
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(result.headers["access-control-allow-origin"], origin)
+            for rejected_origin in ("null", "https://evil.example", origin + ".evil.example"):
+                result = client.post("/v1/players", json={"nickname": "Blocked"}, headers={"Origin": rejected_origin})
+                self.assertEqual(result.status_code, 403)
+                self.assertNotIn("access-control-allow-origin", result.headers)
+
+    def test_cors_exposes_retry_and_applies_to_auth_errors(self):
+        origin = "https://game.example"
+        with TestClient(create_app(self.store, allowed_origins=[origin]), base_url="http://localhost") as client:
+            result = client.get("/v1/me", headers={"Origin": origin})
+            self.assertEqual(result.status_code, 401)
+            self.assertEqual(result.headers["access-control-allow-origin"], origin)
+            self.assertIn("Retry-After", result.headers["access-control-expose-headers"])
+
+    def test_public_host_is_explicit_and_wildcard_configuration_is_rejected(self):
+        with TestClient(create_app(self.store, allowed_hosts=["api.example"]), base_url="https://api.example") as client:
+            self.assertEqual(client.get("/health").status_code, 200)
+            self.assertEqual(client.get("/health", headers={"Host": "evil.example"}).status_code, 400)
+        for origin in ("*", "null", "http://game.example", "https://game.example/path", "https://user:pass@game.example"):
+            with self.assertRaises(ValueError):
+                create_app(self.store, allowed_origins=[origin])
+
+
     def headers(self, player):
         return {"Authorization": "Bearer " + player["access_code"]}
 

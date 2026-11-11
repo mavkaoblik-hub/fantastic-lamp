@@ -25,12 +25,16 @@ import android.widget.FrameLayout;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import org.json.JSONObject;
 import java.util.Locale;
 
 public final class MainActivity extends Activity {
     private static final String HOST = "appassets.androidplatform.net";
     private static final String HOME = "https://" + HOST + "/assets/game/index.html";
     private WebView game;
+    private Uri syncEndpoint;
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,7 @@ public final class MainActivity extends Activity {
             getWindow().setStatusBarColor(Color.BLACK);
             getWindow().setNavigationBarColor(Color.BLACK);
             game = new WebView(this);
+            syncEndpoint = readSyncEndpoint();
             game.setBackgroundColor(Color.rgb(8, 16, 24));
             game.setOverScrollMode(View.OVER_SCROLL_NEVER);
             WebSettings settings = game.getSettings();
@@ -59,9 +64,15 @@ public final class MainActivity extends Activity {
                 }
             });
             game.setWebViewClient(new WebViewClient() {
+                @Override public void onPageFinished(WebView view, String url) {
+                    if (HOME.equals(url)) view.evaluateJavascript(
+                            "Boolean(globalThis.__CARAVAN_RESOURCE_SUMMARY && document.getElementById('syncAuth'))",
+                            ready -> { if ("true".equals(ready)) Log.i("CARAVAN_BOOT", "Game scene ready"); });
+                }
                 @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                     Uri uri = request.getUrl();
                     String path = uri.getPath();
+                    if (allowSyncRequest(request)) return null; // Normal WebView TLS and CORS checks still apply.
                     if (!"https".equals(uri.getScheme()) || !HOST.equals(uri.getHost())
                             || path == null || !path.startsWith("/assets/game/")) {
                         return response(403, "Blocked");
@@ -134,6 +145,37 @@ public final class MainActivity extends Activity {
             message.setGravity(android.view.Gravity.CENTER);
             setContentView(message);
         }
+    }
+    private Uri readSyncEndpoint() {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                getAssets().open("game/sync_config.json"), java.nio.charset.StandardCharsets.UTF_8))) {
+            StringBuilder text = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (text.length() + line.length() > 4096) return null;
+                text.append(line);
+            }
+            Uri uri = Uri.parse(new JSONObject(text.toString()).getString("endpoint"));
+            String path = uri.getEncodedPath();
+            if (!"https".equals(uri.getScheme()) || uri.getHost() == null
+                    || HOST.equalsIgnoreCase(uri.getHost()) || uri.getUserInfo() != null
+                    || uri.getEncodedQuery() != null || uri.getEncodedFragment() != null
+                    || !(path == null || path.isEmpty() || "/".equals(path))) return null;
+            return uri;
+        } catch (Exception ignored) { return null; }
+    }
+    private boolean allowSyncRequest(WebResourceRequest request) {
+        Uri uri = request.getUrl();
+        if (syncEndpoint == null || request.isForMainFrame() || !"https".equals(uri.getScheme())
+                || !syncEndpoint.getHost().equalsIgnoreCase(uri.getHost())
+                || (syncEndpoint.getPort() == -1 ? 443 : syncEndpoint.getPort())
+                    != (uri.getPort() == -1 ? 443 : uri.getPort())
+                || uri.getUserInfo() != null || uri.getEncodedQuery() != null
+                || uri.getEncodedFragment() != null) return false;
+        String path = uri.getEncodedPath(), method = request.getMethod();
+        return ("/v1/players".equals(path) && ("POST".equals(method) || "OPTIONS".equals(method)))
+                || ("/v1/me".equals(path) && ("GET".equals(method) || "OPTIONS".equals(method)))
+                || ("/v1/resources".equals(path) && ("PUT".equals(method) || "OPTIONS".equals(method)));
     }
     private static WebResourceResponse response(int code, String text) {
         return new WebResourceResponse("text/plain", "UTF-8", code, text, null,

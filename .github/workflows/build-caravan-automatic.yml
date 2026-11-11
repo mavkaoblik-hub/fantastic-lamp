@@ -4,7 +4,10 @@ on:
   push:
     branches: [main]
     paths:
-      - 'web/**'
+      - 'game/v012_restored/**'
+      - 'tools/caravan_restore_v012.py'
+      - 'tools/configure_caravan_sync.py'
+      - 'tests/caravan_*.cjs'
       - 'android/**'
       - 'game/assets/painterly_v021/**'
       - '.github/workflows/build-caravan-automatic.yml'
@@ -24,50 +27,28 @@ jobs:
     steps:
       - name: Checkout Caravan source
         uses: actions/checkout@v4
-      - name: Verify web source and game assets
-        shell: bash
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify restored D7A source and resource sync
         run: |
-          set -euo pipefail
-          test -s web/index.html
-          test -s web/game.js
-          test -s web/style.css
-          test -s game/assets/painterly_v021/assets/locations/abandoned_power_point.png
-          node --check web/game.js
-          node --check web/camera_math.js
-          node --check web/crew_motion.js
-          node --check web/caravan_systems.js
-          node --check web/gameplay_ui.js
-          node --test tests/caravan_systems.test.cjs tests/caravan_camera.test.cjs tests/caravan_crew_motion.test.cjs
-      - name: Bundle the game offline
-        shell: bash
+          node --check game/v012_restored/app.js
+          node --check game/v012_restored/server_sync.js
+          node --check game/v012_restored/server_sync_ui.js
+          node --test tests/*.test.cjs
+      - name: Bundle approved D7A game offline with public endpoint configuration
+        env:
+          CARAVAN_SERVER_URL: ${{ vars.CARAVAN_SERVER_URL }}
         run: |
-          set -euo pipefail
-          GAME=android/app/src/main/assets/game
-          mkdir -p "$GAME/assets"
-          cp web/index.html web/game.js web/camera_math.js web/crew_motion.js web/caravan_systems.js web/gameplay_ui.js web/style.css web/manifest.webmanifest web/sw.js "$GAME/"
-          cp game/assets/painterly_v021/assets/locations/abandoned_power_point.png "$GAME/assets/concept_cover.png"
-          mkdir -p "$GAME/assets/painterly"
-          cp game/assets/painterly_v021/assets/locations/*.png "$GAME/assets/painterly/"
-          for GROUP in ui resource status task currency; do
-            mkdir -p "$GAME/assets/catalog/$GROUP"
-            cp "game/assets/catalog/crops_v1/$GROUP/"*.png "$GAME/assets/catalog/$GROUP/"
-          done
+          python3 tools/caravan_restore_v012.py android/app/src/main/assets/game
           python3 - <<'PY'
           from pathlib import Path
           root = Path("android/app/src/main/assets/game")
           css = root / "style.css"
-          css.write_text("\n".join(line for line in css.read_text().splitlines() if not line.lstrip().startswith('@import url(')) + "\n")
-          index = root / "index.html"
-          txt = index.read_text()
-          txt = txt.replace("if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});", "")
-          index.write_text(txt)
-          assert (root / "assets/concept_cover.png").stat().st_size > 10000
-          assert (root / "game.js").stat().st_size > 1000
-          for name in ("camera_math.js", "crew_motion.js", "caravan_systems.js", "gameplay_ui.js"):
-              assert (root / name).stat().st_size > 1000
-              assert name in txt
-          for item in ("ui/ui_tasks_open.png", "resource/resource_water.png", "task/task_repair.png"):
-              assert (root / "assets/catalog" / item).stat().st_size > 1000
+          css.write_text("\n".join(line for line in css.read_text().splitlines()
+              if not line.lstrip().startswith('@import url(')) + "\n", encoding="utf-8")
+          for name in ("app.js", "server_sync.js", "server_sync_ui.js", "sync_config.json"):
+              assert (root / name).is_file(), name
           PY
       - name: Java 17
         uses: actions/setup-java@v4
@@ -95,24 +76,24 @@ jobs:
         with:
           gradle-version: '8.9'
       - name: Compile genuine Android APK
-        run: gradle -p android --no-daemon --stacktrace :app:assembleDebug
+        run: gradle -p android --no-daemon --stacktrace :app:assemblePreview
       - name: Check APK identity, ZIP and signing
         shell: bash
         run: |
           set -euo pipefail
-          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          APK=android/app/build/outputs/apk/preview/app-preview.apk
           test -s "$APK"
           unzip -tqq "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee android/apk-badging.txt
-          grep -F "package: name='ua.mavka.caravan.autotest'" android/apk-badging.txt
+          grep -F "package: name='ua.mavka.caravan.autotest.syncpreview'" android/apk-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee android/apk-signature.txt
           sha256sum "$APK" | tee android/APK_SHA256.txt
       - name: Publish downloadable APK
         uses: actions/upload-artifact@v4
         with:
-          name: CARAVAN-auto-Android-debug-APK
+          name: CARAVAN-auto-install-alongside-APK
           path: |
-            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/preview/app-preview.apk
             android/apk-badging.txt
             android/apk-signature.txt
             android/APK_SHA256.txt

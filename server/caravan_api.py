@@ -8,11 +8,13 @@ from pathlib import Path
 import sqlite3
 import threading
 import time
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from starlette.concurrency import run_in_threadpool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 from .caravan_store import CACHE_SECONDS, MAX_DB_BYTES, MAX_PLAYERS, Rejected, Store
 
@@ -77,7 +79,7 @@ def access_code(request):
     return values[0][7:]
 
 
-def create_app(store=None, limiter=None):
+def create_app(store=None, limiter=None, *, allowed_origins=None, allowed_hosts=None):
     store = store or Store(Path(os.environ.get("CARAVAN_DATA_DIR", Path(__file__).parent / "data")) / "players.db")
     limiter = limiter or RateLimit()
 
@@ -87,7 +89,24 @@ def create_app(store=None, limiter=None):
         yield
 
     app = FastAPI(title="Caravan Lite", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost"])
+    # Explicit origins only: never reflect arbitrary origins or accept null/file origins.
+    origins = allowed_origins if allowed_origins is not None else [
+        s.strip() for s in os.environ.get("CARAVAN_ALLOWED_ORIGINS", "").split(",") if s.strip()]
+    hosts = allowed_hosts if allowed_hosts is not None else [
+        s.strip() for s in os.environ.get("CARAVAN_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if s.strip()]
+    def valid_origin(value):
+        try:
+            parsed = urlsplit(value)
+            return (parsed.scheme == "https" and bool(parsed.hostname) and parsed.port != 0
+                    and not parsed.username and not parsed.password
+                    and not parsed.path and not parsed.query and not parsed.fragment and "*" not in value)
+        except ValueError:
+            return False
+    if any(not valid_origin(s) for s in origins):
+        raise ValueError("Allowed origins must be explicit HTTPS origins without a trailing slash")
+    if not hosts or any("*" in s or "/" in s for s in hosts):
+        raise ValueError("Allowed hosts must be explicit hostnames")
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts)
     app.state.store = store
 
     @app.exception_handler(Rejected)
@@ -106,7 +125,7 @@ def create_app(store=None, limiter=None):
     async def local_requests(request, call_next):
         if request.method not in ("GET", "HEAD", "OPTIONS"):
             origin = request.headers.get("origin")
-            if origin and origin != str(request.base_url).rstrip("/"):
+            if origin and origin != str(request.base_url).rstrip("/") and origin not in origins:
                 return JSONResponse({"error": "origin_forbidden"}, 403)
         try:
             limiter.check(("requests", request.client.host if request.client else "local"), 120, 60)
@@ -128,9 +147,11 @@ def create_app(store=None, limiter=None):
     async def register(request: Request):
         limiter.check(("registration", request.client.host if request.client else "local"), 5, 3600)
         value = await body(request)
-        if set(value) != {"nickname"}:
+        if set(value) not in ({"nickname"}, {"nickname", "registration_key"}):
             raise Rejected("invalid_registration")
-        return await run_in_threadpool(store.register, value["nickname"])
+        if "registration_key" in value and value["registration_key"] is None:
+            raise Rejected("invalid_registration_key")
+        return await run_in_threadpool(store.register, value["nickname"], value.get("registration_key"))
 
     @app.get("/v1/me")
     async def profile(request: Request):
@@ -168,4 +189,8 @@ def create_app(store=None, limiter=None):
     def script():
         return FileResponse(Path(__file__).parent / "leaderboard.js", media_type="text/javascript")
 
+    app.add_middleware(CORSMiddleware, allow_origins=origins,
+                       allow_methods=["GET", "POST", "PUT"],
+                       allow_headers=["Authorization", "Content-Type"],
+                       expose_headers=["Retry-After"], allow_credentials=False, max_age=600)
     return app
